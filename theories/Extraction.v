@@ -1,4 +1,4 @@
-From MetaCoq.Erasure Require EAst.
+From MetaRocq.Erasure Require EAst.
 From LambdaBox Require CheckWf.
 From LambdaBox Require EvalBox.
 From LambdaBox Require ErasurePipeline.
@@ -7,11 +7,12 @@ From LambdaBox Require Translations.
 Local Set Universe Checking.
 From LambdaBox Require SerializePrimitives.
 From LambdaBox Require Serialize.
-From Coq Require Import ExtrOcamlBasic.
-From Coq Require Import ExtrOCamlFloats.
-From Coq Require Import ExtrOCamlInt63.
-(* From Coq Require Import ExtrOcamlNativeString. *)
-From Coq Require Import Extraction.
+From Stdlib Require Import ExtrOcamlBasic.
+From Stdlib Require Import ExtrOCamlFloats.
+From Stdlib Require Import ExtrOCamlInt63.
+From Stdlib Require Import ExtrOCamlPString.
+(* From Stdlib Require Import ExtrOcamlNativeString. *)
+From Stdlib Require Import Extraction.
 
 
 
@@ -41,7 +42,7 @@ Extraction Blacklist config List String Nat Int Ast Universes UnivSubst Typing R
 
 
 (* TODO: add time implementation if *)
-Extract Constant MetaCoq.Common.Transform.time =>
+Extract Constant MetaRocq.Common.Transform.time =>
   "(fun c f x -> f x)".
 
 (* TODO: validate prim int implementations *)
@@ -57,6 +58,14 @@ Extract Constant SerializePrimitives.string_of_prim_float =>
   (* "(fun s -> failwith "" "")". *)
 Extract Constant SerializePrimitives.prim_float_of_string =>
   "(fun s -> s |> Camlcoq.camlstring_of_coqstring |> Int64.of_string |> Int64.float_of_bits |> Float64.of_float)".
+  (* "(fun s -> failwith "" "")". *)
+
+(* TODO: validate prim string implementations *)
+Extract Constant SerializePrimitives.string_of_prim_string =>
+  "(fun f -> f |> Pstring.to_string |> Camlcoq.coqstring_of_camlstring)".
+  (* "(fun s -> failwith "" "")". *)
+Extract Constant SerializePrimitives.prim_string_of_string =>
+  "(fun s -> s |> Camlcoq.camlstring_of_coqstring |> Pstring.of_string |> Option.get)".
   (* "(fun s -> failwith "" "")". *)
 
 
