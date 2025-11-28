@@ -20,6 +20,7 @@
     coqPackages.verified-extraction.override.version = "rocq-9.0";
   };
 
+  bundles."9.0".push-branches = ["master"];
 
   cachix.coq = {};
   cachix.math-comp = {};

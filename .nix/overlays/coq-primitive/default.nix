@@ -27,6 +27,6 @@ ocaml-ng.ocamlPackages_4_14.buildDunePackage {
     homepage = "https://github.com/palmskog/coq-primitive";
     description = "This library provides OCaml modules for primitive objects in Coq.";
     license = licenses.lgpl21;
-    maintainers = [  ];
+    maintainers = with maintainers; [ _4ever2 ];
   };
 }
