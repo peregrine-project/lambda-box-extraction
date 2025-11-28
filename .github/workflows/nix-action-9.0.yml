@@ -32,12 +32,12 @@ jobs:
       uses: cachix/install-nix-action@v31
       with:
         nix_path: nixpkgs=channel:nixpkgs-unstable
-    - name: Cachix setup au-cobra
+    - name: Cachix setup peregrine
       uses: cachix/cachix-action@v16
       with:
         authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
         extraPullNames: coq, coq-community, math-comp, metarocq
-        name: au-cobra
+        name: peregrine
     - id: stepGetDerivation
       name: Getting derivation for current job (CertiCoq)
       run: "NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link \\\n   --argstr bundle
@@ -108,12 +108,12 @@ jobs:
       uses: cachix/install-nix-action@v31
       with:
         nix_path: nixpkgs=channel:nixpkgs-unstable
-    - name: Cachix setup au-cobra
+    - name: Cachix setup peregrine
       uses: cachix/cachix-action@v16
       with:
         authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
         extraPullNames: coq, coq-community, math-comp, metarocq
-        name: au-cobra
+        name: peregrine
     - id: stepGetDerivation
       name: Getting derivation for current job (ElmExtraction)
       run: "NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link \\\n   --argstr bundle
@@ -172,12 +172,12 @@ jobs:
       uses: cachix/install-nix-action@v31
       with:
         nix_path: nixpkgs=channel:nixpkgs-unstable
-    - name: Cachix setup au-cobra
+    - name: Cachix setup peregrine
       uses: cachix/cachix-action@v16
       with:
         authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
         extraPullNames: coq, coq-community, math-comp, metarocq
-        name: au-cobra
+        name: peregrine
     - id: stepGetDerivation
       name: Getting derivation for current job (RustExtraction)
       run: "NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link \\\n   --argstr bundle
@@ -234,12 +234,12 @@ jobs:
       uses: cachix/install-nix-action@v31
       with:
         nix_path: nixpkgs=channel:nixpkgs-unstable
-    - name: Cachix setup au-cobra
+    - name: Cachix setup peregrine
       uses: cachix/cachix-action@v16
       with:
         authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
         extraPullNames: coq, coq-community, math-comp, metarocq
-        name: au-cobra
+        name: peregrine
     - id: stepGetDerivation
       name: Getting derivation for current job (coq)
       run: "NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link \\\n   --argstr bundle
@@ -298,12 +298,12 @@ jobs:
       uses: cachix/install-nix-action@v31
       with:
         nix_path: nixpkgs=channel:nixpkgs-unstable
-    - name: Cachix setup au-cobra
+    - name: Cachix setup peregrine
       uses: cachix/cachix-action@v16
       with:
         authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
         extraPullNames: coq, coq-community, math-comp, metarocq
-        name: au-cobra
+        name: peregrine
     - id: stepGetDerivation
       name: Getting derivation for current job (lambda-box-extraction)
       run: "NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link \\\n   --argstr bundle
@@ -381,12 +381,12 @@ jobs:
       uses: cachix/install-nix-action@v31
       with:
         nix_path: nixpkgs=channel:nixpkgs-unstable
-    - name: Cachix setup au-cobra
+    - name: Cachix setup peregrine
       uses: cachix/cachix-action@v16
       with:
         authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
         extraPullNames: coq, coq-community, math-comp, metarocq
-        name: au-cobra
+        name: peregrine
     - id: stepGetDerivation
       name: Getting derivation for current job (metarocq)
       run: "NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link \\\n   --argstr bundle
@@ -461,12 +461,12 @@ jobs:
       uses: cachix/install-nix-action@v31
       with:
         nix_path: nixpkgs=channel:nixpkgs-unstable
-    - name: Cachix setup au-cobra
+    - name: Cachix setup peregrine
       uses: cachix/cachix-action@v16
       with:
         authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
         extraPullNames: coq, coq-community, math-comp, metarocq
-        name: au-cobra
+        name: peregrine
     - id: stepGetDerivation
       name: Getting derivation for current job (verified-extraction)
       run: "NIXPKGS_ALLOW_UNFREE=1 nix-build --no-out-link \\\n   --argstr bundle

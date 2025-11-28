@@ -26,5 +26,5 @@
   cachix.coq-community = {};
   cachix.metarocq = {};
 
-  cachix.au-cobra.authToken = "CACHIX_AUTH_TOKEN";
+  cachix.peregrine.authToken = "CACHIX_AUTH_TOKEN";
 }
