@@ -23,6 +23,7 @@ depends: [
   "rocq-metarocq-template-pcuic" {= "1.4+9.0"}
   "rocq-metarocq-utils" {= "1.4+9.0"}
   "coq-primitive" {= "8.20.dev"}
+  "rocq-typed-extraction-common" {= "9.0.dev"}
   "rocq-rust-extraction" {= "9.0.dev"}
   "rocq-verified-extraction" {= "0.9.3+9.0"}
   "cmdliner" {= "1.3.0"}
@@ -40,11 +41,15 @@ pin-depends: [
     "git+https://github.com/4ever2/coq-primitive.git#ccd389d209aec3ce4563714981283a1ea3497ce3"
   ]
   [
+    "rocq-typed-extraction-common.9.0.dev"
+    "git+https://github.com/peregrine-project/rocq-typed-extraction.git#5b9de3c5eaf47177e46cc8177bf44cf6f89291a1"
+  ]
+  [
     "rocq-rust-extraction.9.0.dev"
-    "git+https://github.com/AU-COBRA/coq-rust-extraction.git#8c4185f5a790461e8c329ec9a7e5cb4bfd85a4b6"
+    "git+https://github.com/peregrine-project/rocq-typed-extraction.git#5b9de3c5eaf47177e46cc8177bf44cf6f89291a1"
   ]
   [
     "rocq-elm-extraction.9.0.dev"
-    "git+https://github.com/AU-COBRA/coq-elm-extraction.git#805565ee5f519a8ca17a0bacb3fc2b44534f2b45"
+    "git+https://github.com/peregrine-project/rocq-typed-extraction.git#5b9de3c5eaf47177e46cc8177bf44cf6f89291a1"
   ]
 ]

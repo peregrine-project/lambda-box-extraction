@@ -4,9 +4,9 @@ From MetaRocq.Utils Require Import bytestring.
 From MetaRocq.Utils Require Import monad_utils.
 From MetaRocq.Common Require Import Kernames.
 From MetaRocq.Erasure Require Import ExAst.
-From ElmExtraction Require Import PrettyPrinterMonad.
-From ElmExtraction Require Import ElmExtract.
-From ElmExtraction Require Import Common.
+From TypedExtraction Require Import PrettyPrinterMonad.
+From TypedExtraction Require Import ElmExtract.
+From TypedExtraction Require Import Common.
 From MetaRocq.Erasure.Typed Require Import ResultMonad.
 From LambdaBox Require Import TypedTransforms.
 
