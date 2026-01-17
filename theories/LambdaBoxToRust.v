@@ -4,9 +4,9 @@ From MetaRocq.Utils Require Import bytestring.
 From MetaRocq.Utils Require Import monad_utils.
 From MetaRocq.Erasure Require Import ExAst.
 From MetaRocq.Erasure.Typed Require Import ResultMonad.
-From RustExtraction Require Import PrettyPrinterMonad.
-From RustExtraction Require Import Printing.
-From RustExtraction Require Import RustExtract.
+From TypedExtraction Require Import PrettyPrinterMonad.
+From TypedExtraction Require Import Printing.
+From TypedExtraction Require Import RustExtract.
 From LambdaBox Require Import TypedTransforms.
 
 Import ListNotations.
