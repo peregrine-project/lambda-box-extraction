@@ -1,6 +1,6 @@
 
 { lib, mkCoqDerivation, which, coq
-  , metarocq, ElmExtraction, RustExtraction
+  , metarocq, TypedExtraction
   , ceres, CertiCoq, verified-extraction
   , coq-primitive
   , version ? null }:
@@ -21,8 +21,7 @@ with lib; mkCoqDerivation {
     coq.ocamlPackages.findlib
     coq.ocamlPackages.dune_3
     metarocq
-    ElmExtraction
-    RustExtraction
+    TypedExtraction
     ceres
     CertiCoq
     verified-extraction
