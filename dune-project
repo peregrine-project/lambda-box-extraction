@@ -15,8 +15,8 @@
 
 (package
  (name rocq-peregrine)
- (synopsis "A framework for extracting lambda box programs")
- (description "A framework for extracting lambda box programs")
+ (synopsis "The Peregrine tool is a unified middle-end for code generation from proof assistants")
+ (description "The Peregrine tool is a unified middle-end for code generation from proof assistants")
  (depends ocaml coq-primitive)
  (tags
   ("keyword:extraction" "logpath:Peregrine")))

@@ -239,7 +239,7 @@ let elm_cmd =
   Cmd.v info Term.(const compile_elm $ copts_t $ teopts_t $ top_pre_arg $ file)
 
 let main_cmd =
-  let doc = "a compiler for lambda box to webassembly" in
+  let doc = "Verified compiler from LambdaBox to WebAssembly, C, Rust, and OCaml" in
   let man = help_secs in
   let info = Cmd.info "peregrine" ~version ~doc ~sdocs ~man ~exits in
   let default = Term.(ret (const (fun _ -> `Help (`Pager, None)) $ copts_t)) in
