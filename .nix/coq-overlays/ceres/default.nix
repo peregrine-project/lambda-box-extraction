@@ -2,6 +2,7 @@
   lib,
   mkCoqDerivation,
   coq,
+  metarocq,
   stdlib,
   version ? null,
 }:
@@ -9,7 +10,7 @@
 mkCoqDerivation {
 
   pname = "ceres";
-  repo = "coq-ceres";
+  repo = "rocq-ceres";
   owner = "4ever2";
 
   inherit version;
@@ -27,7 +28,7 @@ mkCoqDerivation {
 
   useDuneifVersion = lib.versions.isGe "0.4.1";
 
-  propagatedBuildInputs = [ stdlib ];
+  propagatedBuildInputs = [ coq.ocamlPackages.findlib stdlib metarocq ];
 
   meta = {
     description = "Library for serialization to S-expressions";
