@@ -24,6 +24,16 @@ var failed_tests: string[] = [];
 
 var tmpdir = process.env.TMPDIR;
 
+var use_local_binary = false;
+function get_exec(local: boolean): string {
+  if (local) {
+    // For local testing without installing
+    return "dune exec --no-print-directory peregrine --";
+  } else {
+    // Using installed binary
+    return "peregrine";
+  }
+}
 
 // Calls the lambda box compiler with
 // `file` input program
@@ -32,7 +42,7 @@ var tmpdir = process.env.TMPDIR;
 // returns a string containing the location of the compiled code or an ExecFailure object
 function compile_box(file: string, outdir: string, lang: Lang, opts: string): string | ExecFailure {
   const out_f = path.join(outdir, path.basename(replace_ext(file, lang_to_ext(lang))));
-  const cmd = `dune exec --no-print-directory peregrine -- ${lang_to_peregrine_arg(lang)} ${file} -o ${out_f} ${opts}`;
+  const cmd = `${get_exec(use_local_binary)} ${lang_to_peregrine_arg(lang)} ${file} -o ${out_f} ${opts}`;
 
   try {
     execSync(cmd, { stdio: "pipe", timeout: compile_timeout });
