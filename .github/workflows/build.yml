@@ -82,6 +82,33 @@ jobs:
         run: |
           npm install -g elm-test@0.19.1-revision9
 
+      - name: Set up GHC
+        uses: haskell-actions/setup@v2
+        id: setup
+        with:
+          ghc-version: 9.10.1
+          cabal-version: 3.12.1
+
+      - name: Checkout agda2lambox
+        uses: actions/checkout@v6
+        with:
+          repository: agda/agda2lambox
+          path: agda
+
+      - name: Configure the agda2lambox build
+        run: |
+          cd agda && \
+          cabal configure --disable-documentation && \
+          cabal build all --dry-run
+
+      - name: Install agda2lambox dependencies
+        run: cd agda && cabal build all --only-dependencies
+      - name: Install agda2lambox
+        run: cd agda && make install
+
+      - name: Generate Agda ASTs
+        run: cd agda && make test && mv test/dist/ ../test/agda/
+
       - name: Test extraction
         run: |
           echo "::group::Running tests"

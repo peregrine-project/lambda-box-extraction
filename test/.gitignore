@@ -146,3 +146,5 @@ dist
 *.mli
 !src/ocaml/*.ml
 !src/ocaml/*.mli
+
+agda/
