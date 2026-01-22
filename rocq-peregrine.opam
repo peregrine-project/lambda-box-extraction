@@ -42,7 +42,7 @@ pin-depends: [
   ["rocq-elm-extraction.9.0.dev" "git+https://github.com/peregrine-project/rocq-typed-extraction.git#5b9de3c5eaf47177e46cc8177bf44cf6f89291a1"]
 ]
 
-build: [ "dune" "build" "-p" name "-j" jobs "@install" ]
+build: [ make "build" ]
 install: [ "dune" "install" "-p" name ]
 
 tags: [
