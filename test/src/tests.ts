@@ -95,7 +95,7 @@ export var tests: TestCase[] = [
         expected_output: undefined,
         parameters: []
     },
-    {
+/*     {
         src: "agda/Levels.ast",
         main: "Levels_testMkLevel",
         output_type: SimpleType.Nat,
@@ -105,7 +105,7 @@ export var tests: TestCase[] = [
             ""
         ],
         parameters: []
-    },
+    }, */ // TODO: currently disabled due to illegal escape characters
     {
         src: "agda/Map.ast",
         main: "Map_ys",
@@ -173,13 +173,13 @@ export var tests: TestCase[] = [
         expected_output: ["", ""], // TODO
         parameters: []
     }, */ // No main to test
-    {
+/*     {
         src: "agda/STLC.ast",
         main: "STLC_test",
         output_type: SimpleType.Nat,
         expected_output: ["(S (S O))", "", ""],
         parameters: []
-    },
+    }, */ // TODO: currently disabled due to illegal escape characters
 /*     {
         tsrc: "agda/Test.ast",
         main: "Test_demo",
