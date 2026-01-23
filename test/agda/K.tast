@@ -1,1 +1,0 @@
-(((((MPfile ("K")) "K") true) (ConstantDecl (constant_body (((nNamed "A") (nNamed "B")) (TArr TBox (TArr TBox (TArr (TVar 0) (TArr (TVar 1) (TVar 0)))))) (Some (tLambda nAnon (tLambda nAnon (tLambda nAnon (tLambda nAnon (tRel 1))))))))))
