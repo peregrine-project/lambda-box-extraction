@@ -84,7 +84,7 @@ function gen_main(file: string, module: string, type: ProgramType) {
     `open Printf
 
 let go () =
-  ${module}.main
+  ${module.charAt(0).toUpperCase() + module.slice(1)}.main
 
 let main =
   let x = go () in
