@@ -33,10 +33,12 @@ clean: RocqMakefile
 .PHONY: clean
 
 install: build
+	+@make -f RocqMakefile install
 	dune install
 .PHONY: install
 
 uninstall:
+	+@make -f RocqMakefile uninstall
 	dune uninstall
 .PHONY: uninstall
 
