@@ -106,7 +106,7 @@ jobs:
           cabal configure --disable-documentation && \
           cabal build all --dry-run
       - name: Restore cached Haskell dependencies
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         id: haskell-cache
         env:
           key: ${{ runner.os }}-${{ env.GHC_VERSION }}-${{ env.CABAL_VERSION }}
@@ -119,7 +119,7 @@ jobs:
         if: steps.haskell-cache.outputs.cache-hit != 'true'
         run: cd agda && cabal build all --only-dependencies
       - name: Save cached dependencies
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         if: steps.haskell-cache.outputs.cache-hit != 'true'
         with:
           path: ${{ steps.haskell-setup.outputs.cabal-store }}
