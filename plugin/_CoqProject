@@ -1,0 +1,4 @@
+-Q ../theories Peregrine
+
+-Q theories Peregrine.Plugin
+theories/ExtractPlugin.v
