@@ -1,7 +1,7 @@
 all: build
 .PHONY: all
 
-build: theory mllib
+build: theory mllib plugin
 .PHONY: build
 
 RocqMakefile: _CoqProject
@@ -10,6 +10,10 @@ RocqMakefile: _CoqProject
 theory: RocqMakefile
 	+@make -f RocqMakefile
 .PHONY: theory
+
+plugin: theory
+	+@make -C plugin
+.PHONY: plugin
 
 test:
 	+@make -C test test
@@ -26,6 +30,7 @@ clean-extraction:
 
 clean: RocqMakefile
 	+@make -f RocqMakefile clean
+	+@make -C plugin clean
 	rm -f RocqMakefile
 	dune clean
 	find src/extraction/. -type f -name "*.ml" -delete
@@ -34,10 +39,14 @@ clean: RocqMakefile
 
 install: build
 	dune install
+	+@make -f RocqMakefile install
+	+@make -C plugin install
 .PHONY: install
 
 uninstall:
 	dune uninstall
+	+@make -f RocqMakefile uninstall
+	+@make -C plugin uninstall
 .PHONY: uninstall
 
 # Forward most things to Coq makefile. Use 'force' to make this phony.

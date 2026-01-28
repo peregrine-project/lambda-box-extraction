@@ -44,7 +44,7 @@ pin-depends: [
 ]
 
 build: [ make "build" ]
-install: [ "dune" "install" "-p" name ]
+install: [ make "install" ]
 
 tags: [
   "keyword:extraction"
