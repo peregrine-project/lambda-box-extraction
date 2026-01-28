@@ -38,15 +38,15 @@ clean: RocqMakefile
 .PHONY: clean
 
 install: build
+	dune install
 	+@make -f RocqMakefile install
 	+@make -C plugin install
-	dune install
 .PHONY: install
 
 uninstall:
+	dune uninstall
 	+@make -f RocqMakefile uninstall
 	+@make -C plugin uninstall
-	dune uninstall
 .PHONY: uninstall
 
 # Forward most things to Coq makefile. Use 'force' to make this phony.
