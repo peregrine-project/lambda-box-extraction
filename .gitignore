@@ -15,7 +15,9 @@ result
 CoqMakefile
 CoqMakefile.conf
 RocqMakefile
+RocqMakefile.plugin
 RocqMakefile.conf
+RocqMakefile.plugin.conf
 Makefile.coq
 Makefile.coq.conf
 Makefile.rocq
