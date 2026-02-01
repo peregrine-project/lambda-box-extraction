@@ -12,24 +12,18 @@
 
 From Stdlib Require Import Arith.
 
-(** Ackermann function with explicit fuel for termination *)
-Fixpoint ackermann_fuel (fuel : nat) (m n : nat) : nat :=
-  match fuel with
-  | O => 0  (* Out of fuel *)
-  | S fuel' =>
-      match m with
-      | O => S n
-      | S m' =>
-          match n with
-          | O => ackermann_fuel fuel' m' 1
-          | S n' => ackermann_fuel fuel' m' (ackermann_fuel fuel' m n')
-          end
-      end
+(** Structurally recursive Ackermann using nested fixpoints.
+    Well-founded on lexicographic order of (m, n). *)
+Fixpoint ackermann (m : nat) : nat -> nat :=
+  match m with
+  | O => S
+  | S m' =>
+      fix ack_m (n : nat) : nat :=
+        match n with
+        | O => ackermann m' 1
+        | S n' => ackermann m' (ack_m n')
+        end
   end.
-
-(** Ackermann with sufficient fuel *)
-Definition ackermann (m n : nat) : nat :=
-  ackermann_fuel (Nat.pow 2 20) m n.
 
 (** Test values:
     A(0, 0) = 1
