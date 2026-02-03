@@ -5,11 +5,11 @@ From Peregrine Require Import ConfigUtils.
 From Peregrine Require Import Transforms.
 From Peregrine Require Import Erasure.
 From Peregrine Require Import CheckWf.
-From Peregrine Require LambdaBoxToRust.
-From Peregrine Require LambdaBoxToElm.
-From Peregrine Require LambdaBoxToOCaml.
-From Peregrine Require LambdaBoxToC.
-From Peregrine Require LambdaBoxToWasm.
+From Peregrine Require RustBackend.
+From Peregrine Require ElmBackend.
+From Peregrine Require OCamlBackend.
+From Peregrine Require CBackend.
+From Peregrine Require WasmBackend.
 From Peregrine Require TypedTransforms.
 From MetaRocq.Utils Require Import utils.
 From MetaRocq.Erasure.Typed Require Import ResultMonad.
@@ -113,48 +113,61 @@ Definition extraction_result : Type := result extracted_program string.
 Existing Instance Monad_result.
 
 Definition run_backend (c : config) (f : string) (p : PAst) : extraction_result :=
+  let remaps := c.(remappings_opts) in
+  let custom_attr := c.(custom_attributes_opts) in
   match c.(backend_opts) with
   | Rust opts =>
     p' <- PAst_to_ExAst p;;
-    res <- LambdaBoxToRust.box_to_rust
-      LambdaBoxToRust.default_remaps
-      (LambdaBoxToRust.mk_preamble None None)
-      LambdaBoxToRust.default_attrs
-      TypedTransforms.default_params
+    res <- RustBackend.extract_rust
+      remaps
+      custom_attr
+      opts
+      f
       p';;
     Ok (RustProgram res)
 
   | Elm opts =>
     p' <- PAst_to_ExAst p;;
-    res <- LambdaBoxToElm.box_to_elm
+    res <- ElmBackend.extract_elm
+      remaps
+      custom_attr
+      opts
       f
-      None
-      LambdaBoxToElm.default_remaps
-      TypedTransforms.default_params
       p';;
     Ok (ElmProgram res)
 
   | OCaml opts =>
     p' <- PAst_to_EAst p;;
-    let res := LambdaBoxToOCaml.box_to_ocaml p' in
+    res <- OCamlBackend.extract_ocaml
+      remaps
+      custom_attr
+      opts
+      f
+      p';;
     Ok (OCamlProgram res)
 
   | C opts =>
     p' <- PAst_to_EAst p;;
-    let opts := CertiCoqPipeline.make_opts false false in
-    match LambdaBoxToC.run_translation opts p' with
-    | (compM.Ret prg, _) => Ok (CProgram prg)
-    | (compM.Err e, _) => Err e
-    end
+    res <- CBackend.extract_c
+      remaps
+      custom_attr
+      opts
+      f
+      p';;
+    Ok (CProgram res)
 
   | Wasm opts =>
     p' <- PAst_to_EAst p;;
-    let opts := CertiCoqPipeline.make_opts false false in
-    match LambdaBoxToWasm.run_translation opts p' with
-    | (compM.Ret prg, _) => Ok (WasmProgram prg)
-    | (compM.Err e, _) => Err e
-    end
+    res <- WasmBackend.extract_wasm
+      remaps
+      custom_attr
+      opts
+      f
+      p';;
+    Ok (WasmProgram res)
   end.
+
+
 
 Definition peregrine_pipeline (c : string + config') (p : string) (f : string) : extraction_result :=
   p <- parse_ast p;; (* Parse input string into AST *)
