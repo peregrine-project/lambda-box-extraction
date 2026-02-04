@@ -103,7 +103,7 @@ Definition apply_transforms (c : config) (p : PAst) (typed : bool) : result PAst
 Inductive extracted_program :=
 | RustProgram : list string -> extracted_program
 | ElmProgram : string -> extracted_program
-| CProgram : CertiCoq.Codegen.toplevel.Cprogram -> extracted_program
+| CProgram : (CertiCoq.Codegen.toplevel.Cprogram * list string) -> extracted_program
 | WasmProgram : string -> extracted_program
 | OCamlProgram : (list string * string) -> extracted_program.
 

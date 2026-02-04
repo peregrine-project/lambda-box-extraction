@@ -15,7 +15,7 @@ theories/LambdaBoxToElm.v
 theories/LambdaBoxToC.v
 theories/LambdaBoxToOCaml.v
 theories/Translations.v
-#theories/Extraction.v
+theories/Extraction.v
 
 theories/Pipeline.v
 

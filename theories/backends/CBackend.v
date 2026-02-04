@@ -40,16 +40,20 @@ Definition c_pipeline prs (p : EAst.program) :=
   p_c <- compile_Clight prs p_anf;;
   ret p_c.
 
+
+
 Definition extract_c (remaps : remappings)
                      (custom_attr : custom_attributes)
                      (opts : c_config)
                      (file_name : string)
                      (p : EAst.program)
-                     : result Cprogram string :=
+                     : result (Cprogram * list string) string :=
   let config := mk_opts opts in
   let prs := mk_prims remaps in
+  let gc_lib := if opts.(direct) then "gc_stack.h" else "gc.h" in
+  let libs := gc_lib :: (Kernames.IdentSetProp.to_list (get_libs remaps)) in
   let (res, _) := run_pipeline EAst.program Cprogram config p (c_pipeline prs) in
   match res with
-  | compM.Ret p => Ok p
+  | compM.Ret p => Ok (p, libs)
   | compM.Err s => Err s
   end.

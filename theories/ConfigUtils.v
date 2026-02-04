@@ -58,6 +58,15 @@ Section BackendConfigOptional.
     rust_print_full_names'   : option bool;
     rust_default_attributes' : option string;
   }.
+  Definition empty_rust_config' : rust_config' := {|
+    rust_preamble_top'       := None;
+    rust_preamble_program'   := None;
+    rust_term_box_symbol'    := None;
+    rust_type_box_symbol'    := None;
+    rust_any_type_symbol'    := None;
+    rust_print_full_names'   := None;
+    rust_default_attributes' := None;
+  |}.
 
   Definition mk_rust_config (o : rust_config') : rust_config := {|
     rust_preamble_top       := get_optional o default_rust_config rust_preamble_top' rust_preamble_top;
@@ -80,6 +89,15 @@ Section BackendConfigOptional.
     elm_false_elim_def'   : option string;
     elm_print_full_names' : option bool;
   }.
+  Definition empty_elm_config' : elm_config' := {|
+    elm_preamble'         := None;
+    elm_module_name'      := None;
+    elm_term_box_symbol'  := None;
+    elm_type_box_symbol'  := None;
+    elm_any_type_symbol'  := None;
+    elm_false_elim_def'   := None;
+    elm_print_full_names' := None;
+  |}.
 
   Definition mk_elm_config (o : elm_config') : elm_config := {|
     elm_preamble         := get_optional o default_elm_config elm_preamble' elm_preamble;
@@ -103,6 +121,13 @@ Section BackendConfigOptional.
     prefix'    : option string;
     body_name' : option string;
   }.
+  Definition empty_certicoq_config' : certicoq_config' := {|
+    direct'    := None;
+    c_args'    := None;
+    o_level'   := None;
+    prefix'    := None;
+    body_name' := None;
+  |}.
 
   Definition mk_certicoq_config default_certicoq_config (o : certicoq_config') : certicoq_config := {|
     direct    := get_optional o default_certicoq_config direct' direct;
@@ -120,6 +145,9 @@ Section BackendConfigOptional.
   Record ocaml_config' := {
     program_type' : option Malfunction.Serialize.program_type;
   }.
+  Definition empty_ocaml_config' :ocaml_config' := {|
+    program_type' := None;
+  |}.
 
   Definition mk_ocaml_config (o : ocaml_config') : ocaml_config := {|
     program_type := get_optional o default_ocaml_config program_type' program_type;
@@ -197,10 +225,16 @@ Section GeneralConfigOptional.
     end.
 
   Record erasure_config' := {
-      phases'                       : option erasure_phases;
-      dearging_do_trim_const_masks' : option bool;
-      dearging_do_trim_ctor_masks'  : option bool;
-    }.
+    phases'                       : option erasure_phases;
+    dearging_do_trim_const_masks' : option bool;
+    dearging_do_trim_ctor_masks'  : option bool;
+  }.
+  Definition empty_erasure_config' : erasure_config' := {|
+    phases'                       := None;
+    dearging_do_trim_const_masks' := None;
+    dearging_do_trim_ctor_masks'  := None;
+  |}.
+
   Definition mk_erasure_config (b : backend_config') (o : erasure_config') : erasure_config := {|
     phases := mk_erasure_phases b o.(phases');
     dearging_do_trim_const_masks :=
@@ -216,13 +250,22 @@ Section GeneralConfigOptional.
   |}.
 
   Record config' := {
-      backend_opts'           : backend_config';
-      erasure_opts'           : erasure_config';
-      inlinings_opts'         : inlinings;
-      remappings_opts'        : remappings;
-      cstr_reorders_opts'     : EProgram.inductives_mapping;
-      custom_attributes_opts' : custom_attributes;
-    }.
+    backend_opts'           : backend_config';
+    erasure_opts'           : erasure_config';
+    inlinings_opts'         : inlinings;
+    remappings_opts'        : remappings;
+    cstr_reorders_opts'     : EProgram.inductives_mapping;
+    custom_attributes_opts' : custom_attributes;
+  }.
+  Definition empty_config' (b : backend_config') : config' := {|
+    backend_opts'           := b;
+    erasure_opts'           := empty_erasure_config';
+    inlinings_opts'         := nil;
+    remappings_opts'        := nil;
+    cstr_reorders_opts'     := nil;
+    custom_attributes_opts' := nil;
+  |}.
+
   Definition mk_config (o : config') : config := {|
     backend_opts           := mk_backend_config o.(backend_opts');
     erasure_opts           := mk_erasure_config o.(backend_opts') o.(erasure_opts');
@@ -231,5 +274,37 @@ Section GeneralConfigOptional.
     cstr_reorders_opts     := o.(cstr_reorders_opts');
     custom_attributes_opts := o.(custom_attributes_opts');
   |}.
+
+
+
+  Definition is_rust_config (o : config) : bool :=
+    match o.(backend_opts) with
+    | Rust _ => true
+    | _ => false
+    end.
+
+  Definition is_elm_config (o : config) : bool :=
+    match o.(backend_opts) with
+    | Elm _ => true
+    | _ => false
+    end.
+
+  Definition is_ocaml_config (o : config) : bool :=
+    match o.(backend_opts) with
+    | OCaml _ => true
+    | _ => false
+    end.
+
+  Definition is_c_config (o : config) : bool :=
+    match o.(backend_opts) with
+    | C _ => true
+    | _ => false
+    end.
+
+  Definition is_wasm_config (o : config) : bool :=
+    match o.(backend_opts) with
+    | Wasm _ => true
+    | _ => false
+    end.
 
 End GeneralConfigOptional.
