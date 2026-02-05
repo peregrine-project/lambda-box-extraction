@@ -3834,31 +3834,3 @@ Definition is_xid_continue (x : utf8_codepoint) : bool :=
     (byte_eqb b "_")
   | codepoint u v w x y z => is_xid_continue' u v w x y z
   end.
-
-(* Time Compute (
-  match (of_string "H") with
-  | Ok s => Some (s)
-  | Err e => None
-  end
-). *)
-
-Time Compute (
-  is_xid_continue' D0 D0 D0 D0 D4 D8
-  ).
-
-Time Compute (
-  match (of_string "Ֆ") with
-  | Ok s => (* Some (s) *)
-    match s with
-    | EmptyString => None
-    | String s _ => Some (is_xid_start s, is_xid_continue s)
-    end
-  | Err e => None
-  end
-).
-
-Time Compute (match (of_string "hello world ∃ ? .- ၍ hello world ∃ ? .- ၍ hello world ∃ ? .- ၍ hello world ∃ ? .- ၍ hello world ∃ ? .- ၍ hello world ∃ ? .- ၍ hello world ∃ ? .- ၍ hello world ∃ ? .- ၍ hello world ∃ ? .- ၍ hello world ∃ ? .- ၍") with
-        | Ok s => to_string s
-        | Err e => e
-        end
-).
