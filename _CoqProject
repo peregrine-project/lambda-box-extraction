@@ -3,6 +3,8 @@ theories/PAst.v
 theories/Utils.v
 theories/Config.v
 theories/ConfigUtils.v
+theories/Unicode.v
+theories/UnicodeXID.v
 theories/CheckWf.v
 theories/EvalBox.v
 theories/CoqToLambdaBox.v
