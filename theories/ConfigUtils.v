@@ -20,15 +20,15 @@ Section ErasureConfig.
 
   Definition mk_opts (c : config) (typed : bool) : erasure_configuration := {|
       enable_unsafe := {|
-        Erasure.cofix_to_lazy := c.(erasure_opts).(phases).(cofix_to_laxy);
+        Erasure.cofix_to_lazy := c.(erasure_opts).(cofix_to_laxy);
         Erasure.inlining := true;
-        Erasure.unboxing := c.(erasure_opts).(phases).(unboxing);
-        Erasure.betared := c.(erasure_opts).(phases).(betared);
+        Erasure.unboxing := c.(erasure_opts).(unboxing);
+        Erasure.betared := c.(erasure_opts).(betared);
       |};
       dearging_config := {|
         overridden_masks := fun _ => None;
-        do_trim_const_masks := c.(erasure_opts).(dearging_do_trim_const_masks);
-        do_trim_ctor_masks := c.(erasure_opts).(dearging_do_trim_ctor_masks);
+        do_trim_const_masks := c.(erasure_opts).(dearg_consts);
+        do_trim_ctor_masks := c.(erasure_opts).(dearg_ctors);
       |};
       enable_typed_erasure := typed;
       inlined_constants := MetaRocq.Erasure.Typed.Utils.kername_set_of_list c.(inlinings_opts)
@@ -174,84 +174,90 @@ End BackendConfigOptional.
 
 Section GeneralConfigOptional.
 
-  Definition get_default_phase_opt' (o : erasure_phases') (p : erasure_phases' -> phases_config) : bool :=
+  Record erasure_phases' := {
+    implement_box'  : option bool;
+    implement_lazy' : option bool;
+    cofix_to_laxy'  : option bool;
+    betared'        : option bool;
+    unboxing'       : option bool;
+    dearg_ctors'    : option bool;
+    dearg_consts'   : option bool;
+  }.
+  Definition empty_erasure_phases' : erasure_phases' := {|
+    implement_box'  := None;
+    implement_lazy' := None;
+    cofix_to_laxy'  := None;
+    betared'        := None;
+    unboxing'       := None;
+    dearg_ctors'    := None;
+    dearg_consts'   := None;
+  |}.
+
+  Definition get_default_phase_opt' (o : erasure_phases_config) (p : erasure_phases_config -> phases_config) : bool :=
     match (p o) with
     | Required => true
     | Compatible default => default
     | Incompatible => false
     end.
 
-  Definition get_default_phases_opt (o : erasure_phases') := {|
-    implement_box  := get_default_phase_opt' o implement_box';
-    implement_lazy := get_default_phase_opt' o implement_lazy';
-    cofix_to_laxy  := get_default_phase_opt' o cofix_to_laxy';
-    betared        := get_default_phase_opt' o betared';
-    unboxing       := get_default_phase_opt' o unboxing';
+  Definition get_default_phases_opt (o : erasure_phases_config) := {|
+    implement_box  := get_default_phase_opt' o implement_box_c;
+    implement_lazy := get_default_phase_opt' o implement_lazy_c;
+    cofix_to_laxy  := get_default_phase_opt' o cofix_to_laxy_c;
+    betared        := get_default_phase_opt' o betared_c;
+    unboxing       := get_default_phase_opt' o unboxing_c;
+    dearg_ctors    := get_default_phase_opt' o dearg_ctors_c;
+    dearg_consts   := get_default_phase_opt' o dearg_consts_c;
   |}.
 
-  Definition enforce_phase' (b : bool) (o : phases_config) : bool :=
+  Definition enforce_phase' (b' : option bool) (b : bool) (o : phases_config) : bool :=
     match o with
     | Required => true
     | Incompatible => false
-    | _ => b
+    | _ =>
+      match b' with
+      | Some x => x
+      | None => b
+      end
     end.
 
-  Definition enforce_phases (o : erasure_phases) (o' : erasure_phases') : erasure_phases := {|
-    implement_box  := enforce_phase' o.(implement_box)  o'.(implement_box');
-    implement_lazy := enforce_phase' o.(implement_lazy) o'.(implement_lazy');
-    cofix_to_laxy  := enforce_phase' o.(cofix_to_laxy)  o'.(cofix_to_laxy');
-    betared        := enforce_phase' o.(betared)        o'.(betared');
-    unboxing       := enforce_phase' o.(unboxing)       o'.(unboxing');
+  Definition enforce_phases (o : erasure_phases') (d : erasure_phases) (o' : erasure_phases_config) : erasure_phases := {|
+    implement_box  := enforce_phase' o.(implement_box')  d.(implement_box)  o'.(implement_box_c);
+    implement_lazy := enforce_phase' o.(implement_lazy') d.(implement_lazy) o'.(implement_lazy_c);
+    cofix_to_laxy  := enforce_phase' o.(cofix_to_laxy')  d.(cofix_to_laxy)  o'.(cofix_to_laxy_c);
+    betared        := enforce_phase' o.(betared')        d.(betared)        o'.(betared_c);
+    unboxing       := enforce_phase' o.(unboxing')       d.(unboxing)       o'.(unboxing_c);
+    dearg_ctors    := enforce_phase' o.(dearg_ctors')    d.(dearg_ctors)    o'.(dearg_ctors_c);
+    dearg_consts   := enforce_phase' o.(dearg_consts')   d.(dearg_consts)   o'.(dearg_consts_c);
   |}.
 
-  Definition mk_erasure_phases (b : backend_config') (o : option erasure_phases) : erasure_phases :=
-    match o with
-    | Some o =>
-      match b with
-      | Rust' _  => enforce_phases o rust_phases
-      | Elm' _   => enforce_phases o elm_phases
-      | C' _     => enforce_phases o c_phases
-      | Wasm' _  => enforce_phases o wasm_phases
-      | OCaml' _ => enforce_phases o ocaml_phases
-      end
-    | None =>
+  Definition mk_erasure_phases (b : backend_config') (o : option erasure_phases') : erasure_phases :=
+    let def_opt :=
       match b with
       | Rust' _  => get_default_phases_opt rust_phases
       | Elm' _   => get_default_phases_opt elm_phases
       | C' _     => get_default_phases_opt c_phases
       | Wasm' _  => get_default_phases_opt wasm_phases
       | OCaml' _ => get_default_phases_opt ocaml_phases
+      end in
+    match o with
+    | Some o =>
+      match b with
+      | Rust' _  => enforce_phases o def_opt rust_phases
+      | Elm' _   => enforce_phases o def_opt elm_phases
+      | C' _     => enforce_phases o def_opt c_phases
+      | Wasm' _  => enforce_phases o def_opt wasm_phases
+      | OCaml' _ => enforce_phases o def_opt ocaml_phases
       end
+    | None => def_opt
     end.
 
-  Record erasure_config' := {
-    phases'                       : option erasure_phases;
-    dearging_do_trim_const_masks' : option bool;
-    dearging_do_trim_ctor_masks'  : option bool;
-  }.
-  Definition empty_erasure_config' : erasure_config' := {|
-    phases'                       := None;
-    dearging_do_trim_const_masks' := None;
-    dearging_do_trim_ctor_masks'  := None;
-  |}.
-
-  Definition mk_erasure_config (b : backend_config') (o : erasure_config') : erasure_config := {|
-    phases := mk_erasure_phases b o.(phases');
-    dearging_do_trim_const_masks :=
-      match o.(dearging_do_trim_const_masks') with
-      | Some x => x
-      | None => true
-      end;
-    dearging_do_trim_ctor_masks :=
-      match o.(dearging_do_trim_ctor_masks') with
-      | Some x => x
-      | None => true
-      end;
-  |}.
+  Definition mk_erasure_config (b : backend_config') (o : option erasure_phases') : erasure_phases := 
+    mk_erasure_phases b o.
 
   Record config' := {
     backend_opts'           : backend_config';
-    erasure_opts'           : erasure_config';
+    erasure_opts'           : option erasure_phases';
     inlinings_opts'         : inlinings;
     remappings_opts'        : remappings;
     cstr_reorders_opts'     : EProgram.inductives_mapping;
@@ -259,7 +265,7 @@ Section GeneralConfigOptional.
   }.
   Definition empty_config' (b : backend_config') : config' := {|
     backend_opts'           := b;
-    erasure_opts'           := empty_erasure_config';
+    erasure_opts'           := None;
     inlinings_opts'         := nil;
     remappings_opts'        := nil;
     cstr_reorders_opts'     := nil;

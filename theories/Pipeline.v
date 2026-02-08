@@ -75,8 +75,8 @@ Definition needs_typed (c : config) : bool :=
 Definition apply_transforms (c : config) (p : PAst) (typed : bool) : result PAst string :=
   let econf := mk_opts c typed in
   let cstr_reorder := mk_cstr_reorders c in
-  let impl_box := c.(erasure_opts).(phases).(implement_box) in
-  let impl_lazy := c.(erasure_opts).(phases).(implement_lazy) in
+  let impl_box := c.(erasure_opts).(implement_box) in
+  let impl_lazy := c.(erasure_opts).(implement_lazy) in
   match p, typed with
   | Untyped env (Some t), _ =>
       let (env', t') := run_untyped_transforms econf cstr_reorder impl_box impl_lazy (env, t) in

@@ -365,13 +365,15 @@ Proof.
   apply sound_class in Ea2.
   apply sound_class in Ea3.
   apply sound_class in Ea4.
+  apply sound_class in Ea5.
+  apply sound_class in Ea6.
   unfold to_sexp, Serialize_erasure_phases.
   cbn.
-  rewrite <- Ea0, <- Ea1, <- Ea2, <- Ea3, <- Ea4.
+  rewrite <- Ea0, <- Ea1, <- Ea2, <- Ea3, <- Ea4, <- Ea5, <- Ea6.
   reflexivity.
 Qed.
 
-Instance Sound_erasure_config : SoundClass erasure_config.
+Instance Sound_erasure_phases' : SoundClass erasure_phases'.
 Proof.
   unfold SoundClass, Sound.
   intros l e a He.
@@ -382,26 +384,13 @@ Proof.
   apply sound_class in Ea0.
   apply sound_class in Ea1.
   apply sound_class in Ea2.
-  unfold to_sexp, Serialize_erasure_config.
+  apply sound_class in Ea3.
+  apply sound_class in Ea4.
+  apply sound_class in Ea5.
+  apply sound_class in Ea6.
+  unfold to_sexp, Serialize_erasure_phases'.
   cbn.
-  rewrite <- Ea0, <- Ea1, <- Ea2.
-  reflexivity.
-Qed.
-
-Instance Sound_erasure_config' : SoundClass erasure_config'.
-Proof.
-  unfold SoundClass, Sound.
-  intros l e a He.
-  apply sound_match_con in He.
-  destruct He as [He | He]; elim_Exists He.
-  destruct He as [es [<- He]].
-  sound_field He.
-  apply sound_class in Ea0.
-  apply sound_class in Ea1.
-  apply sound_class in Ea2.
-  unfold to_sexp, Serialize_erasure_config'.
-  cbn.
-  rewrite <- Ea0, <- Ea1, <- Ea2.
+  rewrite <- Ea0, <- Ea1, <- Ea2, <- Ea3, <- Ea4, <- Ea5, <- Ea6.
   reflexivity.
 Qed.
 

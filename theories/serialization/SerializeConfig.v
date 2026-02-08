@@ -180,23 +180,21 @@ Instance Serialize_erasure_phases : Serialize erasure_phases :=
      to_sexp (implement_lazy o);
      to_sexp (cofix_to_laxy o);
      to_sexp (betared o);
-     to_sexp (unboxing o)
+     to_sexp (unboxing o);
+     to_sexp (dearg_ctors o);
+     to_sexp (dearg_consts o)
     ]%sexp.
 
-Instance Serialize_erasure_config : Serialize erasure_config :=
+Instance Serialize_erasure_phases' : Serialize erasure_phases' :=
   fun o =>
-    [Atom "erasure_config";
-     to_sexp (phases o);
-     to_sexp (dearging_do_trim_const_masks o);
-     to_sexp (dearging_do_trim_ctor_masks o)
-    ]%sexp.
-
-Instance Serialize_erasure_config' : Serialize erasure_config' :=
-  fun o =>
-    [Atom "erasure_config";
-     to_sexp (phases' o);
-     to_sexp (dearging_do_trim_const_masks' o);
-     to_sexp (dearging_do_trim_ctor_masks' o)
+    [Atom "erasure_phases";
+     to_sexp (implement_box' o);
+     to_sexp (implement_lazy' o);
+     to_sexp (cofix_to_laxy' o);
+     to_sexp (betared' o);
+     to_sexp (unboxing' o);
+     to_sexp (dearg_ctors' o);
+     to_sexp (dearg_consts' o)
     ]%sexp.
 
 Instance Serialize_config : Serialize config :=
@@ -352,19 +350,13 @@ Instance Deserialize_custom_attributes : Deserialize custom_attributes :=
 Instance Deserialize_erasure_phases : Deserialize erasure_phases :=
   fun l e =>
     Deser.match_con "erasure_phases" []
-      [ ("erasure_phases", Deser.con5_ Build_erasure_phases) ]
+      [ ("erasure_phases", con7_ Build_erasure_phases) ]
       l e.
 
-Instance Deserialize_erasure_config : Deserialize erasure_config :=
+Instance Deserialize_erasure_phases' : Deserialize erasure_phases' :=
   fun l e =>
-    Deser.match_con "erasure_config" []
-      [ ("erasure_config", Deser.con3_ Build_erasure_config) ]
-      l e.
-
-Instance Deserialize_erasure_config' : Deserialize erasure_config' :=
-  fun l e =>
-    Deser.match_con "erasure_config" []
-      [ ("erasure_config", Deser.con3_ Build_erasure_config') ]
+    Deser.match_con "erasure_phases" []
+      [ ("erasure_phases", con7_ Build_erasure_phases') ]
       l e.
 
 Instance Deserialize_config : Deserialize config :=
@@ -449,11 +441,8 @@ Definition string_of_custom_attributes (x : custom_attributes) : string :=
 Definition string_of_erasure_phases (x : erasure_phases) : string :=
   @to_string erasure_phases Serialize_erasure_phases x.
 
-Definition string_of_erasure_config (x : erasure_config) : string :=
-  @to_string erasure_config Serialize_erasure_config x.
-
-Definition string_of_erasure_config' (x : erasure_config') : string :=
-  @to_string erasure_config' Serialize_erasure_config' x.
+Definition string_of_erasure_phases' (x : erasure_phases') : string :=
+  @to_string erasure_phases' Serialize_erasure_phases' x.
 
 Definition string_of_config (x : config) : string :=
   @to_string config Serialize_config x.
@@ -531,11 +520,8 @@ Definition custom_attributes_of_string (s : string) : error + custom_attributes 
 Definition erasure_phases_of_string (s : string) : error + erasure_phases :=
   @from_string erasure_phases Deserialize_erasure_phases s.
 
-Definition erasure_config_of_string (s : string) : error + erasure_config :=
-  @from_string erasure_config Deserialize_erasure_config s.
-
-Definition erasure_config'_of_string (s : string) : error + erasure_config' :=
-  @from_string erasure_config' Deserialize_erasure_config' s.
+Definition erasure_phases'_of_string (s : string) : error + erasure_phases' :=
+  @from_string erasure_phases' Deserialize_erasure_phases' s.
 
 Definition config_of_string (s : string) : error + config :=
   @from_string config Deserialize_config s.

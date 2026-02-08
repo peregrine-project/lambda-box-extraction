@@ -85,12 +85,14 @@ Section GeneralConfig.
   | Compatible (default : bool) : phases_config
   | Incompatible : phases_config.
 
-  Record erasure_phases' := {
-      implement_box'  : phases_config;
-      implement_lazy' : phases_config;
-      cofix_to_laxy'  : phases_config;
-      betared'        : phases_config;
-      unboxing'       : phases_config;
+  Record erasure_phases_config := {
+      implement_box_c  : phases_config;
+      implement_lazy_c : phases_config;
+      cofix_to_laxy_c  : phases_config;
+      betared_c        : phases_config;
+      unboxing_c       : phases_config;
+      dearg_ctors_c    : phases_config;
+      dearg_consts_c   : phases_config;
     }.
 
   Record erasure_phases := {
@@ -99,17 +101,13 @@ Section GeneralConfig.
       cofix_to_laxy  : bool;
       betared        : bool;
       unboxing       : bool;
-    }.
-
-  Record erasure_config := {
-      phases                       : erasure_phases;
-      dearging_do_trim_const_masks : bool;
-      dearging_do_trim_ctor_masks  : bool;
+      dearg_ctors    : bool;
+      dearg_consts   : bool;
     }.
 
   Record config := {
       backend_opts           : backend_config;
-      erasure_opts           : erasure_config;
+      erasure_opts           : erasure_phases;
       inlinings_opts         : inlinings;
       remappings_opts        : remappings;
       cstr_reorders_opts     : EProgram.inductives_mapping;

@@ -19,6 +19,7 @@ Local Open Scope bs_scope.
 
 (** ** Backend Config *)
 
+
 Instance Complete_rust_config : CompleteClass rust_config.
 Proof.
   unfold CompleteClass, Complete.
@@ -259,29 +260,18 @@ Proof.
   intros l o.
   cbn -[Deserialize_bool].
   rewrite !eqb_ascii_refl.
-  rewrite 5!complete_class.
+  rewrite 7!complete_class.
   destruct o; cbn.
   reflexivity.
 Qed.
 
-Instance Complete_erasure_config : CompleteClass erasure_config.
+Instance Complete_erasure_phases' : CompleteClass erasure_phases'.
 Proof.
   unfold CompleteClass, Complete.
   intros l o.
-  cbn -[Deserialize_bool Deserialize_erasure_phases].
+  cbn -[Deserialize_bool].
   rewrite !eqb_ascii_refl.
-  rewrite 3!complete_class.
-  destruct o; cbn.
-  reflexivity.
-Qed.
-
-Instance Complete_erasure_config' : CompleteClass erasure_config'.
-Proof.
-  unfold CompleteClass, Complete.
-  intros l o.
-  cbn -[Deserialize_bool Deserialize_erasure_phases].
-  rewrite !eqb_ascii_refl.
-  rewrite 3!complete_class.
+  rewrite 7!complete_class.
   destruct o; cbn.
   reflexivity.
 Qed.
@@ -290,7 +280,7 @@ Instance Complete_config : CompleteClass config.
 Proof.
   unfold CompleteClass, Complete.
   intros l o.
-  cbn -[Deserialize_backend_config Deserialize_erasure_config Deserialize_list Deserialize_inlinings Deserialize_inductive_mapping Deserialize_remappings Deserialize_custom_attributes].
+  cbn -[Deserialize_backend_config Deserialize_erasure_phases Deserialize_option Deserialize_list Deserialize_inlinings Deserialize_inductive_mapping Deserialize_remappings Deserialize_custom_attributes].
   rewrite !eqb_ascii_refl.
   rewrite 6!complete_class.
   destruct o; cbn.
@@ -301,7 +291,7 @@ Instance Complete_config' : CompleteClass config'.
 Proof.
   unfold CompleteClass, Complete.
   intros l o.
-  cbn -[Deserialize_backend_config' Deserialize_erasure_config' Deserialize_list Deserialize_inlinings Deserialize_inductive_mapping Deserialize_remappings Deserialize_custom_attributes].
+  cbn -[Deserialize_backend_config' Deserialize_erasure_phases' Deserialize_option Deserialize_list Deserialize_inlinings Deserialize_inductive_mapping Deserialize_remappings Deserialize_custom_attributes].
   rewrite !eqb_ascii_refl.
   rewrite 6!complete_class.
   destruct o; cbn.
