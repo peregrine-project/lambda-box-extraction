@@ -141,3 +141,12 @@ configConv Config {..} =
     (remappingsConv remappings)
     (inductivesMappingConv cstrReorders)
     (customAttributesConv customAttributes)
+
+-- Attributes configuration
+attributesConfigConv :: AttributesConfig -> Config0.Coq_attributes_config
+attributesConfigConv AttributesConfig {..} =
+  Config0.Build_attributes_config
+    (inliningsConv inlinings')
+    (remappingsConv remappings')
+    (inductivesMappingConv cstrReorders')
+    (customAttributesConv customAttributes')

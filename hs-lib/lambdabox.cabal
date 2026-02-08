@@ -36,6 +36,7 @@ library
                       Datatypes
                       Decimal
                       DecimalString
+                      Deserialize
                       EAst
                       EPrimitive
                       EProgram

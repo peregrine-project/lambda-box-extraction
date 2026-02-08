@@ -108,3 +108,11 @@ data Config = Config
     cstrReorders      :: InductivesMapping,
     customAttributes  :: CustomAttributes
   }
+
+-- Attributes configuration
+data AttributesConfig = AttributesConfig
+  { inlinings'         :: Inlinings,
+    remappings'        :: Remappings,
+    cstrReorders'      :: InductivesMapping,
+    customAttributes'  :: CustomAttributes
+  }
