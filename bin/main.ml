@@ -23,6 +23,30 @@ let copts_t =
   in
   Term.(const mk_copts $ verbose_arg $ debug_arg $ out_arg)
 
+let certicoq_opts_t =
+  let cps_arg =
+    let doc = "Use CPS translation pipeline." in
+    Arg.(value & flag & info ["cps"] ~doc)
+  in
+  let c_args_arg =
+    let doc = "Numbers of C arguments." in
+    Arg.(value & opt (some int) None & info ["c-args"] ~doc)
+  in
+  let o_level_arg =
+    let doc = "Optimization level." in
+    Arg.(value & opt (some int) None & info ["O"] ~doc)
+  in
+  let prefix_arg =
+    let doc = "Prefix to generated FFI." in
+    Arg.(value & opt (some string) None & info ["prefix"] ~doc)
+  in
+  let body_name_arg =
+    let doc = "Name of the toplevel function." in
+    Arg.(value & opt (some string) None & info ["body-name"] ~doc)
+  in
+  Term.(const mk_certicoq_opts $ cps_arg $ c_args_arg $ o_level_arg $ prefix_arg $ body_name_arg)
+
+  
 let sdocs = Manpage.s_common_options
 
 let help man_format cmds topic = match topic with
@@ -147,7 +171,7 @@ let c_cmd =
     `Blocks help_secs; ]
   in
   let info = Cmd.info "c" ~doc ~sdocs ~man in
-  Cmd.v info Term.(const compile_c $ copts_t $ program_file)
+  Cmd.v info Term.(const compile_c $ copts_t $ certicoq_opts_t $ program_file)
 
 let wasm_cmd =
   let program_file =
@@ -162,7 +186,7 @@ let wasm_cmd =
     `Blocks help_secs; ]
   in
   let info = Cmd.info "wasm" ~doc ~sdocs ~man in
-  Cmd.v info Term.(const compile_wasm $ copts_t $ program_file)
+  Cmd.v info Term.(const compile_wasm $ copts_t $ certicoq_opts_t $ program_file)
 
 let main_cmd =
   let doc = "Verified compiler from LambdaBox to WebAssembly, C, Rust, and OCaml" in

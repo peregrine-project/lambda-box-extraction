@@ -12,7 +12,7 @@ module Cps = Peregrine.Cps
 
 
 
-(* Bytestring conversion *)
+(* String conversion *)
 let string_of_cstring = Peregrine.Camlcoq.camlstring_of_coqstring
 let cstring_of_string = Peregrine.Camlcoq.coqstring_of_camlstring
 
@@ -130,10 +130,21 @@ let compile_ocaml opts f_prog =
   let b_opts = ConfigUtils.OCaml' ConfigUtils.empty_ocaml_config' in
   compile_backend b_opts opts f_prog
 
-let compile_c opts f_prog =
-  let b_opts = ConfigUtils.C' ConfigUtils.empty_certicoq_config' in
+
+
+let mk_certicoq_config copts = {
+  ConfigUtils.direct'    = Some (not copts.cps);
+  ConfigUtils.c_args'    = Option.map Peregrine.Caml_nat.nat_of_caml_int copts.c_args;
+  ConfigUtils.o_level'   = Option.map Peregrine.Caml_nat.nat_of_caml_int copts.o_level;
+  ConfigUtils.prefix'    = Option.map bytestring_of_caml_string copts.prefix;
+  ConfigUtils.body_name' = Option.map bytestring_of_caml_string copts.body_name;
+}
+
+
+let compile_c opts copts f_prog =
+  let b_opts = ConfigUtils.C' (mk_certicoq_config copts) in
   compile_backend b_opts opts f_prog
 
-let compile_wasm opts f_prog =
-  let b_opts = ConfigUtils.Wasm' ConfigUtils.empty_certicoq_config' in
+let compile_wasm opts copts f_prog =
+  let b_opts = ConfigUtils.Wasm' (mk_certicoq_config copts) in
   compile_backend b_opts opts f_prog
