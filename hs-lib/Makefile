@@ -1,4 +1,4 @@
-all: theory
+all: theory haskell-build
 .PHONY: all
 
 RocqMakefile: _CoqProject
