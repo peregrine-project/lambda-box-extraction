@@ -4,11 +4,13 @@ type copts = {
   verbose: verbose;
   debug: bool;
   output_file: string option;
+  attrs: string list;
 }
-let mk_copts verbose debug output_file = {
+let mk_copts verbose debug output_file attrs = {
   verbose;
   debug;
-  output_file
+  output_file;
+  attrs
 }
 
 type certicoq_opts = {

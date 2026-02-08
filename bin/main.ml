@@ -21,7 +21,11 @@ let copts_t =
     let doc = "Output file." in
     Arg.(value & opt (some string) None & info ["o"; "outfile"] ~docs ~doc)
   in
-  Term.(const mk_copts $ verbose_arg $ debug_arg $ out_arg)
+  let attrs_arg =
+    let doc = "Attribute config files." in
+    Arg.(value & opt (list file) [] & info ["attributes"] ~docs ~doc)
+  in
+  Term.(const mk_copts $ verbose_arg $ debug_arg $ out_arg $ attrs_arg)
 
 let certicoq_opts_t =
   let cps_arg =
