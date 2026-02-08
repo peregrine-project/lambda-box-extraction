@@ -297,3 +297,14 @@ Proof.
   destruct o; cbn.
   reflexivity.
 Qed.
+
+Instance Complete_attributes_config : CompleteClass attributes_config.
+Proof.
+  unfold CompleteClass, Complete.
+  intros l o.
+  cbn -[Deserialize_list Deserialize_inlinings Deserialize_inductive_mapping Deserialize_remappings Deserialize_custom_attributes].
+  rewrite !eqb_ascii_refl.
+  rewrite 4!complete_class.
+  destruct o; cbn.
+  reflexivity.
+Qed.

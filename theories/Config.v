@@ -114,4 +114,11 @@ Section GeneralConfig.
       custom_attributes_opts : custom_attributes;
     }.
 
+  Record attributes_config := {
+      inlinings_opt         : inlinings;
+      remappings_opt        : remappings;
+      cstr_reorders_opt     : EProgram.inductives_mapping;
+      custom_attributes_opt : custom_attributes;
+    }.
+
 End GeneralConfig.

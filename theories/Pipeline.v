@@ -18,6 +18,8 @@ From MetaRocq.Utils Require Import utils.
 From MetaRocq.Utils Require Import bytestring.
 
 Import MRMonadNotation.
+#[local]
+Existing Instance Monad_result.
 
 Local Open Scope bs_scope.
 
@@ -35,11 +37,22 @@ Definition parse_config (s : string) : result config string :=
   | inl e => Err ("Failed parsing configuration file\n" ++ string_of_error true true e)
   end.
 
-Definition get_config (c : string + config') : result config string :=
-  match c with
-  | inl s => parse_config s
-  | inr c' => Ok (mk_config c')
+Definition parse_attribute (s : string) : result attributes_config string :=
+  match attributes_config_of_string s with
+  | inr p => Ok p
+  | inl e => Err ("Failed parsing configuration file\n" ++ string_of_error true true e)
   end.
+
+Definition parse_attributes (attrs : list string) : result (list attributes_config) string :=
+  monad_map parse_attribute attrs.
+
+Definition get_config (c : string + config') (attrs : list string) : result config string :=
+  c <- match c with
+      | inl s => parse_config s
+      | inr c' => Ok (mk_config c')
+      end;;
+  attrs <- parse_attributes attrs;;
+  if 0 <? length attrs then Ok (merge_attributes_config c attrs) else Ok c.
 
 Definition check_wf (p : PAst) : result unit string :=
   map_error (fun e => "Program not wellformed\n" ++ e)
@@ -109,9 +122,6 @@ Inductive extracted_program :=
 
 Definition extraction_result : Type := result extracted_program string.
 
-#[local]
-Existing Instance Monad_result.
-
 Definition run_backend (c : config) (f : string) (p : PAst) : extraction_result :=
   let remaps := c.(remappings_opts) in
   let custom_attr := c.(custom_attributes_opts) in
@@ -169,9 +179,9 @@ Definition run_backend (c : config) (f : string) (p : PAst) : extraction_result 
 
 
 
-Definition peregrine_pipeline (c : string + config') (p : string) (f : string) : extraction_result :=
+Definition peregrine_pipeline (c : string + config') (attrs : list string) (p : string) (f : string) : extraction_result :=
   p <- parse_ast p;; (* Parse input string into AST *)
-  c <- get_config c;; (* Parse or construct config *)
+  c <- get_config c attrs;; (* Parse or construct config *)
   check_wf p;; (* Check that AST is wellformed *)
   validate_ast_type c p;; (* Check that the provided AST is compatible with the chosen backend *)
   p <- apply_transforms c p (needs_typed c);; (* Apply program transformation *)

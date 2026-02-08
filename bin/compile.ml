@@ -95,10 +95,10 @@ let read_file f =
 
 
 (* Compile functions *)
-let compile_aux opts f prog config =
+let compile_aux opts f attrs prog config =
   let f_name = f |> Filename.basename |> Filename.chop_extension |> bytestring_of_caml_string in
   print_endline "Compiling:";
-  let res = Pipeline.peregrine_pipeline config prog f_name in
+  let res = Pipeline.peregrine_pipeline config attrs prog f_name in
   match res with
   | ResultMonad.Ok p ->
     print_endline "Compiled successfully:";
@@ -111,12 +111,12 @@ let compile_aux opts f prog config =
 let compile opts f_prog f_config =
   let prog = f_prog |> read_file |> bytestring_of_caml_string in
   let config = f_config |> read_file |> bytestring_of_caml_string in
-  compile_aux opts f_prog prog (Datatypes.Coq_inl config)
+  compile_aux opts f_prog [] prog (Datatypes.Coq_inl config)
 
 let compile_backend backend_opts opts f_prog =
   let prog = f_prog |> read_file |> bytestring_of_caml_string in
   let config = backend_opts |> ConfigUtils.empty_config' in
-  compile_aux opts f_prog prog (Datatypes.Coq_inr config)
+  compile_aux opts f_prog [] prog (Datatypes.Coq_inr config)
 
 let compile_rust opts f_prog =
   let b_opts = ConfigUtils.Rust' ConfigUtils.empty_rust_config' in

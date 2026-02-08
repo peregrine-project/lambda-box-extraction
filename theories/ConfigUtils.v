@@ -281,6 +281,24 @@ Section GeneralConfigOptional.
     custom_attributes_opts := o.(custom_attributes_opts');
   |}.
 
+  Definition merge_attributes_config (o : config) (attrs : list attributes_config) : config :=
+    let inlinings_o :=
+      List.concat (o.(inlinings_opts) :: (List.map inlinings_opt attrs)) in
+    let remappings_o :=
+      List.concat (o.(remappings_opts) :: (List.map remappings_opt attrs)) in
+    let cstr_reorders_o :=
+      List.concat (o.(cstr_reorders_opts) :: (List.map cstr_reorders_opt attrs)) in
+    let custom_attributes_o :=
+      List.concat (o.(custom_attributes_opts) :: (List.map custom_attributes_opt attrs)) in
+    {|
+      backend_opts           := o.(backend_opts);
+      erasure_opts           := o.(erasure_opts);
+      inlinings_opts         := inlinings_o;
+      remappings_opts        := remappings_o;
+      cstr_reorders_opts     := cstr_reorders_o;
+      custom_attributes_opts := custom_attributes_o;
+    |}.
+
 
 
   Definition is_rust_config (o : config) : bool :=

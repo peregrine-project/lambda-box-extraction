@@ -219,6 +219,15 @@ Instance Serialize_config' : Serialize config' :=
      to_sexp (custom_attributes_opts' o)
     ]%sexp.
 
+Instance Serialize_attributes_config : Serialize attributes_config :=
+  fun o =>
+    [Atom "attributes_config";
+     to_sexp (inlinings_opt o);
+     to_sexp (remappings_opt o);
+     to_sexp (cstr_reorders_opt o);
+     to_sexp (custom_attributes_opt o)
+    ]%sexp.
+
 
 
 (** * Deserializers *)
@@ -371,6 +380,12 @@ Instance Deserialize_config' : Deserialize config' :=
       [ ("config", con6_ Build_config') ]
       l e.
 
+Instance Deserialize_attributes_config : Deserialize attributes_config :=
+  fun l e =>
+    Deser.match_con "attributes_config" []
+      [ ("attributes_config", Deser.con4_ Build_attributes_config) ]
+      l e.
+
 
 
 (** * Main serialization functions *)
@@ -450,6 +465,9 @@ Definition string_of_config (x : config) : string :=
 Definition string_of_config' (x : config') : string :=
   @to_string config' Serialize_config' x.
 
+Definition string_of_attributes_config (x : attributes_config) : string :=
+  @to_string attributes_config Serialize_attributes_config x.
+
 
 
 (** * Main deserialization functions *)
@@ -528,3 +546,6 @@ Definition config_of_string (s : string) : error + config :=
 
 Definition config'_of_string (s : string) : error + config' :=
   @from_string config' Deserialize_config' s.
+
+Definition attributes_config_of_string (s : string) : error + attributes_config :=
+  @from_string attributes_config Deserialize_attributes_config s.
