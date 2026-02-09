@@ -18,13 +18,3 @@ Definition backend_config_of_string := SerializeConfig.backend_config'_of_string
 Definition erasure_phases_of_string := SerializeConfig.erasure_phases'_of_string.
 
 Definition attributes_config_of_string := SerializeConfig.attributes_config_of_string.
-
-
-(* TODO: remove? *)
-Definition program_of_string := SerializeEAst.program_of_string.
-
-(* TODO: remove? *)
-Definition global_env_of_string := SerializeExAst.global_env_of_string.
-
-(* TODO: remove? *)
-Definition kername_of_string := SerializeCommon.kername_of_string.
