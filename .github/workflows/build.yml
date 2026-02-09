@@ -139,4 +139,6 @@ jobs:
       - name: Cache clean up
         run: |
           opam remove rocq-peregrine
+          opam pin remove rocq-peregrine
+          eval $(opam env)
           opam clean -a -c -s --logs
