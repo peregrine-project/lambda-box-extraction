@@ -142,7 +142,7 @@ The [lean-to-lambox](https://github.com/peregrine-project/lean-to-lambdabox) fro
 Usage
 To use the lean-to-lambox frontend use the `#erase DEF_NAME to "FILE"` notation in Lean.
 ```
-import Erasure
+import LeanToLambdaBox
 
 def val_at_false (f: Bool -> Nat): Nat := f .false
 
