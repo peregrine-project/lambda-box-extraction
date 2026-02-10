@@ -59,7 +59,7 @@ let write_ocaml_res opts f p =
     output_string f (caml_string_of_bytestring (snd p)))
 
 let write_cakeml_res opts f p =
-  let f = get_out_file opts f "cake" in
+  let f = get_out_file opts f "cml" in
   write_res f (fun f ->
     output_string f (caml_string_of_bytestring (snd p)))
 
