@@ -25,12 +25,13 @@ depends: [
   "rocq-typed-extraction-common" {= "9.0.dev"}
   "rocq-rust-extraction" {= "9.0.dev"}
   "rocq-elm-extraction" {= "9.0.dev"}
-  "coq-certicoq" {= "dev"}
+  "rocq-cakeml-extraction" {= "9.0.dev"}
+  "rocq-verified-extraction" {= "9.0.dev"}
   "rocq-primitive" {= "9.0.0"}
   "coq-ceres" {= "dev"}
-  "rocq-verified-extraction" {= "9.0.dev"}
-  "cmdliner" {< "2.0.0"}
+  "coq-certicoq" {= "dev"}
   "coq-compcert" {= "3.16"}
+  "cmdliner" {< "2.0.0"}
 ]
 
 pin-depends: [
@@ -41,6 +42,7 @@ pin-depends: [
   ["rocq-typed-extraction-common.9.0.dev" "git+https://github.com/peregrine-project/rocq-typed-extraction.git#5b9de3c5eaf47177e46cc8177bf44cf6f89291a1"]
   ["rocq-rust-extraction.9.0.dev" "git+https://github.com/peregrine-project/rocq-typed-extraction.git#5b9de3c5eaf47177e46cc8177bf44cf6f89291a1"]
   ["rocq-elm-extraction.9.0.dev" "git+https://github.com/peregrine-project/rocq-typed-extraction.git#5b9de3c5eaf47177e46cc8177bf44cf6f89291a1"]
+  ["rocq-cakeml-extraction.9.0.dev" "git+https://github.com/4ever2/cakeml-backend.git#8fdfa438be482254db0810c304f18f0efd1fd36d"]
 ]
 
 build: [ make "build" ]

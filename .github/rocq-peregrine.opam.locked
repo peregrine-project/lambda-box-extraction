@@ -14,7 +14,7 @@ depends: [
   "rocq-runtime" {= "9.0.0"}
   "coq-ceres" {= "dev"}
   "coq-certicoq" {= "dev"}
-  "rocq-elm-extraction" {= "9.0.dev"}
+  "coq-compcert" {= "3.16"}
   "rocq-metarocq-common" {= "1.4+9.0"}
   "rocq-metarocq-erasure" {= "1.4+9.0"}
   "rocq-metarocq-pcuic" {= "1.4+9.0"}
@@ -24,10 +24,11 @@ depends: [
   "rocq-metarocq-utils" {= "1.4+9.0"}
   "rocq-primitive" {= "9.0.0"}
   "rocq-typed-extraction-common" {= "9.0.dev"}
+  "rocq-elm-extraction" {= "9.0.dev"}
   "rocq-rust-extraction" {= "9.0.dev"}
+  "rocq-cakeml-extraction" {= "9.0.dev"}
   "rocq-verified-extraction" {= "9.0.dev"}
   "cmdliner" {= "1.3.0"}
-  "coq-compcert" {= "3.16"}
 ]
 build: [make "build"]
 install: ["dune" "install" "-p" name]
@@ -60,5 +61,9 @@ pin-depends: [
   [
     "rocq-elm-extraction.9.0.dev"
     "git+https://github.com/peregrine-project/rocq-typed-extraction.git#5b9de3c5eaf47177e46cc8177bf44cf6f89291a1"
+  ]
+  [
+    "rocq-cakeml-extraction.9.0.dev"
+    "git+https://github.com/4ever2/cakeml-backend.git#8fdfa438be482254db0810c304f18f0efd1fd36d"
   ]
 ]
