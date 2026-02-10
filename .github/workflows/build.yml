@@ -68,6 +68,9 @@ jobs:
         run: |
           opam install -j${{ env.JOBS }} ./rocq-peregrine.opam
 
+      - name: Generate Rocq ASTs
+        run: opam exec -- make -C test/rocq build-ci
+
       - name: Set up Rust
         uses: dtolnay/rust-toolchain@v1
         with:
@@ -130,9 +133,6 @@ jobs:
         run: cd agda && make build
       - name: Generate Agda ASTs
         run: cd agda && make test && mv test/dist/ ../test/agda/
-
-      - name: Generate Rocq ASTs
-        run: cd test/rocq && make build-ci
 
       - name: Set up lean and generate Lean ASTs
         uses: leanprover/lean-action@v1

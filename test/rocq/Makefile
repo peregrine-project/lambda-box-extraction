@@ -4,15 +4,15 @@ all: theory
 RocqMakefile: _CoqProject
 	rocq makefile -f _CoqProject -o RocqMakefile
 
-RocqMakefile_: _CoqProject_
-	rocq makefile -f _CoqProject_ -o RocqMakefile_
+RocqMakefile.ci: _CoqProject.ci
+	rocq makefile -f _CoqProject.ci -o RocqMakefile.ci
 
 theory: RocqMakefile
 	+@make -f RocqMakefile
 .PHONY: theory
 
-build-ci: RocqMakefile_
-	+@make -f RocqMakefile_
+build-ci: RocqMakefile.ci
+	+@make -f RocqMakefile.ci
 .PHONY: build-ci
 
 clean: RocqMakefile
