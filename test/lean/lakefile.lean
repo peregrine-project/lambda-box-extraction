@@ -5,7 +5,7 @@ package lean_peregrine where
   moreLeanArgs := #["-DautoImplicit=false"]
 
 require lean_to_lambdabox from git
-  "https://github.com/4ever2/lean-to-lambdabox" @ "ast-format"
+  "https://github.com/peregrine-project/lean-to-lambdabox" @ "main"
 
 @[default_target]
 lean_lib Tests where

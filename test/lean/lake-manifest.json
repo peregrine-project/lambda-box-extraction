@@ -3,11 +3,11 @@
     "packagesDir": ".lake/packages",
     "packages": [
         {
-            "url": "https://github.com/4ever2/lean-to-lambdabox",
+            "url": "https://github.com/peregrine-project/lean-to-lambdabox",
             "type": "git",
             "subDir": null,
             "scope": "",
-            "rev": "0e30d165365cf85f3bfaebe3af16c19ddfe34e18",
+            "rev": "c471c29fdbe6ff73b7dedca8630565c118c0f3ef",
             "name": "lean_to_lambdabox",
             "manifestFile": "lake-manifest.json",
             "inputRev": "ast-format",
