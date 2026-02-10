@@ -50,7 +50,7 @@ let certicoq_opts_t =
   in
   Term.(const mk_certicoq_opts $ cps_arg $ c_args_arg $ o_level_arg $ prefix_arg $ body_name_arg)
 
-  
+
 let sdocs = Manpage.s_common_options
 
 let help man_format cmds topic = match topic with
@@ -162,6 +162,21 @@ let ocaml_cmd =
   let info = Cmd.info "ocaml" ~doc ~sdocs ~man in
   Cmd.v info Term.(const compile_ocaml $ copts_t $ program_file)
 
+let cakeml_cmd =
+  let program_file =
+    let doc = "lambda box program" in
+    Arg.(required & pos 0 (some file) None & info []
+           ~docv:"FILE" ~doc)
+  in
+  let doc = "Compile lambda box program to CakeML" in
+  let man = [
+    `S Manpage.s_description;
+    `P "";
+    `Blocks help_secs; ]
+  in
+  let info = Cmd.info "cakeml" ~doc ~sdocs ~man in
+  Cmd.v info Term.(const compile_cakeml $ copts_t $ program_file)
+
 let c_cmd =
   let program_file =
     let doc = "lambda box program" in
@@ -197,6 +212,6 @@ let main_cmd =
   let man = help_secs in
   let info = Cmd.info "peregrine" ~version ~doc ~sdocs ~man ~exits in
   let default = Term.(ret (const (fun _ -> `Help (`Pager, None)) $ copts_t)) in
-  Cmd.group info ~default [compile_cmd; rust_cmd; elm_cmd; ocaml_cmd; c_cmd; wasm_cmd; help_cmd]
+  Cmd.group info ~default [compile_cmd; rust_cmd; elm_cmd; ocaml_cmd; cakeml_cmd; c_cmd; wasm_cmd; help_cmd]
 
 let () = exit (Cmd.eval main_cmd)
