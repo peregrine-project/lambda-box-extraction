@@ -18,6 +18,7 @@
     coqPackages.CertiCoq.override.version = "coq-9.0";
     coqPackages.verified-extraction.override.version = "ceres-bs";
     coqPackages.ceres.override.version = "dev";
+    coqPackages.CakeMLExtraction.override.version = "opam";
   };
 
   bundles."9.0".push-branches = ["master"];
