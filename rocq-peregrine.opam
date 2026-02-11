@@ -44,7 +44,7 @@ pin-depends: [
   ["rocq-typed-extraction-common.9.0.dev" "git+https://github.com/peregrine-project/rocq-typed-extraction.git#5b9de3c5eaf47177e46cc8177bf44cf6f89291a1"]
   ["rocq-rust-extraction.9.0.dev" "git+https://github.com/peregrine-project/rocq-typed-extraction.git#5b9de3c5eaf47177e46cc8177bf44cf6f89291a1"]
   ["rocq-elm-extraction.9.0.dev" "git+https://github.com/peregrine-project/rocq-typed-extraction.git#5b9de3c5eaf47177e46cc8177bf44cf6f89291a1"]
-  ["rocq-cakeml-extraction.9.0.dev" "git+https://github.com/peregrine-project/cakeml-backend.git#06faae3eb3ba2b1c92dac1bf338c686d568d5957"]
+  ["rocq-cakeml-extraction.9.0.dev" "git+https://github.com/peregrine-project/cakeml-backend.git#8d90f408738019e4808a5bf1d0fb7c8fc8ae53ec"]
 ]
 
 build: [ make "build" ]
