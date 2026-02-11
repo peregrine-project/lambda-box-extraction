@@ -53,6 +53,10 @@ ocamlConfigConv :: OCamlConfig -> ConfigUtils.Coq_ocaml_config'
 ocamlConfigConv OCamlConfig {..} =
   fmap programTypeConv programType
 
+-- CakeML backend configuration
+cakemlConfigConv :: CakeMLConfig -> ConfigUtils.Coq_cakeml_config'
+cakemlConfigConv t = t
+
 -- Backend configuration
 backendConfigConv :: BackendConfig -> ConfigUtils.Coq_backend_config'
 backendConfigConv (Rust c) = ConfigUtils.Rust' $ rustConfigConv c
@@ -60,6 +64,7 @@ backendConfigConv (Elm c) = ConfigUtils.Elm' $ elmConfigConv c
 backendConfigConv (C c) = ConfigUtils.C' $ certicoqConfigConv c
 backendConfigConv (Wasm c) = ConfigUtils.Wasm' $ certicoqConfigConv c
 backendConfigConv (OCaml c) = ConfigUtils.OCaml' $ ocamlConfigConv c
+backendConfigConv (CakeML c) = ConfigUtils.CakeML' $ cakemlConfigConv c
 
 -- Inductive remapping
 remappedInductiveConv :: RemappedInductive -> Config0.Coq_remapped_inductive

@@ -48,15 +48,19 @@ data OCamlConfig = OCamlConfig
   { programType :: Maybe ProgramType
   }
 
+-- CakeML backend configuration
+type CakeMLConfig = ()
+
 -- Backend configuration
 -- States the backend that Peregrine should use along
--- with with options specific to that backend 
+-- with with options specific to that backend
 data BackendConfig
   = Rust RustConfig
   | Elm ElmConfig
   | C CertiCoqConfig
   | Wasm CertiCoqConfig
   | OCaml OCamlConfig
+  | CakeML CakeMLConfig
 
 
 
