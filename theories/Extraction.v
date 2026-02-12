@@ -68,6 +68,10 @@ Extract Constant Malfunction.FFI.coq_msg_info => "(fun s -> s |> Caml_bytestring
 Extract Constant Malfunction.FFI.coq_user_error => "(fun s -> s |> Caml_bytestring.caml_string_of_bytestring |> Stdlib.print_endline)".
 Extraction Inline Malfunction.FFI.coq_msg_info.
 Extraction Inline Malfunction.FFI.coq_user_error.
+Extract Constant CakeML.FFI.coq_msg_info => "(fun s -> s |> Caml_bytestring.caml_string_of_bytestring |> Stdlib.print_endline)".
+Extract Constant CakeML.FFI.coq_user_error => "(fun s -> s |> Caml_bytestring.caml_string_of_bytestring |> Stdlib.print_endline)".
+Extraction Inline CakeML.FFI.coq_msg_info.
+Extraction Inline CakeML.FFI.coq_user_error.
 
 
 Set Warnings "-extraction-reserved-identifier".
@@ -79,7 +83,8 @@ Require compcert.cfrontend.Csyntax
         compcert.cfrontend.Clight.
 
 Separate Extraction Pipeline.peregrine_pipeline
-                    ConfigUtils.empty_rust_config' ConfigUtils.empty_elm_config' ConfigUtils.empty_certicoq_config' ConfigUtils.empty_ocaml_config' ConfigUtils.empty_config'
+                    ConfigUtils.empty_rust_config' ConfigUtils.empty_elm_config' ConfigUtils.empty_certicoq_config'
+                    ConfigUtils.empty_ocaml_config' ConfigUtils.empty_cakeml_config' ConfigUtils.empty_config'
                     Floats.Float32.to_bits Floats.Float.to_bits
                     Floats.Float32.of_bits Floats.Float.of_bits
                     Csyntax

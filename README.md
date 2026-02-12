@@ -18,6 +18,18 @@ eval $(opam env)
 opam install .
 ```
 
+Or built locally with:
+```bash
+git clone https://github.com/peregrine-project/peregrine-tool.git
+cd peregrine-tool
+opam switch create . 4.14.2 --repositories default,coq-released=https://coq.inria.fr/opam/released
+eval $(opam env)
+opam install . --deps-only
+make
+```
+Calling Peregrine using a local build: `dune exec peregrine -- ARGS`
+
+
 ## Usage
 ```
 peregrine TARGETLANGUAGE FILE [-o FILE]
@@ -30,6 +42,7 @@ Valid values for `TARGETLANGUAGE` are:
 * `wasm`
 * `c`
 * `ocaml`
+* `cakeml`
 * `rust`
 * `elm`
 
@@ -162,6 +175,7 @@ Valid values for `TARGETLANGUAGE` are:
 * `wasm`
 * `c`
 * `ocaml`
+* `cakeml`
 * `rust`
 * `elm`
 

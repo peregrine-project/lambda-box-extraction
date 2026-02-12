@@ -6,8 +6,8 @@ import path from "path";
 import { existsSync, mkdirSync } from "fs";
 import { lang_to_ext, lang_to_peregrine_arg, print_line, replace_ext } from "./utils";
 import { compile_c, set_c_env } from "./c";
-import { compile_types } from "./ocaml";
-import { compile_ocaml } from "./ocaml";
+import { compile_ocaml, compile_types } from "./ocaml";
+import { compile_cakeml, get_cake } from "./cakeml";
 import { compile_rust, prepare_cargo, run_rust } from "./rust";
 import { prepare_elm_project, run_elm } from "./elm";
 import { test_configurations, tests } from "./tests";
@@ -58,7 +58,7 @@ function compile_box(file: string, outdir: string, lang: Lang, opts: string): st
 
 
 // Run the given executable and compare against the expected test result
-function run_exec(file: string, test: TestCase): ExecResult {
+function run_exec(file: string, test: TestCase, skip_output_check: boolean): ExecResult {
   // Command to run
   const cmd = file;
 
@@ -71,7 +71,7 @@ function run_exec(file: string, test: TestCase): ExecResult {
 
     // Return success if there is no expected output to compare against or if the program
     // returns a type that we don't know how to print
-    if (test.expected_output === undefined || test.output_type === SimpleType.Other) {
+    if (test.expected_output === undefined || test.output_type === SimpleType.Other || skip_output_check) {
       return { type: "success", time: time_main };
     }
 
@@ -145,7 +145,36 @@ async function run_tests(lang: Lang, n: string, opts: string, tests: TestCase[])
         }
 
         // Run executable
-        const res = run_exec(f_exec, test);
+        const res = run_exec(f_exec, test, false);
+
+        // Report result
+        print_result(res, test.src);
+      }
+      break;
+    case Lang.CakeML:
+      //compile_types(compile_timeout);
+      get_cake(compile_timeout, tmpdir)
+      for (var test of tests) {
+        if (test.src === undefined) continue;
+        process.stdout.write(`  ${test.src}: `);
+
+        // Compile peregrine
+        const f_cml = compile_box(test.src, tmpdir, Lang.CakeML, opts);
+        if (typeof f_cml !== "string") {
+          print_result(f_cml, test.src);
+          continue;
+        }
+
+
+        // Compile CakeML
+        const f_exec = compile_cakeml(f_cml, test, compile_timeout, tmpdir);
+        if (typeof f_exec !== "string") {
+          print_result(f_exec, test.src);
+          continue;
+        }
+
+        // Run executable
+        const res = run_exec(f_exec, test, true); //TODO: support checking that output is correct
 
         // Report result
         print_result(res, test.src);
@@ -172,7 +201,7 @@ async function run_tests(lang: Lang, n: string, opts: string, tests: TestCase[])
         }
 
         // Run executable
-        const res = run_exec(f_exec, test);
+        const res = run_exec(f_exec, test, false);
 
         // Report result
         print_result(res, test.src);
@@ -255,6 +284,19 @@ async function run_tests(lang: Lang, n: string, opts: string, tests: TestCase[])
   }
 }
 
+function check_peregrine() {
+  const cmd = `which peregrine`;
+
+  try {
+    execSync(cmd, { stdio: "pipe", timeout: compile_timeout });
+    use_local_binary = false;
+  } catch (e) {
+    print_line("Could not locate peregrine, falling back to using dune");
+    use_local_binary = true;
+  }
+
+}
+
 async function main() {
   // Create tmp dir
   if (tmpdir === undefined) {
@@ -263,6 +305,9 @@ async function main() {
   }
   tmpdir = path.join(tmpdir, "peregrine/");
   if (!existsSync(tmpdir)) mkdirSync(tmpdir, { recursive: false });
+
+  // Check if the peregrine binary exists
+  check_peregrine();
 
   // For each test configuration run all test programs
   for (var backend of test_configurations) {

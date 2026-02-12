@@ -5,7 +5,7 @@ module Datatypes = Peregrine.Datatypes
 module CeresExtra = Peregrine.CeresExtra
 module Config = Peregrine.Config1
 module ConfigUtils = Peregrine.ConfigUtils
-module Pipeline = Peregrine.Pipeline1
+module Pipeline = Peregrine.Pipeline2
 module CompM = Peregrine.CompM
 module ResultMonad = Peregrine.ResultMonad
 module Cps = Peregrine.Cps
@@ -58,6 +58,11 @@ let write_ocaml_res opts f p =
   write_res f (fun f ->
     output_string f (caml_string_of_bytestring (snd p)))
 
+let write_cakeml_res opts f p =
+  let f = get_out_file opts f "cml" in
+  write_res f (fun f ->
+    output_string f (caml_string_of_bytestring (snd p)))
+
 let printCProg prog names (dest : string) (imports : import list) =
   let imports' = List.map (fun i -> match i with
     | FromRelativePath s -> "#include \"" ^ s ^ "\""
@@ -81,6 +86,7 @@ let write_program opts f p =
   | Pipeline.RustProgram p -> write_rust_res opts f p
   | Pipeline.ElmProgram p -> write_elm_res opts f p
   | Pipeline.OCamlProgram p -> write_ocaml_res opts f p
+  | Pipeline.CakeMLProgram p -> write_cakeml_res opts f p
   | Pipeline.CProgram p -> write_c_res opts f p
   | Pipeline.WasmProgram p -> write_wasm_res opts f p
 
@@ -129,6 +135,10 @@ let compile_elm opts f_prog =
 
 let compile_ocaml opts f_prog =
   let b_opts = ConfigUtils.OCaml' ConfigUtils.empty_ocaml_config' in
+  compile_backend b_opts opts f_prog
+
+let compile_cakeml opts f_prog =
+  let b_opts = ConfigUtils.CakeML' ConfigUtils.empty_cakeml_config' in
   compile_backend b_opts opts f_prog
 
 

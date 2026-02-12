@@ -2,7 +2,7 @@
 { lib, mkCoqDerivation, which, coq
   , metarocq, TypedExtraction
   , ceres, CertiCoq, verified-extraction
-  , rocq-primitive
+  , rocq-primitive, CakeMLExtraction
   , version ? null }:
 
 with lib; mkCoqDerivation {
@@ -25,6 +25,7 @@ with lib; mkCoqDerivation {
     ceres
     CertiCoq
     verified-extraction
+    CakeMLExtraction
     rocq-primitive
   ];
 

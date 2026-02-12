@@ -88,3 +88,4 @@ test/**/*.anf
 *.c
 *.h
 *.mlf
+*.cml
