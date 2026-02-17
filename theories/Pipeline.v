@@ -11,6 +11,7 @@ From Peregrine Require OCamlBackend.
 From Peregrine Require CBackend.
 From Peregrine Require WasmBackend.
 From Peregrine Require TypedTransforms.
+From Peregrine Require NameSanitize.
 From MetaRocq.Utils Require Import utils.
 From MetaRocq.Erasure.Typed Require Import ResultMonad.
 From MetaRocq.Erasure.Typed Require Import ExAst.
@@ -195,5 +196,7 @@ Definition peregrine_pipeline (c : string + config') (attrs : list string) (p : 
   c <- get_config c attrs;; (* Parse or construct config *)
   check_wf p;; (* Check that AST is wellformed *)
   validate_ast_type c p;; (* Check that the provided AST is compatible with the chosen backend *)
+  p <- NameSanitize.sanitize_PAst (NameSanitize.get_sanitizer c) p;; (* Sanitize names in AST *)
+  c <- NameSanitize.sanitize_config (NameSanitize.get_sanitizer c) c;; (* Sanitize names in config *)
   p <- apply_transforms c p (needs_typed c);; (* Apply program transformation *)
   run_backend c f p. (* Run extraction backend *)

@@ -26,16 +26,16 @@ var agda_tests: TestCase[] =
             ],
             parameters: []
         },
-        /*     {
-                src: "agda/Equality.ast",
-                main: "Equality_test",
-                output_type: SimpleType.Nat,
-                expected_output: [
-                    "(S (S O))",
-                    ""
-                ],
-                parameters: []
-            }, */ // Doesn't work with OCaml backend due to unicode in identifiers
+        {
+            src: "agda/Equality.ast",
+            main: "Equality_test",
+            output_type: SimpleType.Nat,
+            expected_output: [
+                "(S (S O))",
+                ""
+            ],
+            parameters: []
+        },
         {
             src: "agda/EtaCon.ast",
             main: "EtaCon_example",
@@ -65,17 +65,17 @@ var agda_tests: TestCase[] =
             ],
             parameters: []
         },
-        /*     {
-                src: "agda/Imports.ast",
-                main: "Imports_test2",
-                output_type: { type: "list", a_t: SimpleType.Nat },
-                expected_output: [
-                    "(cons (S (S (S (S (S (S O)))))) nil)",
-                    "",
-                    ""
-                ],
-                parameters: []
-            }, */ // Doesn't work with OCaml backend due to unicode in identifiers
+        {
+            src: "agda/Imports.ast",
+            main: "Imports_test2",
+            output_type: { type: "list", a_t: SimpleType.Nat },
+            expected_output: [
+                "(cons (S (S (S (S (S (S O)))))) nil)",
+                "",
+                ""
+            ],
+            parameters: []
+        },
         {
             src: "agda/Input.ast",
             main: "Input_main",
@@ -97,17 +97,17 @@ var agda_tests: TestCase[] =
             expected_output: undefined,
             parameters: []
         },
-        /*     {
-                src: "agda/Levels.ast",
-                main: "Levels_testMkLevel",
-                output_type: SimpleType.Nat,
-                expected_output: [
-                    "(S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S O))))))))))))))))))))))))))))))))))))))))))",
-                    "",
-                    ""
-                ],
-                parameters: []
-            }, */ // Doesn't work with OCaml backend due to unicode in identifiers
+        {
+            src: "agda/Levels.ast",
+            main: "Levels_testMkLevel",
+            output_type: SimpleType.Nat,
+            expected_output: [
+                "(S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S (S O))))))))))))))))))))))))))))))))))))))))))",
+                "",
+                ""
+            ],
+            parameters: []
+        },
         {
             src: "agda/Map.ast",
             main: "Map_ys",
@@ -126,13 +126,13 @@ var agda_tests: TestCase[] =
             expected_output: ["(S O)", "", ""],
             parameters: []
         },
-        /*     {
-                src: "agda/Nat.ast",
-                main: "Nat_thing",
-                output_type: SimpleType.Nat,
-                expected_output: ["(S (S (S O)))", "", ""],
-                parameters: []
-            }, */ // Doesn't work with OCaml backend due to unicode in identifiers
+        {
+            src: "agda/Nat.ast",
+            main: "Nat_thing",
+            output_type: SimpleType.Nat,
+            expected_output: ["(S (S (S O)))", "", ""],
+            parameters: []
+        },
         {
             src: "agda/OddEven.ast",
             main: "OddEven_test",
@@ -154,13 +154,13 @@ var agda_tests: TestCase[] =
             expected_output: ["false", "", ""],
             parameters: []
         },
-        /*     {
-                src: "agda/rust.ast",
-                main: "rust_testIdd",
-                output_type: { type: "list", a_t: SimpleType.Nat },
-                expected_output: ["(cons (S (S (S O))) nil)", ""],
-                parameters: []
-            }, */ // Doesn't work with OCaml backend due to unicode in identifiers
+        {
+            src: "agda/rust.ast",
+            main: "rust_testIdd",
+            output_type: { type: "list", a_t: SimpleType.Nat },
+            expected_output: ["(cons (S (S (S O))) nil)", ""],
+            parameters: []
+        },
         {
             src: "agda/scheme.ast",
             main: "scheme_demo",
@@ -175,13 +175,13 @@ var agda_tests: TestCase[] =
                 expected_output: ["", ""], // TODO
                 parameters: []
             }, */ // No main to test
-        /*     {
-                src: "agda/STLC.ast",
-                main: "STLC_test",
-                output_type: SimpleType.Nat,
-                expected_output: ["(S (S O))", "", ""],
-                parameters: []
-            }, */ // Doesn't work with OCaml backend due to unicode in identifiers
+        {
+            src: "agda/STLC.ast",
+            main: "STLC_test",
+            output_type: SimpleType.Nat,
+            expected_output: ["(S (S O))", "", ""],
+            parameters: []
+        },
         /*     {
                 tsrc: "agda/Test.ast",
                 main: "Test_demo",
@@ -196,13 +196,13 @@ var agda_tests: TestCase[] =
                 expected_output: ["", ""], // TODO
                 parameters: []
             }, */ // No main to test
-        /*     {
-                src: "agda/Unicode.ast",
-                main: "Unicode_main",
-                output_type: { type: "list", a_t: SimpleType.Nat },
-                expected_output: ["(cons (S O) nil)", "", ""],
-                parameters: []
-            }, */ // Doesn't work with OCaml backend due to unicode in identifiers
+        {
+            src: "agda/Unicode.ast",
+            main: "Unicode_main",
+            output_type: { type: "list", a_t: SimpleType.Nat },
+            expected_output: ["(cons (S O) nil)", "", ""],
+            parameters: []
+        },
         {
             src: "agda/With.ast",
             main: "With_ys",
@@ -290,7 +290,7 @@ var lean_tests: TestCase[] =
             ],
             parameters: []
         },
-/*         {
+        {
             src: "lean/extraction/Map.ast",
             main: "Map_ys",
             output_type: { type: "list", a_t: SimpleType.Nat },
@@ -300,7 +300,7 @@ var lean_tests: TestCase[] =
                 ""
             ],
             parameters: []
-        }, */ // Generates invalid identifier names in C backend
+        }, // Generates invalid identifier names in C backend
     ];
 
 // List of programs to be tested
