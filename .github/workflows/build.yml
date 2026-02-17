@@ -101,7 +101,7 @@ jobs:
         uses: actions/checkout@v6
         with:
           repository: 4ever2/agda2lambox
-          ref: d8d2ee1abb8417bdd3082d82673e69bc257b6398
+          ref: 20120b78af01b7bec1c8d46ba8dceef140d65fb6
           path: agda
 
       - name: Configure the agda2lambox build
