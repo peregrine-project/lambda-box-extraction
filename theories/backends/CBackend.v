@@ -44,7 +44,7 @@ Definition c_pipeline prs (p : EAst.program) :=
 
 
 
-Definition extract_c (remaps : remappings)
+Definition extract_c (remaps : constant_remappings)
                      (custom_attr : custom_attributes)
                      (opts : c_config)
                      (file_name : string)

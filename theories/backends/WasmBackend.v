@@ -47,7 +47,7 @@ Definition print_wasm p : string :=
   String.parse (binary_of_module p).
 
 
-Definition extract_wasm (remaps : remappings)
+Definition extract_wasm (remaps : constant_remappings)
                         (custom_attr : custom_attributes)
                         (opts : wasm_config)
                         (file_name : string)

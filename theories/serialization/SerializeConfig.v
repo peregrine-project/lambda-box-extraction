@@ -1,6 +1,7 @@
 From MetaRocq.Utils Require Import bytestring.
 From MetaRocq.Erasure Require Import EProgram.
 From Malfunction Require Serialize.
+From Peregrine Require Import ERemapInductives.
 From Peregrine Require Import Config.
 From Peregrine Require Import ConfigUtils.
 From Peregrine Require Import SerializeCommon.
@@ -146,9 +147,15 @@ Instance Serialize_remapped_inductive : Serialize remapped_inductive :=
      to_sexp (re_ind_match o)
     ]%sexp.
 
-Instance Serialize_external_remapping : Serialize external_remapping :=
-  fun r =>
-    to_sexp r.
+Instance Serialize_remapped_constant : Serialize remapped_constant :=
+  fun o =>
+    [Atom "remapped_constant";
+     to_sexp (re_const_ext o);
+     to_sexp (re_const_arity o);
+     to_sexp (re_const_gc o);
+     to_sexp (re_const_inl o);
+     to_sexp (re_const_s o)
+    ]%sexp.
 
 Instance Serialize_inductive_mapping : Serialize EProgram.inductive_mapping :=
   fun r =>
@@ -159,12 +166,18 @@ Instance Serialize_inductive_mapping : Serialize EProgram.inductive_mapping :=
      to_sexp n
     ]%sexp.
 
-Instance Serialize_remapping : Serialize remapping :=
+Instance Serialize_extract_inductive : Serialize extract_inductive :=
+  fun r =>
+    [Atom "extract_inductive";
+     to_sexp (cstrs r);
+     to_sexp (elim r)
+    ]%sexp.
+
+Instance Serialize_remap_inductive : Serialize remap_inductive :=
   fun r =>
     match r with
-    | RemapInductive kn er ri => [Atom "RemapInductive"; to_sexp kn; to_sexp er; to_sexp ri ]
-    | RemapConstant kn er a gc s => [Atom "RemapConstant"; to_sexp kn; to_sexp er; to_sexp a; to_sexp gc; to_sexp s ]
-    | RemapInlineConstant kn er a gc s => [Atom "RemapInlineConstant"; to_sexp kn; to_sexp er; to_sexp a; to_sexp gc; to_sexp s ]
+    | KnIndRemap r => [Atom "KnIndRemap"; to_sexp r]
+    | StringIndRemap r => [Atom "StringIndRemap"; to_sexp r ]
     end%sexp.
 
 Instance Serialize_custom_attribute : Serialize custom_attribute :=
@@ -175,7 +188,11 @@ Instance Serialize_inlinings : Serialize inlinings :=
   fun o =>
     to_sexp o.
 
-Instance Serialize_remappings : Serialize remappings :=
+Instance Serialize_constant_remappings : Serialize constant_remappings :=
+  fun o =>
+    to_sexp o.
+
+Instance Serialize_inductive_remappings : Serialize inductive_remappings :=
   fun o =>
     to_sexp o.
 
@@ -213,7 +230,8 @@ Instance Serialize_config : Serialize config :=
      to_sexp (backend_opts o);
      to_sexp (erasure_opts o);
      to_sexp (inlinings_opts o);
-     to_sexp (remappings_opts o);
+     to_sexp (const_remappings_opts o);
+     to_sexp (ind_remappings_opts o);
      to_sexp (cstr_reorders_opts o);
      to_sexp (custom_attributes_opts o)
     ]%sexp.
@@ -224,7 +242,8 @@ Instance Serialize_config' : Serialize config' :=
      to_sexp (backend_opts' o);
      to_sexp (erasure_opts' o);
      to_sexp (inlinings_opts' o);
-     to_sexp (remappings_opts' o);
+     to_sexp (const_remappings_opts' o);
+     to_sexp (ind_remappings_opts' o);
      to_sexp (cstr_reorders_opts' o);
      to_sexp (custom_attributes_opts' o)
     ]%sexp.
@@ -233,7 +252,8 @@ Instance Serialize_attributes_config : Serialize attributes_config :=
   fun o =>
     [Atom "attributes_config";
      to_sexp (inlinings_opt o);
-     to_sexp (remappings_opt o);
+     to_sexp (const_remappings_opt o);
+     to_sexp (ind_remappings_opt o);
      to_sexp (cstr_reorders_opt o);
      to_sexp (custom_attributes_opt o)
     ]%sexp.
@@ -341,22 +361,29 @@ Instance Deserialize_remapped_inductive : Deserialize remapped_inductive :=
       [ ("remapped_inductive", con3_ build_remapped_inductive) ]
       l e.
 
-Instance Deserialize_external_remapping : Deserialize external_remapping :=
-  fun l e =>
-    _from_sexp l e.
-
 Instance Deserialize_inductive_mapping : Deserialize EProgram.inductive_mapping :=
   fun l e =>
     Deser.match_con "inductive_mapping" []
       [ ("inductive_mapping", con3_ (fun kn s n => (kn, (s, n)))) ]
       l e.
 
-Instance Deserialize_remapping : Deserialize remapping :=
+Instance Deserialize_remapped_constant : Deserialize remapped_constant :=
   fun l e =>
-    Deser.match_con "remapping" []
-      [ ("RemapInductive", con3_ RemapInductive);
-        ("RemapConstant", con5_ RemapConstant);
-        ("RemapInlineConstant", con5_ RemapInlineConstant)
+    Deser.match_con "remapped_constant" []
+      [ ("remapped_constant", con5_ Build_remapped_constant) ]
+      l e.
+
+Instance Deserialize_extract_inductive : Deserialize extract_inductive :=
+  fun l e =>
+    Deser.match_con "extract_inductive" []
+      [ ("extract_inductive", con2_ Build_extract_inductive) ]
+      l e.
+
+Instance Deserialize_remap_inductive : Deserialize remap_inductive :=
+  fun l e =>
+    Deser.match_con "remap_inductive" []
+      [ ("KnIndRemap", con1_ KnIndRemap);
+        ("StringIndRemap", con1_ StringIndRemap)
       ]
       l e.
 
@@ -368,7 +395,11 @@ Instance Deserialize_inlinings : Deserialize inlinings :=
   fun l e =>
     _from_sexp l e.
 
-Instance Deserialize_remappings : Deserialize remappings :=
+Instance Deserialize_constant_remappings : Deserialize constant_remappings :=
+  fun l e =>
+    _from_sexp l e.
+
+Instance Deserialize_inductive_remappings : Deserialize inductive_remappings :=
   fun l e =>
     _from_sexp l e.
 
@@ -391,19 +422,19 @@ Instance Deserialize_erasure_phases' : Deserialize erasure_phases' :=
 Instance Deserialize_config : Deserialize config :=
   fun l e =>
     Deser.match_con "config" []
-      [ ("config", con6_ Build_config) ]
+      [ ("config", con7_ Build_config) ]
       l e.
 
 Instance Deserialize_config' : Deserialize config' :=
   fun l e =>
     Deser.match_con "config" []
-      [ ("config", con6_ Build_config') ]
+      [ ("config", con7_ Build_config') ]
       l e.
 
 Instance Deserialize_attributes_config : Deserialize attributes_config :=
   fun l e =>
     Deser.match_con "attributes_config" []
-      [ ("attributes_config", con4_ Build_attributes_config) ]
+      [ ("attributes_config", con5_ Build_attributes_config) ]
       l e.
 
 
@@ -458,14 +489,17 @@ Definition string_of_backend_config' (x : backend_config') : string :=
 Definition string_of_remapped_inductive (x : remapped_inductive) : string :=
   @to_string remapped_inductive Serialize_remapped_inductive x.
 
-Definition string_of_external_remapping (x : external_remapping) : string :=
-  @to_string external_remapping Serialize_external_remapping x.
+Definition string_of_remapped_constant (x : remapped_constant) : string :=
+  @to_string remapped_constant Serialize_remapped_constant x.
 
 Definition string_of_inductive_mapping (x : inductive_mapping) : string :=
   @to_string inductive_mapping Serialize_inductive_mapping x.
 
-Definition string_of_remapping (x : remapping) : string :=
-  @to_string remapping Serialize_remapping x.
+Definition string_of_extract_inductive (x : extract_inductive) : string :=
+  @to_string extract_inductive Serialize_extract_inductive x.
+
+Definition string_of_remap_inductive (x : remap_inductive) : string :=
+  @to_string remap_inductive Serialize_remap_inductive x.
 
 Definition string_of_custom_attribute (x : custom_attribute) : string :=
   @to_string custom_attribute Serialize_custom_attribute x.
@@ -473,8 +507,11 @@ Definition string_of_custom_attribute (x : custom_attribute) : string :=
 Definition string_of_inlinings (x : inlinings) : string :=
   @to_string inlinings Serialize_inlinings x.
 
-Definition string_of_remappings (x : remappings) : string :=
-  @to_string remappings Serialize_remappings x.
+Definition string_of_constant_remappings (x : constant_remappings) : string :=
+  @to_string constant_remappings Serialize_constant_remappings x.
+
+Definition string_of_inductive_remappings (x : inductive_remappings) : string :=
+  @to_string inductive_remappings Serialize_inductive_remappings x.
 
 Definition string_of_custom_attributes (x : custom_attributes) : string :=
   @to_string custom_attributes Serialize_custom_attributes x.
@@ -546,14 +583,17 @@ Definition backend_config'_of_string (s : string) : error + backend_config' :=
 Definition remapped_inductive_of_string (s : string) : error + remapped_inductive :=
   @from_string remapped_inductive Deserialize_remapped_inductive s.
 
-Definition external_remapping_of_string (s : string) : error + external_remapping :=
-  @from_string external_remapping Deserialize_external_remapping s.
-
-Definition inductive_mapping_of_string (s : string) : error + inductive_mapping :=
+Definition inductive_mapping_of_string (s : string) : error + EProgram.inductive_mapping :=
   @from_string inductive_mapping Deserialize_inductive_mapping s.
 
-Definition remapping_of_string (s : string) : error + remapping :=
-  @from_string remapping Deserialize_remapping s.
+Definition remapped_constant_of_string (s : string) : error + remapped_constant :=
+  @from_string remapped_constant Deserialize_remapped_constant s.
+
+Definition extract_inductive_of_string (s : string) : error + extract_inductive :=
+  @from_string extract_inductive Deserialize_extract_inductive s.
+
+Definition remap_inductive_of_string (s : string) : error + remap_inductive :=
+  @from_string remap_inductive Deserialize_remap_inductive s.
 
 Definition custom_attribute_of_string (s : string) : error + custom_attribute :=
   @from_string custom_attribute Deserialize_custom_attribute s.
@@ -561,8 +601,11 @@ Definition custom_attribute_of_string (s : string) : error + custom_attribute :=
 Definition inlinings_of_string (s : string) : error + inlinings :=
   @from_string inlinings Deserialize_inlinings s.
 
-Definition remappings_of_string (s : string) : error + remappings :=
-  @from_string remappings Deserialize_remappings s.
+Definition constant_remappings_of_string (s : string) : error + constant_remappings :=
+  @from_string constant_remappings Deserialize_constant_remappings s.
+
+Definition inductive_remappings_of_string (s : string) : error + inductive_remappings :=
+  @from_string inductive_remappings Deserialize_inductive_remappings s.
 
 Definition custom_attributes_of_string (s : string) : error + custom_attributes :=
   @from_string custom_attributes Deserialize_custom_attributes s.

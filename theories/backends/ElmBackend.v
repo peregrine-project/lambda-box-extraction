@@ -51,12 +51,9 @@ Definition mk_config (o : elm_config) : ElmPrintConfig := {|
   print_full_names  := o.(elm_print_full_names);
 |}.
 
-Definition mk_remaps (rs : remappings) : Kernames.kername -> option string :=
-  let re_const := filter_map (fun x =>
-    match x with
-    | RemapConstant kn _ _ _ s => Some (kn, s)
-    | _ => None
-    end
+Definition mk_remaps (rs : constant_remappings) : Kernames.kername -> option string :=
+  let re_const := map (fun '(kn, r) =>
+    (kn, r.(re_const_s))
   ) rs in
   match re_const with
   | nil => fun _ => None
@@ -73,7 +70,7 @@ Definition mk_remaps (rs : remappings) : Kernames.kername -> option string :=
 #[local]
 Existing Instance Monad_result.
 
-Definition extract_elm (remaps : remappings)
+Definition extract_elm (remaps : constant_remappings)
                        (custom_attr : custom_attributes)
                        (opts : elm_config)
                        (file_name : string)

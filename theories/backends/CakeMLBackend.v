@@ -56,7 +56,7 @@ Definition print_program nms p :=
 
 Axiom trust_coq_kernel : forall p, pre cakeml_pipeline p.
 
-Definition extract_cakeml (remaps : remappings)
+Definition extract_cakeml (remaps : constant_remappings)
                           (custom_attr : custom_attributes)
                           (opts : cakeml_config)
                           (file_name : string)
