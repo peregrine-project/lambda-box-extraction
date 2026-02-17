@@ -91,24 +91,25 @@ Definition apply_transforms (c : config) (p : PAst) (typed : bool) : result PAst
   let cstr_reorder := mk_cstr_reorders c in
   let impl_box := c.(erasure_opts).(implement_box) in
   let impl_lazy := c.(erasure_opts).(implement_lazy) in
+  let ind_remaps := mk_ind_remaps c in
   match p, typed with
   | Untyped env (Some t), _ =>
-      let (env', t') := run_untyped_transforms econf cstr_reorder impl_box impl_lazy (env, t) in
+      let (env', t') := run_untyped_transforms econf cstr_reorder impl_box impl_lazy ind_remaps (env, t) in
       Ok (Untyped env' (Some t'))
   | Untyped env None, _ =>
-      let (env', _) := run_untyped_transforms econf cstr_reorder impl_box impl_lazy (env, EAst.tBox) in
+      let (env', _) := run_untyped_transforms econf cstr_reorder impl_box impl_lazy ind_remaps (env, EAst.tBox) in
       Ok (Untyped env' None)
   | Typed env (Some t), true =>
       let '(_, (env', t')) := run_typed_transforms econf cstr_reorder (env, t) in
       Ok (Typed env' (Some t'))
   | Typed env (Some t), false =>
-      let (env', t') := run_typed_to_untyped_transforms econf cstr_reorder impl_box impl_lazy (env, t) in
+      let (env', t') := run_typed_to_untyped_transforms econf cstr_reorder impl_box impl_lazy ind_remaps (env, t) in
       (Ok (Untyped env' (Some t')))
   | Typed env None, true =>
       let '(_, (env', _)) := run_typed_transforms econf cstr_reorder (env, EAst.tBox) in
       Ok (Typed env' None)
   | Typed env None, false =>
-      let (env', _) := run_typed_to_untyped_transforms econf cstr_reorder impl_box impl_lazy (env, EAst.tBox) in
+      let (env', _) := run_typed_to_untyped_transforms econf cstr_reorder impl_box impl_lazy ind_remaps (env, EAst.tBox) in
       (Ok (Untyped env' None))
   end.
 
@@ -125,13 +126,15 @@ Inductive extracted_program :=
 Definition extraction_result : Type := result extracted_program string.
 
 Definition run_backend (c : config) (f : string) (p : PAst) : extraction_result :=
-  let remaps := c.(remappings_opts) in
+  let const_remaps := c.(const_remappings_opts) in
+  let ind_remaps := c.(ind_remappings_opts) in
   let custom_attr := c.(custom_attributes_opts) in
   match c.(backend_opts) with
   | Rust opts =>
     p' <- PAst_to_ExAst p;;
     res <- RustBackend.extract_rust
-      remaps
+      const_remaps
+      ind_remaps
       custom_attr
       opts
       f
@@ -141,7 +144,7 @@ Definition run_backend (c : config) (f : string) (p : PAst) : extraction_result 
   | Elm opts =>
     p' <- PAst_to_ExAst p;;
     res <- ElmBackend.extract_elm
-      remaps
+      const_remaps
       custom_attr
       opts
       f
@@ -151,7 +154,7 @@ Definition run_backend (c : config) (f : string) (p : PAst) : extraction_result 
   | OCaml opts =>
     p' <- PAst_to_EAst p;;
     res <- OCamlBackend.extract_ocaml
-      remaps
+      const_remaps
       custom_attr
       opts
       f
@@ -161,7 +164,7 @@ Definition run_backend (c : config) (f : string) (p : PAst) : extraction_result 
   | CakeML opts =>
     p' <- PAst_to_EAst p;;
     res <- CakeMLBackend.extract_cakeml
-      remaps
+      const_remaps
       custom_attr
       opts
       f
@@ -171,7 +174,7 @@ Definition run_backend (c : config) (f : string) (p : PAst) : extraction_result 
   | C opts =>
     p' <- PAst_to_EAst p;;
     res <- CBackend.extract_c
-      remaps
+      const_remaps
       custom_attr
       opts
       f
@@ -181,7 +184,7 @@ Definition run_backend (c : config) (f : string) (p : PAst) : extraction_result 
   | Wasm opts =>
     p' <- PAst_to_EAst p;;
     res <- WasmBackend.extract_wasm
-      remaps
+      const_remaps
       custom_attr
       opts
       f

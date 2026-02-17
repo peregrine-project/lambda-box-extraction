@@ -9,6 +9,7 @@ From MetaRocq.Erasure Require Import EProgram EInlining EBeta EWellformed.
 From MetaRocq.ErasurePlugin Require Import ETransform Erasure.
 From MetaRocq.Erasure Require EImplementBox.
 From Peregrine Require EImplementLazyForce.
+From Peregrine Require ERemapInductives.
 From Malfunction Require Pipeline.
 
 Import PCUICProgram.
@@ -130,11 +131,21 @@ Proof.
 Qed.
 
 
-Program Definition extra_unsafe_transforms (impl_box impl_lazy_force : bool) :=
+Program Definition extra_unsafe_transforms (impl_box impl_lazy_force : bool) remaps :=
   let efl := EConstructorsAsBlocks.switch_cstr_as_blocks
   (EInlineProjections.disable_projections_env_flag (ERemoveParams.switch_no_params EWellformed.all_env_flags)) in
+  (ERemapInductives.extract_inductive_transformation efl final_wcbv_flags remaps ▷
+    ERemapInductives.forget_inductive_extraction_info_transformation efl final_wcbv_flags) ▷
   ETransform.optional_self_transform impl_box implement_box_transformation ▷
   ETransform.optional_self_transform impl_lazy_force implement_lazy_force_transformation.
+Next Obligation.
+  cbn. intros.
+  destruct impl_box, impl_lazy_force; auto.
+Qed.
+Next Obligation.
+  cbn. intros.
+  destruct impl_box, impl_lazy_force; auto.
+Qed.
 Final Obligation.
   cbn. intros.
   destruct impl_box, impl_lazy_force; auto.
@@ -145,7 +156,7 @@ Qed.
 
 
 Program Definition untyped_transform_pipeline {guard : abstract_guard_impl}
-  (efl := all_env_flags) econf impl_box impl_lazy_force
+  (efl := all_env_flags) econf impl_box impl_lazy_force remaps
   : Transform.t _ _ _ EAst.term _ _
    (* Standard evaluation, with cases on prop, guarded fixpoints, applied constructors *)
    (eval_eprogram_mapping EWcbvEval.default_wcbv_flags)
@@ -154,7 +165,7 @@ Program Definition untyped_transform_pipeline {guard : abstract_guard_impl}
   rebuild_wf_env_transform_mapping true true ▷
   verified_lambdabox_pipeline_mapping ▷
   optional_unsafe_transforms econf ▷
-  extra_unsafe_transforms impl_box impl_lazy_force.
+  extra_unsafe_transforms impl_box impl_lazy_force remaps.
 Next Obligation.
   cbn. intros.
   destruct H as [? [? ?]].
@@ -333,7 +344,7 @@ Qed.
 
 
 Program Definition typed_to_untyped_transform_pipeline {guard : abstract_guard_impl}
-  (efl := EWellformed.all_env_flags) econf impl_box impl_lazy_force
+  (efl := EWellformed.all_env_flags) econf impl_box impl_lazy_force remaps
   : Transform.t _ _ _ _ _ _
    (eval_typed_eprogram_mapping EWcbvEval.default_wcbv_flags)
    (EProgram.eval_eprogram final_wcbv_flags) :=
@@ -342,7 +353,7 @@ Program Definition typed_to_untyped_transform_pipeline {guard : abstract_guard_i
    trans_env_transform ▷
    rebuild_wf_env_transform_mapping true true ▷
    verified_lambdabox_typed_pipeline econf ▷
-   extra_unsafe_transforms impl_box impl_lazy_force.
+   extra_unsafe_transforms impl_box impl_lazy_force remaps.
 Next Obligation.
   intros.
   cbn in *.
@@ -369,17 +380,17 @@ Final Obligation.
 Qed.
 
 
-Program Definition run_untyped_transforms econf ind_reorder impl_box impl_lazy_force p :=
-  run (untyped_transform_pipeline econf impl_box impl_lazy_force) (ind_reorder, p) _.
+Program Definition run_untyped_transforms econf ind_reorder impl_box impl_lazy_force remaps p :=
+  run (untyped_transform_pipeline econf impl_box impl_lazy_force remaps) (ind_reorder, p) _.
 Final Obligation.
-Admitted. (* assumed for now, but this should be checked *)
+Admitted. (* assumed for now, check_wf should ensure this *)
 
 Program Definition run_typed_transforms econf ind_reorder p :=
   run (typed_transform_pipeline econf) (ind_reorder, p) _.
 Final Obligation.
-Admitted.
+Admitted. (* assumed for now, check_wf should ensure this *)
 
-Program Definition run_typed_to_untyped_transforms econf ind_reorder impl_box impl_lazy_force p :=
-  run (typed_to_untyped_transform_pipeline econf impl_box impl_lazy_force) (ind_reorder, p) _.
+Program Definition run_typed_to_untyped_transforms econf ind_reorder impl_box impl_lazy_force remaps p :=
+  run (typed_to_untyped_transform_pipeline econf impl_box impl_lazy_force remaps) (ind_reorder, p) _.
 Final Obligation.
-Admitted.
+Admitted. (* assumed for now, check_wf should ensure this *)
