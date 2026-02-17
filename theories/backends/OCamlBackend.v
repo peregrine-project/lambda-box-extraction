@@ -62,14 +62,10 @@ Definition print_program prims pt nms p :=
   let code := serialize p in
   (nms, code).
 
-Definition mk_remaps (rs : remappings) : Malfunction.primitives :=
-  Utils.filter_map (fun x =>
-    match x with
-    | RemapConstant kn _ _ _ s =>
-      let '(m, s) := split_name s in
-      Some (string_of_kername kn, Malfunction.Global m s)
-    | _ => None
-    end
+Definition mk_remaps (rs : constant_remappings) : Malfunction.primitives :=
+  map (fun '(kn, r) =>
+      let '(m, s) := split_name r.(re_const_s) in
+      (string_of_kername kn, Malfunction.Global m s)
   ) rs.
 (* TODO: support Malfuntion prim_def.Primtive & prim_def.Erased *)
 (* TODO: collect list of packages for compiling *)
@@ -78,7 +74,7 @@ Definition mk_remaps (rs : remappings) : Malfunction.primitives :=
 
 Axiom trust_coq_kernel : forall p, pre malfunction_pipeline p.
 
-Definition extract_ocaml (remaps : remappings)
+Definition extract_ocaml (remaps : constant_remappings)
                          (custom_attr : custom_attributes)
                          (opts : ocaml_config)
                          (file_name : string)

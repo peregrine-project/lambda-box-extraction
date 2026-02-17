@@ -4,6 +4,7 @@ From MetaRocq.Erasure Require EProgram.
 From MetaRocq.Utils Require Import bytestring.
 From MetaRocq.Common Require Kernames.
 From Malfunction Require Serialize.
+From Peregrine Require ERemapInductives.
 
 Local Open Scope bs_scope.
 
@@ -64,23 +65,41 @@ End BackendConfig.
 Section GeneralConfig.
 
   Record remapped_inductive := build_remapped_inductive {
+      (* Name of the type to remap to *)
       re_ind_name  : string;
+      (* Constructor functions for the new type,
+         corresponding to the costructors of the remapped type *)
       re_ind_ctors : list string;
+      (* Eliminator, needed if the new type is not an inductive type *)
       re_ind_match : option string;
     }.
 
-  Definition external_remapping : Type := option string.
-  Definition arity : Type := option nat.
+  Record remapped_constant := {
+      (* Remap to a definition defined externally *)
+      re_const_ext : option string;
+      (* Arity of the remapped constant *)
+      re_const_arity : nat;
+      (* Set if the function needs access to GC, only needed for C/Wasm backends *)
+      re_const_gc : bool;
+      (* Inline the remapping *)
+      re_const_inl : bool;
+      (* What to remap the constant to *)
+      re_const_s : string;
+    }.
 
-  Inductive remapping :=
-  | RemapInductive      : Kernames.inductive -> external_remapping -> remapped_inductive -> remapping
-  | RemapConstant       : Kernames.kername -> external_remapping -> arity -> bool -> string -> remapping
-  | RemapInlineConstant : Kernames.kername -> external_remapping -> arity -> bool -> string -> remapping.
+  Inductive remap_inductive :=
+  (* Remap inductives to defined constants *)
+  (* Supported by untyped targets *)
+  | KnIndRemap : ERemapInductives.extract_inductive -> remap_inductive
+  (* Remap inductives to arbitrary strings *)
+  (* Supported by typed targets *)
+  | StringIndRemap : remapped_inductive -> remap_inductive.
 
   Definition custom_attribute : Type := (Kernames.kername * string).
 
   Definition inlinings : Type := list Kernames.kername.
-  Definition remappings : Type := list remapping.
+  Definition constant_remappings : Type := list (Kernames.kername * remapped_constant).
+  Definition inductive_remappings : Type := list (Kernames.inductive * remap_inductive).
   Definition custom_attributes : Type := list custom_attribute.
 
   Inductive phases_config :=
@@ -112,14 +131,16 @@ Section GeneralConfig.
       backend_opts           : backend_config;
       erasure_opts           : erasure_phases;
       inlinings_opts         : inlinings;
-      remappings_opts        : remappings;
+      const_remappings_opts  : constant_remappings;
+      ind_remappings_opts    : inductive_remappings;
       cstr_reorders_opts     : EProgram.inductives_mapping;
       custom_attributes_opts : custom_attributes;
     }.
 
   Record attributes_config := {
       inlinings_opt         : inlinings;
-      remappings_opt        : remappings;
+      const_remappings_opt  : constant_remappings;
+      ind_remappings_opt    : inductive_remappings;
       cstr_reorders_opt     : EProgram.inductives_mapping;
       custom_attributes_opt : custom_attributes;
     }.

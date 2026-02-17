@@ -34,19 +34,15 @@ Definition mk_opts (o : certicoq_config) : Options := {|
   prims := []; (* We pass prims directly to the pipeline *)
 |}.
 
-Definition mk_prims (rs : remappings) : list (((kername × string) × arity) × bool) :=
-  Utils.filter_map (fun x =>
-    match x with
-    | RemapConstant kn _ a gc s =>
-      Some (kn, s, a, gc)
-    | _ => None
-    end
+Definition mk_prims (rs : constant_remappings) : list (((kername × string) × nat) × bool) :=
+  map (fun '(kn, r) =>
+    (kn, r.(re_const_s), r.(re_const_arity), r.(re_const_gc))
   ) rs.
 
-Definition get_libs (rs : remappings) : IdentSet.t :=
-  fold_left (fun s r =>
-    match r with
-    | RemapConstant _ (Some e) _ _ _ => IdentSet.add e s
+Definition get_libs (rs : constant_remappings) : IdentSet.t :=
+  fold_left (fun s '(_, r) =>
+    match r.(re_const_ext) with
+    | Some e => IdentSet.add e s
     | _ => s
     end
   ) rs IdentSet.empty.
@@ -78,13 +74,13 @@ Fixpoint find_prim_arity (env : EAst.global_declarations) (pr : kername) : error
     else find_prim_arity env pr
   end.
 
-Fixpoint find_prim_arities (env : EAst.global_declarations) (prs : list (kername * string * arity * bool)) : error (list (kername * string * bool * nat * positive)) :=
+Fixpoint find_prim_arities (env : EAst.global_declarations) (prs : list (kername * string * nat * bool)) : error (list (kername * string * bool * nat * positive)) :=
   match prs with
   | [] => Ret []
-  | (pr, s, Some a, b) :: prs =>
+  | (pr, s, a, b) :: prs =>
     prs' <- find_prim_arities env prs ;;
     Ret ((pr, s, b, a, 1%positive) :: prs')
-  | (pr, s, None, b) :: prs =>
+(*   | (pr, s, None, b) :: prs =>
     match find_prim_arity env pr with
     | Err _ => (* Be lenient, if a declared primitive is not part of the environment, just skip it *)
       prs' <- find_prim_arities env prs ;;
@@ -92,7 +88,7 @@ Fixpoint find_prim_arities (env : EAst.global_declarations) (prs : list (kername
     | Ret arity =>
       prs' <- find_prim_arities env prs ;;
       Ret ((pr, s, b, arity, 1%positive) :: prs')
-    end
+    end *)
   end.
 
 Definition register_prims prs (id : positive) (env : EAst.global_declarations) : pipelineM (list (kername * string * bool * nat * positive) * positive) :=

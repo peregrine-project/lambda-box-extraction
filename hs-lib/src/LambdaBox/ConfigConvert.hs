@@ -5,6 +5,7 @@ import LambdaBox.Config
 import qualified Config0
 import qualified ConfigUtils
 import qualified EProgram
+import qualified ERemapInductives
 import qualified Serialize
 
 
@@ -74,38 +75,35 @@ remappedInductiveConv RemappedInductive {..} =
     (map stringConv indCtors)
     (fmap stringConv indMatch)
 
--- Remapping annotations
-externalRemappingConv :: ExternalRemapping -> Config0.Coq_external_remapping
-externalRemappingConv r =
-  fmap stringConv r
+extractInductiveConv :: ExtractInductive -> ERemapInductives.Coq_extract_inductive
+extractInductiveConv ExtractInductive {..} =
+  ERemapInductives.Build_extract_inductive
+    (map kerNameConv cstrs)
+    (kerNameConv elim)
 
-arityConv :: Arity -> Config0.Coq_arity
-arityConv i =
-  fmap natConv i
+remapInductiveConv :: RemapInductive -> Config0.Coq_remap_inductive
+remapInductiveConv (KnIndRemap r) =
+  Config0.KnIndRemap $ extractInductiveConv r
+remapInductiveConv (StringIndRemap r) =
+  Config0.StringIndRemap $ remappedInductiveConv r
 
-remappingConv :: Remapping -> Config0.Coq_remapping
-remappingConv (RemapInductive ind ext r) =
-  Config0.RemapInductive
-    (inductiveConv ind)
-    (externalRemappingConv ext)
-    (remappedInductiveConv r)
-remappingConv (RemapConstant kn ext a gc s) =
-  Config0.RemapConstant
-    (kerNameConv kn)
-    (externalRemappingConv ext)
-    (arityConv a)
-    gc
-    (stringConv s)
-remappingConv (RemapInlineConstant kn ext a gc s) =
-  Config0.RemapInlineConstant
-    (kerNameConv kn)
-    (externalRemappingConv ext)
-    (arityConv a)
-    gc
-    (stringConv s)
+inductiveRemappingsConv :: InductiveRemappings -> Config0.Coq_inductive_remappings
+inductiveRemappingsConv l =
+  map (\x -> (inductiveConv $ fst x, remapInductiveConv $ snd x)) l
 
-remappingsConv :: Remappings -> Config0.Coq_remappings
-remappingsConv l = map remappingConv l
+-- Constant remapping
+remappedConstantConv :: RemappedConstant -> Config0.Coq_remapped_constant
+remappedConstantConv RemappedConstant {..} =
+  Config0.Build_remapped_constant
+    (fmap stringConv reConstExt)
+    (natConv reConstArity)
+    reConstGC
+    reConstInl
+    (stringConv reConstS)
+
+constantRemappingsConv :: ConstantRemappings -> Config0.Coq_constant_remappings
+constantRemappingsConv l =
+  map (\x -> (kerNameConv $ fst x, remappedConstantConv $ snd x)) l
 
 -- Constructor reorder annotations
 inductiveMappingConv :: InductiveMapping -> EProgram.Coq_inductive_mapping
@@ -143,7 +141,8 @@ configConv Config {..} =
     (backendConfigConv backendOpts)
     (fmap erasurePhasesConv erasureOpts)
     (inliningsConv inlinings)
-    (remappingsConv remappings)
+    (constantRemappingsConv constRemappings)
+    (inductiveRemappingsConv indRemappings)
     (inductivesMappingConv cstrReorders)
     (customAttributesConv customAttributes)
 
@@ -152,6 +151,7 @@ attributesConfigConv :: AttributesConfig -> Config0.Coq_attributes_config
 attributesConfigConv AttributesConfig {..} =
   Config0.Build_attributes_config
     (inliningsConv inlinings')
-    (remappingsConv remappings')
+    (constantRemappingsConv constRemappings')
+    (inductiveRemappingsConv indRemappings')
     (inductivesMappingConv cstrReorders')
     (customAttributesConv customAttributes')

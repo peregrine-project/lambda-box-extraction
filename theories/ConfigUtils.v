@@ -37,6 +37,14 @@ Section ErasureConfig.
 
   Definition mk_cstr_reorders (c : config) := c.(cstr_reorders_opts).
 
+  Definition mk_ind_remaps (c : config) : ERemapInductives.extract_inductives :=
+    Utils.filter_map (fun '(kn, r) =>
+      match r with
+      | KnIndRemap r => Some (kn, r)
+      | _ => None
+      end
+    ) c.(ind_remappings_opts).
+
 End ErasureConfig.
 
 
@@ -269,7 +277,8 @@ Section GeneralConfigOptional.
     backend_opts'           : backend_config';
     erasure_opts'           : option erasure_phases';
     inlinings_opts'         : inlinings;
-    remappings_opts'        : remappings;
+    const_remappings_opts'  : constant_remappings;
+    ind_remappings_opts'    : inductive_remappings;
     cstr_reorders_opts'     : EProgram.inductives_mapping;
     custom_attributes_opts' : custom_attributes;
   }.
@@ -277,7 +286,8 @@ Section GeneralConfigOptional.
     backend_opts'           := b;
     erasure_opts'           := None;
     inlinings_opts'         := nil;
-    remappings_opts'        := nil;
+    const_remappings_opts'  := nil;
+    ind_remappings_opts'    := nil;
     cstr_reorders_opts'     := nil;
     custom_attributes_opts' := nil;
   |}.
@@ -286,7 +296,8 @@ Section GeneralConfigOptional.
     backend_opts           := mk_backend_config o.(backend_opts');
     erasure_opts           := mk_erasure_config o.(backend_opts') o.(erasure_opts');
     inlinings_opts         := o.(inlinings_opts');
-    remappings_opts        := o.(remappings_opts');
+    const_remappings_opts  := o.(const_remappings_opts');
+    ind_remappings_opts    := o.(ind_remappings_opts');
     cstr_reorders_opts     := o.(cstr_reorders_opts');
     custom_attributes_opts := o.(custom_attributes_opts');
   |}.
@@ -294,8 +305,10 @@ Section GeneralConfigOptional.
   Definition merge_attributes_config (o : config) (attrs : list attributes_config) : config :=
     let inlinings_o :=
       List.concat (o.(inlinings_opts) :: (List.map inlinings_opt attrs)) in
-    let remappings_o :=
-      List.concat (o.(remappings_opts) :: (List.map remappings_opt attrs)) in
+    let const_remappings_o :=
+      List.concat (o.(const_remappings_opts) :: (List.map const_remappings_opt attrs)) in
+    let ind_remappings_o :=
+      List.concat (o.(ind_remappings_opts) :: (List.map ind_remappings_opt attrs)) in
     let cstr_reorders_o :=
       List.concat (o.(cstr_reorders_opts) :: (List.map cstr_reorders_opt attrs)) in
     let custom_attributes_o :=
@@ -304,7 +317,8 @@ Section GeneralConfigOptional.
       backend_opts           := o.(backend_opts);
       erasure_opts           := o.(erasure_opts);
       inlinings_opts         := inlinings_o;
-      remappings_opts        := remappings_o;
+      const_remappings_opts  := const_remappings_o;
+      ind_remappings_opts    := ind_remappings_o;
       cstr_reorders_opts     := cstr_reorders_o;
       custom_attributes_opts := custom_attributes_o;
     |}.

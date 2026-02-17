@@ -75,28 +75,24 @@ Definition mk_attributes (attrs : custom_attributes) (o : rust_config) : Kername
       end
   end.
 
-Definition mk_remaps (rs : remappings) : remaps :=
-  let re_inds := filter_map (fun x =>
+Definition mk_remaps (rs : constant_remappings) (is : inductive_remappings) : remaps :=
+  let re_inds := filter_map (fun '(ind, x) =>
     match x with
-    | RemapInductive ind _ r => Some (ind, {|
+    | StringIndRemap r => Some (ind, {|
       re_ind_name  := r.(Config.re_ind_name);
       re_ind_ctors := r.(Config.re_ind_ctors);
       re_ind_match := r.(Config.re_ind_match);
     |})
     | _ => None
     end
+  ) is in
+  let re_const := filter_map (fun '(kn, r) =>
+    if r.(re_const_inl) then None
+    else Some (kn, r.(re_const_s))
   ) rs in
-  let re_const := filter_map (fun x =>
-    match x with
-    | RemapConstant kn _ _ _ s => Some (kn, s)
-    | _ => None
-    end
-  ) rs in
-  let re_in_const := filter_map (fun x =>
-    match x with
-    | RemapInlineConstant kn _ _ _ s => Some (kn, s)
-    | _ => None
-    end
+  let re_in_const := filter_map (fun '(kn, r) =>
+    if r.(re_const_inl) then Some (kn, r.(re_const_s))
+    else None
   ) rs in
   {|
   remap_inductive :=
@@ -134,13 +130,14 @@ Definition mk_config (o : rust_config) : RustPrintConfig := {|
 
 
 
-Definition extract_rust (remaps : remappings)
+Definition extract_rust (const_remaps : constant_remappings)
+                        (ind_remaps : inductive_remappings)
                         (custom_attr : custom_attributes)
                         (opts : rust_config)
                         (file_name : string)
                         (p : ExAst.global_env)
                         : result (list string) string :=
-  let remaps := mk_remaps remaps in
+  let remaps := mk_remaps const_remaps ind_remaps in
   let attrs := mk_attributes custom_attr opts in
   let config := mk_config opts in
   let preamble := mk_preamble opts in

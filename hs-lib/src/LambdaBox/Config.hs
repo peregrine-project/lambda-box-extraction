@@ -71,16 +71,27 @@ data RemappedInductive = RemappedInductive
     indMatch  :: Maybe String
   }
 
--- Remapping annotations
-type ExternalRemapping = Maybe String
-type Arity = Maybe Int
+data ExtractInductive = ExtractInductive
+  { cstrs :: [LambdaBox.LambdaBox.KerName],
+    elim  :: LambdaBox.LambdaBox.KerName
+  }
 
-data Remapping
-  = RemapInductive LambdaBox.LambdaBox.Inductive ExternalRemapping RemappedInductive
-  | RemapConstant LambdaBox.LambdaBox.KerName ExternalRemapping Arity Bool String
-  | RemapInlineConstant LambdaBox.LambdaBox.KerName ExternalRemapping Arity Bool String
+data RemapInductive
+  = KnIndRemap ExtractInductive
+  | StringIndRemap RemappedInductive
 
-type Remappings = [Remapping]
+type InductiveRemappings = [(LambdaBox.LambdaBox.Inductive, RemapInductive)]
+
+-- Constant remapping
+data RemappedConstant = RemappedConstant
+  { reConstExt   :: Maybe String,
+    reConstArity :: Int,
+    reConstGC    :: Bool,
+    reConstInl   :: Bool,
+    reConstS     :: String
+  }
+
+type ConstantRemappings = [(LambdaBox.LambdaBox.KerName, RemappedConstant)]
 
 -- Constructor reorder annotations
 type InductiveMapping = (LambdaBox.LambdaBox.Inductive, (String, [Int]))
@@ -108,7 +119,8 @@ data Config = Config
   { backendOpts       :: BackendConfig,
     erasureOpts       :: Maybe ErasurePhases,
     inlinings         :: Inlinings,
-    remappings        :: Remappings,
+    constRemappings   :: ConstantRemappings,
+    indRemappings     :: InductiveRemappings,
     cstrReorders      :: InductivesMapping,
     customAttributes  :: CustomAttributes
   }
@@ -116,7 +128,8 @@ data Config = Config
 -- Attributes configuration
 data AttributesConfig = AttributesConfig
   { inlinings'         :: Inlinings,
-    remappings'        :: Remappings,
+    constRemappings'   :: ConstantRemappings,
+    indRemappings'     :: InductiveRemappings,
     cstrReorders'      :: InductivesMapping,
     customAttributes'  :: CustomAttributes
   }

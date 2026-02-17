@@ -7,7 +7,7 @@
             "type": "git",
             "subDir": null,
             "scope": "",
-            "rev": "c471c29fdbe6ff73b7dedca8630565c118c0f3ef",
+            "rev": "42f8f510ca19d7c950f22cfae8072c43e72e7d68",
             "name": "lean_to_lambdabox",
             "manifestFile": "lake-manifest.json",
             "inputRev": "ast-format",

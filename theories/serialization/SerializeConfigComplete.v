@@ -225,9 +225,15 @@ Proof.
   reflexivity.
 Qed.
 
-Instance Complete_external_remapping : CompleteClass external_remapping.
+Instance Complete_remapped_constant : CompleteClass remapped_constant.
 Proof.
-  typeclasses eauto.
+  unfold CompleteClass, Complete.
+  intros l o.
+  cbn -[Deserialize_ident Deserialize_list Deserialize_option Deserialize_bool Deserialize_SemiIntegral].
+  rewrite !eqb_ascii_refl.
+  rewrite 5!complete_class.
+  destruct o; cbn.
+  reflexivity.
 Qed.
 
 Instance Complete_inductive_mapping : CompleteClass EProgram.inductive_mapping.
@@ -241,24 +247,30 @@ Proof.
   reflexivity.
 Qed.
 
-Instance Complete_remapping : CompleteClass remapping.
+Instance Complete_extract_inductive : CompleteClass ERemapInductives.extract_inductive.
+Proof.
+  unfold CompleteClass, Complete.
+  intros l o.
+  cbn -[Deserialize_kername Deserialize_list].
+  rewrite !eqb_ascii_refl.
+  rewrite 2!complete_class.
+  destruct o; cbn.
+  reflexivity.
+Qed.
+
+Instance Complete_remap_inductive : CompleteClass remap_inductive.
 Proof.
   unfold CompleteClass, Complete.
   intros l r.
   destruct r.
-  - cbn -[Deserialize_inductive Deserialize_external_remapping Deserialize_remapped_inductive].
+  - cbn -[Deserialize_extract_inductive].
     rewrite !eqb_ascii_refl.
-    rewrite 3!complete_class.
+    rewrite 1!complete_class.
     reflexivity.
-  - cbn -[Deserialize_ident Deserialize_external_remapping Deserialize_kername Deserialize_option Deserialize_SemiIntegral Deserialize_bool].
+  - cbn -[Deserialize_remapped_inductive].
     rewrite !eqb_ascii_refl.
     rewrite !neqb_ascii_neq by congruence.
-    rewrite 5!complete_class.
-    reflexivity.
-  - cbn -[Deserialize_ident Deserialize_external_remapping Deserialize_kername Deserialize_option Deserialize_SemiIntegral Deserialize_bool].
-    rewrite !eqb_ascii_refl.
-    rewrite !neqb_ascii_neq by congruence.
-    rewrite 5!complete_class.
+    rewrite 1!complete_class.
     reflexivity.
 Qed.
 
@@ -272,7 +284,12 @@ Proof.
   typeclasses eauto.
 Qed.
 
-Instance Complete_remappings : CompleteClass remappings.
+Instance Complete_constant_remappings : CompleteClass constant_remappings.
+Proof.
+  typeclasses eauto.
+Qed.
+
+Instance Complete_inductive_remappings : CompleteClass inductive_remappings.
 Proof.
   typeclasses eauto.
 Qed.
@@ -308,9 +325,9 @@ Instance Complete_config : CompleteClass config.
 Proof.
   unfold CompleteClass, Complete.
   intros l o.
-  cbn -[Deserialize_backend_config Deserialize_erasure_phases Deserialize_option Deserialize_list Deserialize_inlinings Deserialize_inductive_mapping Deserialize_remappings Deserialize_custom_attributes].
+  cbn -[Deserialize_backend_config Deserialize_erasure_phases Deserialize_option Deserialize_list Deserialize_inlinings Deserialize_inductive_mapping Deserialize_constant_remappings Deserialize_inductive_remappings Deserialize_custom_attributes].
   rewrite !eqb_ascii_refl.
-  rewrite 6!complete_class.
+  rewrite 7!complete_class.
   destruct o; cbn.
   reflexivity.
 Qed.
@@ -319,9 +336,9 @@ Instance Complete_config' : CompleteClass config'.
 Proof.
   unfold CompleteClass, Complete.
   intros l o.
-  cbn -[Deserialize_backend_config' Deserialize_erasure_phases' Deserialize_option Deserialize_list Deserialize_inlinings Deserialize_inductive_mapping Deserialize_remappings Deserialize_custom_attributes].
+  cbn -[Deserialize_backend_config' Deserialize_erasure_phases' Deserialize_option Deserialize_list Deserialize_inlinings Deserialize_inductive_mapping Deserialize_constant_remappings Deserialize_inductive_remappings Deserialize_custom_attributes].
   rewrite !eqb_ascii_refl.
-  rewrite 6!complete_class.
+  rewrite 7!complete_class.
   destruct o; cbn.
   reflexivity.
 Qed.
@@ -330,9 +347,9 @@ Instance Complete_attributes_config : CompleteClass attributes_config.
 Proof.
   unfold CompleteClass, Complete.
   intros l o.
-  cbn -[Deserialize_list Deserialize_inlinings Deserialize_inductive_mapping Deserialize_remappings Deserialize_custom_attributes].
+  cbn -[Deserialize_list Deserialize_inlinings Deserialize_inductive_mapping Deserialize_constant_remappings Deserialize_inductive_remappings Deserialize_custom_attributes].
   rewrite !eqb_ascii_refl.
-  rewrite 4!complete_class.
+  rewrite 5!complete_class.
   destruct o; cbn.
   reflexivity.
 Qed.

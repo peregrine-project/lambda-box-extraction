@@ -304,9 +304,23 @@ Proof.
   reflexivity.
 Qed.
 
-Instance Sound_external_remapping : SoundClass external_remapping.
+Instance Sound_remapped_constant : SoundClass remapped_constant.
 Proof.
-  typeclasses eauto.
+  unfold SoundClass, Sound.
+  intros l e a He.
+  apply sound_match_con in He.
+  destruct He as [He | He]; elim_Exists He.
+  destruct He as [es [<- He]].
+  sound_field He.
+  apply sound_class in Ea0.
+  apply sound_class in Ea1.
+  apply sound_class in Ea2.
+  apply sound_class in Ea3.
+  apply sound_class in Ea4.
+  unfold to_sexp, Serialize_remapped_constant.
+  cbn.
+  rewrite <- Ea0, <- Ea1, <- Ea2, <- Ea3, <- Ea4.
+  reflexivity.
 Qed.
 
 Instance Sound_inductive_mapping : SoundClass EProgram.inductive_mapping.
@@ -327,7 +341,24 @@ Proof.
   reflexivity.
 Qed.
 
-Instance Sound_remapping : SoundClass remapping.
+Instance Sound_extract_inductive : SoundClass ERemapInductives.extract_inductive.
+Proof.
+  unfold SoundClass, Sound.
+  intros l e a He.
+  destruct a.
+  apply sound_match_con in He.
+  destruct He as [He | He]; elim_Exists He.
+  destruct He as [es [<- He]].
+  sound_field He.
+  apply sound_class in Ea0.
+  apply sound_class in Ea1.
+  unfold to_sexp, Serialize_extract_inductive.
+  cbn.
+  rewrite <- Ea0, <- Ea1.
+  reflexivity.
+Qed.
+
+Instance Sound_remap_inductive : SoundClass remap_inductive.
 Proof.
   unfold SoundClass, Sound.
   intros l e n He.
@@ -335,28 +366,13 @@ Proof.
   destruct He as [He | He]; elim_Exists He.
   - destruct He as [es [<- He]].
     sound_field He.
-    apply sound_class in Ea0.
     apply sound_class in Ea1.
-    apply sound_class in Ea2.
-    rewrite <- Ea0, <- Ea1, <- Ea2.
+    rewrite <- Ea1.
     reflexivity.
   - destruct He as [es [<- He]].
     sound_field He.
-    apply sound_class in Ea0.
     apply sound_class in Ea1.
-    apply sound_class in Ea2.
-    apply sound_class in Ea3.
-    apply sound_class in Ea4.
-    rewrite <- Ea0, <- Ea1, <- Ea2, <- Ea3, <- Ea4.
-    reflexivity.
-  - destruct He as [es [<- He]].
-    sound_field He.
-    apply sound_class in Ea0.
-    apply sound_class in Ea1.
-    apply sound_class in Ea2.
-    apply sound_class in Ea3.
-    apply sound_class in Ea4.
-    rewrite <- Ea0, <- Ea1, <- Ea2, <- Ea3, <- Ea4.
+    rewrite <- Ea1.
     reflexivity.
 Qed.
 
@@ -370,7 +386,12 @@ Proof.
   typeclasses eauto.
 Qed.
 
-Instance Sound_remappings : SoundClass remappings.
+Instance Sound_constant_remappings : SoundClass constant_remappings.
+Proof.
+  typeclasses eauto.
+Qed.
+
+Instance Sound_inductive_remappings : SoundClass inductive_remappings.
 Proof.
   typeclasses eauto.
 Qed.
@@ -436,9 +457,10 @@ Proof.
   apply sound_class in Ea3.
   apply sound_class in Ea4.
   apply sound_class in Ea5.
+  apply sound_class in Ea6.
   unfold to_sexp, Serialize_config.
   cbn.
-  rewrite <- Ea0, <- Ea1, <- Ea2, <- Ea3, <- Ea4, <- Ea5.
+  rewrite <- Ea0, <- Ea1, <- Ea2, <- Ea3, <- Ea4, <- Ea5, <- Ea6.
   reflexivity.
 Qed.
 
@@ -456,9 +478,10 @@ Proof.
   apply sound_class in Ea3.
   apply sound_class in Ea4.
   apply sound_class in Ea5.
+  apply sound_class in Ea6.
   unfold to_sexp, Serialize_config'.
   cbn.
-  rewrite <- Ea0, <- Ea1, <- Ea2, <- Ea3, <- Ea4, <- Ea5.
+  rewrite <- Ea0, <- Ea1, <- Ea2, <- Ea3, <- Ea4, <- Ea5, <- Ea6.
   reflexivity.
 Qed.
 
@@ -474,8 +497,9 @@ Proof.
   apply sound_class in Ea1.
   apply sound_class in Ea2.
   apply sound_class in Ea3.
+  apply sound_class in Ea4.
   unfold to_sexp, Serialize_attributes_config.
   cbn.
-  rewrite <- Ea0, <- Ea1, <- Ea2, <- Ea3.
+  rewrite <- Ea0, <- Ea1, <- Ea2, <- Ea3, <- Ea4.
   reflexivity.
 Qed.
