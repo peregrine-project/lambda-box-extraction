@@ -19,14 +19,13 @@ open import Prelude
 
 -- Reverse the first n elements of a list, keeping the rest
 
-reversePrefix : Nat → List Nat → List Nat
-reversePrefix n l = aux n l []
-  where
-    aux : Nat → List Nat → List Nat → List Nat
-    aux 0       xs       acc = acc ++ xs
-    aux (suc n) []       acc = acc
-    aux (suc n) (x ∷ xs) acc = aux n xs (x ∷ acc)
+reversePrefixAux : Nat → List Nat → List Nat → List Nat
+reversePrefixAux 0       xs       acc = acc ++ xs
+reversePrefixAux (suc n) []       acc = acc
+reversePrefixAux (suc n) (x ∷ xs) acc = reversePrefixAux n xs (x ∷ acc)
 
+reversePrefix : Nat → List Nat → List Nat
+reversePrefix n l = reversePrefixAux n l []
 
 private
   @0 _ : reversePrefix 3 (1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ []) ≡ 3 ∷ 2 ∷ 1 ∷ 4 ∷ 5 ∷ []
@@ -38,14 +37,14 @@ flip []           = []
 flip perm@(x ∷ _) = reversePrefix (suc x) perm
 
 {-# TERMINATING  #-}
+countFlipsAux : Nat → List Nat → Nat
+countFlipsAux count []      = count
+countFlipsAux count (0 ∷ _) = count
+countFlipsAux count perm    = countFlipsAux (suc count) (flip perm)
+
 -- Count flips until first element is 0
 countFlips : List Nat → Nat
-countFlips = aux 0
-  where
-    aux : Nat → List Nat → Nat
-    aux count []      = count
-    aux count (0 ∷ _) = count
-    aux count perm    = aux (suc count) (flip perm)
+countFlips = countFlipsAux 0
 
 -- Rotate first n elements: [a, b, c, d, ...] -> [b, c, d, a, ...]
 rotatePrefix : List Nat → Nat → List Nat
@@ -77,13 +76,16 @@ nextPerm perm counts with findI counts
   in just (perm' , counts'')
 
 {-# TERMINATING #-}
-fannkuchLoop : List Nat → List Nat → Nat → Nat
+fannkuchLoop    : List Nat → List Nat → Nat → Nat
+fannkuchLoopAux : Nat → Maybe (List Nat × List Nat) → Nat
+
 fannkuchLoop perm counts maxFlips =
   let flips     = countFlips perm
       maxFlips' = max maxFlips flips
-  in case nextPerm perm counts of λ where
-    nothing → maxFlips'
-    (just (perm' , counts')) → fannkuchLoop perm' counts' maxFlips'
+  in fannkuchLoopAux maxFlips' (nextPerm perm counts)
+
+fannkuchLoopAux maxFlips nothing = maxFlips
+fannkuchLoopAux maxFlips (just (perm' , counts')) = fannkuchLoop perm' counts' maxFlips
 
 fannkuch : Nat → Nat
 fannkuch n =
@@ -93,6 +95,10 @@ fannkuch n =
 
 fannkuchBench : Nat → Nat
 fannkuchBench n = fannkuch n
+
+test : Nat
+test = fannkuchBench 7
+{-# COMPILE AGDA2LAMBOX test #-}
 
 {-
 private

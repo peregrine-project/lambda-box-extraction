@@ -84,14 +84,15 @@ updateAt f [] k = []
 updateAt f (x ∷ xs) zero    = f x ∷ xs
 updateAt f (x ∷ xs) (suc k) = x   ∷ updateAt f xs k
 
+findIndexAux : (P : Nat → A → Bool) → Nat → List A → Maybe Nat
+findIndexAux P k []       = nothing
+findIndexAux P k (x ∷ xs) =
+  if P k x then just k
+           else findIndexAux P (suc k) xs
+
 -- find first index k such that P k xs[k] is true
 findIndex : (P : Nat → A → Bool) → List A → Maybe Nat
-findIndex {A = A} P = aux 0
-  where aux : Nat → List A → Maybe Nat
-        aux k []       = nothing
-        aux k (x ∷ xs) =
-          if P k x then just k
-                   else aux (suc k) xs
+findIndex {A = A} P = findIndexAux P 0
 
 tail : List A → List A
 tail [] = []
