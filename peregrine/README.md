@@ -1,18 +1,14 @@
 # Peregrine
-[![Build](https://github.com/peregrine-project/peregrine-tool/actions/workflows/build.yml/badge.svg)](https://github.com/peregrine-project/peregrine-tool/actions/workflows/build.yml)
-[![GitHub](https://img.shields.io/github/license/peregrine-project/peregrine-tool)](https://github.com/peregrine-project/peregrine-tool/blob/master/LICENSE)
 
 The Peregrine Project provides a unified middle-end for code generation from proof assistants. It supports Agda, Lean, and Rocq and can generate code in CakeML, C, Rust, OCaml.
 
 It puts a focus on correct code extraction: The middle end is verified in the Rocq proof assistant, and some of the frontends and backends are. It is based on an intermediate language called $\lambda_\square$ (LambdaBox).
 
 ## Setup
-The backend requires OCaml 4.13 or later to run. The development also depends on Rocq 9.0, and developer builds of CertiCoq.
+The backend requires OCaml 4.13 or later to run. The development also depends on Rocq 9.0.0, and developer builds of CertiCoq.
 
 The backend can be installed using [Opam](https://opam.ocaml.org/doc/Install.html) with:
 ```bash
-git clone https://github.com/peregrine-project/peregrine-tool.git
-cd peregrine-tool
 opam switch create . 4.14.2 --repositories default,coq-released=https://coq.inria.fr/opam/released
 eval $(opam env)
 opam install .
@@ -20,8 +16,6 @@ opam install .
 
 Or built locally with:
 ```bash
-git clone https://github.com/peregrine-project/peregrine-tool.git
-cd peregrine-tool
 opam switch create . 4.14.2 --repositories default,coq-released=https://coq.inria.fr/opam/released
 eval $(opam env)
 opam install . --deps-only
@@ -110,7 +104,7 @@ The extracted Elm code does not depend on any external libraries and can be comp
 The peregrine tool compiles $\lambda_\square$ and $\lambda_\square^T$ to various languages, the $\lambda_\square$ programs can be obtained from either Coq or Agda using the frontends described here.
 
 #### Agda (Agda2lambox)
-[Agda2lambox](https://github.com/agda/agda2lambox) is a frontend translating [Agda](https://github.com/agda/agda) programs into $\lambda_\square$ and $\lambda_\square^T$.
+[Agda2lambox](../agda_frontend) is a frontend translating [Agda](https://github.com/agda/agda) programs into $\lambda_\square$ and $\lambda_\square^T$.
 
 To use the Agda2lambox frontend you should first annotate the definition you wish to translate with `{-# COMPILE AGDA2LAMBOX DEF_NAME #-}`.
 For example
@@ -150,7 +144,7 @@ Peregrine Extract Typed "test.ast" add_5.
 For extracting Coq programs it is recommended to use the respective extraction backends in Coq rather than using the standalone peregrine tool.
 
 #### Lean (lean-to-lambox)
-The [lean-to-lambox](https://github.com/peregrine-project/lean-to-lambdabox) frontend produces $\lambda_\square$ for [Lean]() programs.
+The [lean-to-lambox](../lean_frontend/) frontend produces $\lambda_\square$ for [Lean]() programs.
 
 Usage
 To use the lean-to-lambox frontend use the `#erase DEF_NAME to "FILE"` notation in Lean.
