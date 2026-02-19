@@ -8,9 +8,6 @@ The Peregrine tool is a unified middle-end for code generation from proof assist
 maintainer: "The Peregrine team"
 authors: "The Peregrine team"
 license: "MIT"
-homepage: "https://peregrine-project.github.io/"
-dev-repo: "git+https://github.com/peregrine-project/peregrine-tool.git"
-bug-reports: "https://github.com/peregrine-project/peregrine-tool/issues"
 
 depends: [
   "rocq-core" {>= "9.0" & < "9.1~"}
@@ -34,11 +31,12 @@ depends: [
   "coq-certicoq" {= "dev"}
   "coq-compcert" {= "3.16"}
   "cmdliner" {< "2.0.0"}
+  "menhir" {>= "20200624" & < "20260122"}
+  "coq-menhirlib" {>= "20200624" & < "20260112"}
 ]
 
 pin-depends: [
-  ["coq-ceres.dev" "git+https://github.com/4ever2/rocq-ceres.git#01bee32638df4b6180b3e9ee70beed11150a5da0"]
-  ["coq-compcert.3.16" "git+https://github.com/4ever2/CompCert.git#6ca6ac1858b3444a266c60970102e8ca533e7827"]
+  ["coq-ceres.dev" "git+https://github.com/peregrine-project/rocq-ceres-bytestring.git#01bee32638df4b6180b3e9ee70beed11150a5da0"]
   ["coq-certicoq.dev" "git+https://github.com/4ever2/certicoq.git#476ba6f262b8180600853c304e873fd9f7f20b8d"]
   ["rocq-verified-extraction.9.0.dev" "git+https://github.com/4ever2/rocq-verified-extraction.git#ab5009fddd7744225533f7b4d5b19cbff652f5a3"]
   ["rocq-typed-extraction-common.9.0.dev" "git+https://github.com/peregrine-project/rocq-typed-extraction.git#5b9de3c5eaf47177e46cc8177bf44cf6f89291a1"]
