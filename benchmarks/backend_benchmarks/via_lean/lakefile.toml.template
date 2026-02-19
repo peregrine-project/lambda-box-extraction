@@ -1,0 +1,9 @@
+name = "from_lean_via_lean"
+
+[[require]]
+name = "from_lean_common"
+path = "../../.."
+
+[[lean_exe]]
+name = "test"
+root = "Main"

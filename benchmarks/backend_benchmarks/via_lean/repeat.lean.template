@@ -1,0 +1,13 @@
+import FromLeanCommon
+
+@[noinline, never_extract]
+def test (u: Unit) := {{testfunction}} u
+
+@[noinline]
+def opaquePure (x : α) : IO α := pure x
+
+def main (args: List String): IO Unit := do
+  let n: Nat := args[0]!.toNat!
+  for _ in [:n] do 
+    let _ <- opaquePure <| test ()
+  return

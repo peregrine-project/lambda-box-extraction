@@ -1,0 +1,4 @@
+/.lake
+*.ast
+*.mlf
+LeanToLambdaBox/Test.lean

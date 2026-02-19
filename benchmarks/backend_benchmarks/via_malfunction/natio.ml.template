@@ -1,0 +1,2 @@
+let _ = print_endline @@ Z.to_string @@ {{testmodule}}.main @@ Z.of_string @@ Sys.argv.(1)
+

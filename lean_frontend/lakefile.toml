@@ -1,0 +1,6 @@
+name = "lean_to_lambdabox"
+version = "0.1.0"
+defaultTargets = ["LeanToLambdaBox"]
+
+[[lean_lib]]
+name = "LeanToLambdaBox"

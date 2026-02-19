@@ -1,0 +1,5 @@
+name = "from_lean_common"
+default_targets = ["FromLeanCommon"]
+
+[[lean_lib]]
+name = "FromLeanCommon"

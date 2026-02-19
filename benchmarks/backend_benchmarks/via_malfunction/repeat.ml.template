@@ -1,0 +1,2 @@
+let n = int_of_string Sys.argv.(1)
+let _ = for _ = 1 to n do ignore (Sys.opaque_identity (({{testmodule}}.main[@inlined never]) ())) done

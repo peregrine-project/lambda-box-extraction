@@ -1,0 +1,9 @@
+name = "from_lean_via_malfunction"
+
+[[require]]
+name = "from_lean_common"
+path = ".."
+
+[[require]]
+name = "lean_to_lambdabox"
+path = "../.."

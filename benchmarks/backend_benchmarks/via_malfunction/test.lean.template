@@ -1,0 +1,4 @@
+import FromLeanCommon
+import LeanToLambdaBox
+
+#erase {{testfunction}} config {{{erasureconfig}}} to "{{extractiondir}}/{{testfunction}}.ast" mli "{{extractiondir}}/{{testfunction}}.mli"

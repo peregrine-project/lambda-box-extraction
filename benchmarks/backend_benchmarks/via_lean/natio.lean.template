@@ -1,0 +1,8 @@
+import FromLeanCommon
+
+def main: List String -> IO UInt32
+  | [arg] => do
+    let n := arg.toNat!
+    IO.println ({{testfunction}} n)
+    return 0
+  | _ => pure 1
