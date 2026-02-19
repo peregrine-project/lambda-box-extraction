@@ -4,25 +4,6 @@ The Peregrine Project provides a unified middle-end for code generation from pro
 
 It puts a focus on correct code extraction: The middle end is verified in the Rocq proof assistant, and some of the frontends and backends are. It is based on an intermediate language called $\lambda_\square$ (LambdaBox).
 
-## Setup
-The backend requires OCaml 4.13 or later to run. The development also depends on Rocq 9.0.0, and developer builds of CertiCoq.
-
-The backend can be installed using [Opam](https://opam.ocaml.org/doc/Install.html) with:
-```bash
-opam switch create . 4.14.2 --repositories default,coq-released=https://coq.inria.fr/opam/released
-eval $(opam env)
-opam install .
-```
-
-Or built locally with:
-```bash
-opam switch create . 4.14.2 --repositories default,coq-released=https://coq.inria.fr/opam/released
-eval $(opam env)
-opam install . --deps-only
-make
-```
-Calling Peregrine using a local build: `dune exec peregrine -- ARGS`
-
 
 ## Usage
 ```

@@ -47,7 +47,7 @@ Requires opam.
 ```
 opam switch create . 4.14.2 --repositories default,coq-released=https://coq.inria.fr/opam/released
 eval $(opam env)
-TODO
+opam install ./peregrine/cakeml/rocq-cakeml-extraction.opam ./peregrine/vendor/rocq-typed-extraction/rocq-typed-extraction-common.opam ./peregrine/vendor/rocq-typed-extraction/rocq-rust-extraction.opam ./peregrine/vendor/rocq-typed-extraction/rocq-elm-extraction.opam ./peregrine/vendor/rocq-verified-extraction/rocq-verified-extraction.opam ./peregrine/vendor/certicoq/coq-certicoq.opam ./peregrine/vendor/coq-ceres/coq-ceres.opam ./peregrine/rocq-peregrine.opam
 ```
 
 To extract $\lambda_\square$ to C, Wasm, OCaml, CakeML, Rust, or Elm use:
