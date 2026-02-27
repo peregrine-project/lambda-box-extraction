@@ -25,7 +25,7 @@ Proof.
   unfold CompleteClass, Complete.
   intros l o.
   cbn -[Deserialize_bool Deserialize_ident].
-  rewrite !eqb_ascii_refl.
+  rewrite !eqb_byte_refl.
   rewrite 7!complete_class.
   destruct o; cbn.
   reflexivity.
@@ -36,7 +36,7 @@ Proof.
   unfold CompleteClass, Complete.
   intros l o.
   cbn -[Deserialize_bool Deserialize_ident].
-  rewrite !eqb_ascii_refl.
+  rewrite !eqb_byte_refl.
   rewrite 7!complete_class.
   destruct o; cbn.
   reflexivity.
@@ -47,7 +47,7 @@ Proof.
   unfold CompleteClass, Complete.
   intros l o.
   cbn -[Deserialize_bool Deserialize_ident].
-  rewrite !eqb_ascii_refl.
+  rewrite !eqb_byte_refl.
   rewrite 7!complete_class.
   destruct o; cbn.
   reflexivity.
@@ -58,7 +58,7 @@ Proof.
   unfold CompleteClass, Complete.
   intros l o.
   cbn -[Deserialize_bool Deserialize_ident].
-  rewrite !eqb_ascii_refl.
+  rewrite !eqb_byte_refl.
   rewrite 7!complete_class.
   destruct o; cbn.
   reflexivity.
@@ -69,7 +69,7 @@ Proof.
   unfold CompleteClass, Complete.
   intros l o.
   cbn -[Deserialize_bool Deserialize_ident Deserialize_SemiIntegral].
-  rewrite !eqb_ascii_refl.
+  rewrite !eqb_byte_refl.
   rewrite 5!complete_class.
   destruct o; cbn.
   reflexivity.
@@ -80,7 +80,7 @@ Proof.
   unfold CompleteClass, Complete.
   intros l o.
   cbn -[Deserialize_bool Deserialize_ident Deserialize_SemiIntegral Deserialize_option].
-  rewrite !eqb_ascii_refl.
+  rewrite !eqb_byte_refl.
   rewrite 5!complete_class.
   destruct o; cbn.
   reflexivity.
@@ -93,7 +93,7 @@ Proof.
   destruct a.
   - reflexivity.
   - cbn -[Deserialize_ident].
-    rewrite !eqb_ascii_refl.
+    rewrite !eqb_byte_refl.
     rewrite 2!complete_class.
     reflexivity.
 Qed.
@@ -103,7 +103,7 @@ Proof.
   unfold CompleteClass, Complete.
   intros l o.
   cbn -[Deserialize_program_type].
-  rewrite !eqb_ascii_refl.
+  rewrite !eqb_byte_refl.
   rewrite 1!complete_class.
   destruct o; cbn.
   reflexivity.
@@ -114,7 +114,7 @@ Proof.
   unfold CompleteClass, Complete.
   intros l o.
   cbn -[Deserialize_program_type].
-  rewrite !eqb_ascii_refl.
+  rewrite !eqb_byte_refl.
   rewrite 1!complete_class.
   destruct o; cbn.
   reflexivity.
@@ -144,32 +144,32 @@ Proof.
   intros l b.
   destruct b.
   - cbn -[Deserialize_rust_config].
-    rewrite !eqb_ascii_refl.
+    rewrite !eqb_byte_refl.
     rewrite !complete_class.
     reflexivity.
   - cbn -[Deserialize_elm_config].
-    rewrite !eqb_ascii_refl.
-    rewrite !neqb_ascii_neq by congruence.
+    rewrite !eqb_byte_refl.
+    rewrite !neqb_byte_neq by congruence.
     rewrite !complete_class.
     reflexivity.
   - cbn -[Deserialize_certicoq_config].
-    rewrite !eqb_ascii_refl.
-    rewrite !neqb_ascii_neq by congruence.
+    rewrite !eqb_byte_refl.
+    rewrite !neqb_byte_neq by congruence.
     rewrite !complete_class.
     reflexivity.
   - cbn -[Deserialize_certicoq_config].
-    rewrite !eqb_ascii_refl.
-    rewrite !neqb_ascii_neq by congruence.
+    rewrite !eqb_byte_refl.
+    rewrite !neqb_byte_neq by congruence.
     rewrite !complete_class.
     reflexivity.
   - cbn -[Deserialize_ocaml_config].
-    rewrite !eqb_ascii_refl.
-    rewrite !neqb_ascii_neq by congruence.
+    rewrite !eqb_byte_refl.
+    rewrite !neqb_byte_neq by congruence.
     rewrite !complete_class.
     reflexivity.
   - cbn -[Deserialize_cakeml_config'].
-    rewrite !eqb_ascii_refl.
-    rewrite !neqb_ascii_neq by congruence.
+    rewrite !eqb_byte_refl.
+    rewrite !neqb_byte_neq by congruence.
     rewrite !complete_class.
     reflexivity.
 Qed.
@@ -180,32 +180,32 @@ Proof.
   intros l b.
   destruct b.
   - cbn -[Deserialize_rust_config'].
-    rewrite !eqb_ascii_refl.
+    rewrite !eqb_byte_refl.
     rewrite !complete_class.
     reflexivity.
   - cbn -[Deserialize_elm_config'].
-    rewrite !eqb_ascii_refl.
-    rewrite !neqb_ascii_neq by congruence.
+    rewrite !eqb_byte_refl.
+    rewrite !neqb_byte_neq by congruence.
     rewrite !complete_class.
     reflexivity.
   - cbn -[Deserialize_certicoq_config'].
-    rewrite !eqb_ascii_refl.
-    rewrite !neqb_ascii_neq by congruence.
+    rewrite !eqb_byte_refl.
+    rewrite !neqb_byte_neq by congruence.
     rewrite !complete_class.
     reflexivity.
   - cbn -[Deserialize_certicoq_config'].
-    rewrite !eqb_ascii_refl.
-    rewrite !neqb_ascii_neq by congruence.
+    rewrite !eqb_byte_refl.
+    rewrite !neqb_byte_neq by congruence.
     rewrite !complete_class.
     reflexivity.
   - cbn -[Deserialize_ocaml_config'].
-    rewrite !eqb_ascii_refl.
-    rewrite !neqb_ascii_neq by congruence.
+    rewrite !eqb_byte_refl.
+    rewrite !neqb_byte_neq by congruence.
     rewrite !complete_class.
     reflexivity.
   - cbn -[Deserialize_cakeml_config'].
-    rewrite !eqb_ascii_refl.
-    rewrite !neqb_ascii_neq by congruence.
+    rewrite !eqb_byte_refl.
+    rewrite !neqb_byte_neq by congruence.
     rewrite !complete_class.
     reflexivity.
 Qed.
@@ -219,7 +219,7 @@ Proof.
   unfold CompleteClass, Complete.
   intros l o.
   cbn -[Deserialize_ident Deserialize_list Deserialize_option].
-  rewrite !eqb_ascii_refl.
+  rewrite !eqb_byte_refl.
   rewrite 3!complete_class.
   destruct o; cbn.
   reflexivity.
@@ -230,7 +230,7 @@ Proof.
   unfold CompleteClass, Complete.
   intros l o.
   cbn -[Deserialize_ident Deserialize_list Deserialize_option Deserialize_bool Deserialize_SemiIntegral].
-  rewrite !eqb_ascii_refl.
+  rewrite !eqb_byte_refl.
   rewrite 5!complete_class.
   destruct o; cbn.
   reflexivity.
@@ -242,7 +242,7 @@ Proof.
   intros l a.
   destruct a, p.
   cbn -[Deserialize_ident Deserialize_list Deserialize_inductive].
-  rewrite !eqb_ascii_refl.
+  rewrite !eqb_byte_refl.
   rewrite 3!complete_class.
   reflexivity.
 Qed.
@@ -252,7 +252,7 @@ Proof.
   unfold CompleteClass, Complete.
   intros l o.
   cbn -[Deserialize_kername Deserialize_list].
-  rewrite !eqb_ascii_refl.
+  rewrite !eqb_byte_refl.
   rewrite 2!complete_class.
   destruct o; cbn.
   reflexivity.
@@ -264,12 +264,12 @@ Proof.
   intros l r.
   destruct r.
   - cbn -[Deserialize_extract_inductive Deserialize_kername Deserialize_list].
-    rewrite !eqb_ascii_refl.
+    rewrite !eqb_byte_refl.
     rewrite 2!complete_class.
     reflexivity.
   - cbn -[Deserialize_remapped_inductive Deserialize_inductive].
-    rewrite !eqb_ascii_refl.
-    rewrite !neqb_ascii_neq by congruence.
+    rewrite !eqb_byte_refl.
+    rewrite !neqb_byte_neq by congruence.
     rewrite 2!complete_class.
     reflexivity.
 Qed.
@@ -304,7 +304,7 @@ Proof.
   unfold CompleteClass, Complete.
   intros l o.
   cbn -[Deserialize_bool].
-  rewrite !eqb_ascii_refl.
+  rewrite !eqb_byte_refl.
   rewrite 7!complete_class.
   destruct o; cbn.
   reflexivity.
@@ -315,7 +315,7 @@ Proof.
   unfold CompleteClass, Complete.
   intros l o.
   cbn -[Deserialize_bool].
-  rewrite !eqb_ascii_refl.
+  rewrite !eqb_byte_refl.
   rewrite 7!complete_class.
   destruct o; cbn.
   reflexivity.
@@ -326,7 +326,7 @@ Proof.
   unfold CompleteClass, Complete.
   intros l o.
   cbn -[Deserialize_backend_config Deserialize_erasure_phases Deserialize_option Deserialize_list Deserialize_inlinings Deserialize_inductive_mapping Deserialize_constant_remappings Deserialize_inductive_remappings Deserialize_custom_attributes].
-  rewrite !eqb_ascii_refl.
+  rewrite !eqb_byte_refl.
   rewrite 7!complete_class.
   destruct o; cbn.
   reflexivity.
@@ -337,7 +337,7 @@ Proof.
   unfold CompleteClass, Complete.
   intros l o.
   cbn -[Deserialize_backend_config' Deserialize_erasure_phases' Deserialize_option Deserialize_list Deserialize_inlinings Deserialize_inductive_mapping Deserialize_constant_remappings Deserialize_inductive_remappings Deserialize_custom_attributes].
-  rewrite !eqb_ascii_refl.
+  rewrite !eqb_byte_refl.
   rewrite 7!complete_class.
   destruct o; cbn.
   reflexivity.
@@ -348,7 +348,7 @@ Proof.
   unfold CompleteClass, Complete.
   intros l o.
   cbn -[Deserialize_list Deserialize_inlinings Deserialize_inductive_mapping Deserialize_constant_remappings Deserialize_inductive_remappings Deserialize_custom_attributes].
-  rewrite !eqb_ascii_refl.
+  rewrite !eqb_byte_refl.
   rewrite 5!complete_class.
   destruct o; cbn.
   reflexivity.

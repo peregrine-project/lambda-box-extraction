@@ -478,14 +478,14 @@ Definition string_of_error (print_loc print_sexp : bool) (e : error) : string :=
 
 (* Bytestring utility functions *)
 
-Lemma eqb_ascii_refl : forall c,
+Lemma eqb_byte_refl : forall c,
   CeresString.eqb_byte c c = true.
 Proof.
   intros c.
   destruct c; reflexivity.
 Qed.
 
-Lemma neqb_ascii_neq : forall a b,
+Lemma neqb_byte_neq : forall a b,
   a <> b -> CeresString.eqb_byte a b = false.
 Proof.
   intros.
@@ -493,7 +493,7 @@ Proof.
   assumption.
 Qed.
 
-Lemma bytestring_complete : forall s,
+Lemma bytestring_of_to : forall s,
   bytestring.String.of_string (bytestring.String.to_string s) = s.
 Proof.
   induction s.
@@ -504,7 +504,7 @@ Proof.
     reflexivity.
 Qed.
 
-Lemma bytestring_sound : forall s,
+Lemma bytestring_to_of : forall s,
   bytestring.String.to_string (bytestring.String.of_string s) = s.
 Proof.
   induction s.

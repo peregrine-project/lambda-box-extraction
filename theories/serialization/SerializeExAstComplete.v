@@ -26,30 +26,30 @@ Proof.
     reflexivity.
   - (* TArr *)
     cbn.
-    rewrite !eqb_ascii_refl.
+    rewrite !eqb_byte_refl.
     rewrite IHt1, IHt2.
     reflexivity.
   - (* TApp *)
     cbn.
-    rewrite !eqb_ascii_refl.
+    rewrite !eqb_byte_refl.
     rewrite IHt1, IHt2.
     reflexivity.
   - (* TVar *)
     cbn -[Deserialize_SemiIntegral].
-    rewrite !eqb_ascii_refl.
-    rewrite !neqb_ascii_neq by congruence.
+    rewrite !eqb_byte_refl.
+    rewrite !neqb_byte_neq by congruence.
     rewrite complete_class.
     reflexivity.
   - (* TInd *)
     cbn -[Deserialize_inductive].
-    rewrite !eqb_ascii_refl.
-    rewrite !neqb_ascii_neq by congruence.
+    rewrite !eqb_byte_refl.
+    rewrite !neqb_byte_neq by congruence.
     rewrite complete_class.
     reflexivity.
   - (* TConst *)
     cbn -[Deserialize_kername].
-    rewrite !eqb_ascii_refl.
-    rewrite !neqb_ascii_neq by congruence.
+    rewrite !eqb_byte_refl.
+    rewrite !neqb_byte_neq by congruence.
     rewrite complete_class.
     reflexivity.
 Qed.
@@ -59,7 +59,7 @@ Proof.
   unfold CompleteClass, Complete.
   intros l t.
   cbn -[Deserialize_name Deserialize_bool].
-  rewrite !eqb_ascii_refl.
+  rewrite !eqb_byte_refl.
   rewrite 4!complete_class.
   destruct t; cbn.
   reflexivity.
@@ -70,7 +70,7 @@ Proof.
   unfold CompleteClass, Complete.
   intros l cb.
   cbn -[Deserialize_option].
-  rewrite !eqb_ascii_refl.
+  rewrite !eqb_byte_refl.
   rewrite 2!complete_class.
   rewrite complete_class_list.
   destruct cb, cst_type; cbn.
@@ -82,7 +82,7 @@ Proof.
   unfold CompleteClass, Complete.
   intros l oib.
   cbn -[Deserialize_ident Deserialize_bool Deserialize_allowed_eliminations].
-  rewrite !eqb_ascii_refl.
+  rewrite !eqb_byte_refl.
   rewrite 3!complete_class.
   rewrite 3!complete_class_list.
   destruct oib; cbn.
@@ -94,7 +94,7 @@ Proof.
   unfold CompleteClass, Complete.
   intros l mib.
   cbn -[Deserialize_recursivity_kind Deserialize_SemiIntegral].
-  rewrite !eqb_ascii_refl.
+  rewrite !eqb_byte_refl.
   rewrite 2!complete_class.
   rewrite complete_class_list.
   destruct mib; cbn.
@@ -107,17 +107,17 @@ Proof.
   intros l gd.
   destruct gd.
   - cbn -[Deserialize_constant_body].
-    rewrite !eqb_ascii_refl.
+    rewrite !eqb_byte_refl.
     rewrite complete_class.
     reflexivity.
   - cbn -[Deserialize_mutual_inductive_body].
-    rewrite !eqb_ascii_refl.
-    rewrite !neqb_ascii_neq by congruence.
+    rewrite !eqb_byte_refl.
+    rewrite !neqb_byte_neq by congruence.
     rewrite complete_class.
     reflexivity.
   - cbn -[Deserialize_option].
-    rewrite !eqb_ascii_refl.
-    rewrite !neqb_ascii_neq by congruence.
+    rewrite !eqb_byte_refl.
+    rewrite !neqb_byte_neq by congruence.
     rewrite complete_class.
     reflexivity.
 Qed.

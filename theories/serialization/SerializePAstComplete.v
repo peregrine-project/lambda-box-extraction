@@ -26,12 +26,12 @@ Proof.
   intros l n.
   destruct n.
   - cbn -[Deserialize_untyped_env Deserialize_option].
-    rewrite !eqb_ascii_refl.
+    rewrite !eqb_byte_refl.
     rewrite !complete_class.
     reflexivity.
   - cbn -[Deserialize_typed_env Deserialize_option].
-    rewrite !eqb_ascii_refl.
-    rewrite !neqb_ascii_neq by congruence.
+    rewrite !eqb_byte_refl.
+    rewrite !neqb_byte_neq by congruence.
     rewrite !complete_class.
     reflexivity.
 Qed.
