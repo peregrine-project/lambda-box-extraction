@@ -493,6 +493,15 @@ Proof.
   assumption.
 Qed.
 
+Ltac simpl_byte :=
+  match goal with
+  | [ |- context E [ CeresString.eqb_byte ?x ?x ] ] => rewrite eqb_byte_refl
+  | [ |- context E [ CeresString.eqb_byte ?x ?y ] ] => rewrite neqb_byte_neq by congruence
+  end.
+
+Ltac simpl_bytes :=
+  repeat simpl_byte.
+
 Lemma bytestring_of_to : forall s,
   bytestring.String.of_string (bytestring.String.to_string s) = s.
 Proof.

@@ -33,17 +33,15 @@ Proof.
   revert l.
   induction m; intros l.
   - cbn -[Deserialize_dirpath].
-    rewrite !eqb_byte_refl.
+    simpl_bytes.
     rewrite complete_class.
     reflexivity.
   - cbn -[Deserialize_dirpath Deserialize_ident Deserialize_SemiIntegral].
-    rewrite !eqb_byte_refl.
-    rewrite !neqb_byte_neq by congruence.
+    simpl_bytes.
     rewrite !complete_class.
     reflexivity.
   - cbn -[Deserialize_ident].
-    rewrite !eqb_byte_refl.
-    rewrite !neqb_byte_neq by congruence.
+    simpl_bytes.
     rewrite IHm.
     rewrite !complete_class.
     reflexivity.
@@ -62,7 +60,7 @@ Proof.
   unfold CompleteClass, Complete.
   intros l ind.
   cbn -[Deserialize_kername Deserialize_SemiIntegral].
-  rewrite !eqb_byte_refl.
+  simpl_bytes.
   rewrite 2!complete_class.
   destruct ind; cbn.
   reflexivity.
@@ -73,7 +71,7 @@ Proof.
   unfold CompleteClass, Complete.
   intros l proj.
   cbn -[Deserialize_inductive Deserialize_SemiIntegral].
-  rewrite !eqb_byte_refl.
+  simpl_bytes.
   rewrite 3!complete_class.
   destruct proj; cbn.
   reflexivity.
@@ -88,7 +86,7 @@ Proof.
   destruct n.
   - reflexivity.
   - cbn -[Deserialize_ident].
-    rewrite !eqb_byte_refl.
+    simpl_bytes.
     rewrite complete_class.
     reflexivity.
 Qed.

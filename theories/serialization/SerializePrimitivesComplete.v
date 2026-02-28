@@ -5,6 +5,7 @@ From Ceres Require Import CeresSerialize.
 From Ceres Require Import CeresDeserialize.
 From MetaRocq.Common Require Import Primitive.
 From MetaRocq.Erasure Require Import EPrimitive.
+From MetaRocq.Utils Require Import bytestring.
 From Stdlib Require Import List.
 From Stdlib Require Import ZArith.
 From Stdlib Require PrimInt63.
@@ -58,7 +59,7 @@ Proof.
   unfold CompleteClass, Complete.
   intros l a.
   cbn.
-  rewrite !eqb_byte_refl.
+  simpl_bytes.
   rewrite complete_class.
   rewrite complete_class_list.
   destruct a; cbn.
@@ -72,22 +73,19 @@ Proof.
   destruct p.
   destruct p.
   - cbn -[Deserialize_prim_int].
-    rewrite !eqb_byte_refl.
+    simpl_bytes.
     rewrite complete_class.
     reflexivity.
   - cbn -[Deserialize_prim_float].
-    rewrite !eqb_byte_refl.
-    rewrite !neqb_byte_neq by congruence.
+    simpl_bytes.
     rewrite complete_class.
     reflexivity.
   - cbn -[Deserialize_prim_string].
-    rewrite !eqb_byte_refl.
-    rewrite !neqb_byte_neq by congruence.
+    simpl_bytes.
     rewrite complete_class.
     reflexivity.
   - cbn -[Deserialize_array_model].
-    rewrite !eqb_byte_refl.
-    rewrite !neqb_byte_neq by congruence.
+    simpl_bytes.
     rewrite complete_class.
     reflexivity.
 Qed.
