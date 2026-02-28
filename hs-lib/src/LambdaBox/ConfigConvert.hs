@@ -67,6 +67,19 @@ evalConfigConv EvalConfig {..} =
     (natConv fuel)
     evalAnf
 
+-- AST backend configuration
+astTypeConv :: ASTType -> ConfigUtils.ASTType'
+astTypeConv LambdaBox = ConfigUtils.LambdaBox'
+astTypeConv LambdaBoxTyped = ConfigUtils.LambdaBoxTyped'
+astTypeConv (LambdaBoxMut c) = ConfigUtils.LambdaBoxMut' (fmap certicoqConfigConv c)
+astTypeConv (LambdaBoxLocal c) = ConfigUtils.LambdaBoxLocal' (fmap certicoqConfigConv c)
+astTypeConv (LambdaANF c) = ConfigUtils.LambdaANF' (fmap certicoqConfigConv c)
+astTypeConv (LambdaANFC c) = ConfigUtils.LambdaANFC' (fmap certicoqConfigConv c)
+
+astConfigConv :: ASTConfig -> ConfigUtils.Coq_ast_config'
+astConfigConv ASTConfig {..} =
+  astTypeConv astType
+
 -- Backend configuration
 backendConfigConv :: BackendConfig -> ConfigUtils.Coq_backend_config'
 backendConfigConv (Rust c) = ConfigUtils.Rust' $ rustConfigConv c
@@ -76,6 +89,7 @@ backendConfigConv (Wasm c) = ConfigUtils.Wasm' $ certicoqConfigConv c
 backendConfigConv (OCaml c) = ConfigUtils.OCaml' $ ocamlConfigConv c
 backendConfigConv (CakeML c) = ConfigUtils.CakeML' $ cakemlConfigConv c
 backendConfigConv (Eval c) = ConfigUtils.Eval' $ evalConfigConv c
+backendConfigConv (AST c) = ConfigUtils.AST' $ astConfigConv c
 
 -- Inductive remapping
 remappedInductiveConv :: RemappedInductive -> Config0.Coq_remapped_inductive

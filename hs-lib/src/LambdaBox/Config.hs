@@ -59,6 +59,19 @@ data EvalConfig = EvalConfig
     evalAnf :: Bool
   }
 
+-- AST backend configuration
+data ASTType
+  = LambdaBox
+  | LambdaBoxTyped
+  | LambdaBoxMut (Maybe CertiCoqConfig)
+  | LambdaBoxLocal (Maybe CertiCoqConfig)
+  | LambdaANF (Maybe CertiCoqConfig)
+  | LambdaANFC (Maybe CertiCoqConfig)
+
+data ASTConfig = ASTConfig
+  { astType :: ASTType
+  }
+
 -- Backend configuration
 -- States the backend that Peregrine should use along
 -- with with options specific to that backend
@@ -70,6 +83,7 @@ data BackendConfig
   | OCaml OCamlConfig
   | CakeML CakeMLConfig
   | Eval EvalConfig
+  | AST ASTConfig
 
 
 
