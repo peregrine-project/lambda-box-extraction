@@ -15,8 +15,6 @@ Local Open Scope bs_scope.
 
 (** * Axioms *)
 (* Realized in extraction *)
-Axiom string_of_prim_int : PrimInt63.int -> string.
-Axiom string_of_prim_float : PrimFloat.float -> string.
 Axiom string_of_prim_string : PrimString.string -> string.
 
 
@@ -30,12 +28,6 @@ Instance Serialize_prim_tag : Serialize prim_tag :=
     | primString => Atom "primString"
     | primArray => Atom "primArray"
     end%sexp.
-
-Instance Serialize_prim_int : Serialize PrimInt63.int :=
-  fun i => Atom (Str (string_of_prim_int i)).
-
-Instance Serialize_prim_float : Serialize PrimFloat.float :=
-  fun f => Atom (Str (string_of_prim_float f)).
 
 Instance Serialize_prim_string : Serialize PrimString.string :=
   fun s => Atom (Str (string_of_prim_string s)).
@@ -62,7 +54,7 @@ Definition string_of_prim_tag (t : prim_tag) : string :=
   @to_string prim_tag Serialize_prim_tag t.
 
 Definition string_of_prim_int' (i : PrimInt63.int) : string :=
-  @to_string PrimInt63.int Serialize_prim_int i.
+  @to_string PrimInt63.int (@Serialize_Integral PrimInt63.int Integral_sint) i.
 
 Definition string_of_prim_float' (f : PrimFloat.float) : string :=
   @to_string PrimFloat.float Serialize_prim_float f.

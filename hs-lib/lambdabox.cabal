@@ -41,6 +41,8 @@ library
                       EProgram
                       ERemapInductives
                       ExAst
+                      FloatOps
+                      IntDef
                       Kernames
                       LambdaBox.LBoxConvert
                       List0
@@ -61,8 +63,11 @@ library
                       SerializeExAst
                       SerializePAst
                       SerializePrimitives
+                      Sint63Axioms
+                      SpecFloat
                       Specif
                       String0
+                      Uint63Axioms
                       Universes0
     build-depends:    base       ^>=4.20.0.0,
                       ghc-internal,

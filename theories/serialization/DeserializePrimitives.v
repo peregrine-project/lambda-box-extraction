@@ -15,8 +15,6 @@ Local Open Scope bs_scope.
 
 (** * Axioms *)
 (* Realized in extraction *)
-Axiom prim_int_of_string : string -> PrimInt63.int.
-Axiom prim_float_of_string : string -> PrimFloat.float.
 Axiom prim_string_of_string : string -> PrimString.string.
 
 
@@ -32,20 +30,6 @@ Instance Deserialize_prim_tag : Deserialize prim_tag :=
       ; ("primArray", primArray)
       ]
       [] l e.
-
-Instance Deserialize_prim_int : Deserialize PrimInt63.int :=
-  fun l e =>
-    match e with
-    | Atom_ (Str i) => inr (prim_int_of_string i)
-    | _ => inl (DeserError l "error")
-    end.
-
-Instance Deserialize_prim_float : Deserialize PrimFloat.float :=
-  fun l e =>
-    match e with
-    | Atom_ (Str s) => inr (prim_float_of_string s)
-    | _ => inl (DeserError l "error")
-    end.
 
 Instance Deserialize_prim_string : Deserialize PrimString.string :=
   fun l e =>
@@ -67,7 +51,8 @@ Instance Deserialize_prim_val {T : Set} `{Deserialize T} : Deserialize (prim_val
       let t := @_from_sexp prim_tag _ l e1 in
       match t with
       | inr primInt =>
-        let v := @_from_sexp PrimInt63.int _ l e2 in
+        let v := @_from_sexp PrimInt63.int (@Deserialize_SemiIntegral PrimInt63.int
+                               SemiIntegral_sint) l e2 in
         match v with
         | inr v => inr (prim_int v)
         | inl e => inl e
@@ -96,14 +81,13 @@ Instance Deserialize_prim_val {T : Set} `{Deserialize T} : Deserialize (prim_val
     end.
 
 
-
 (** * Main deserialization functions *)
 
 Definition prim_tag_of_string (s : string) : error + prim_tag :=
   @from_string prim_tag Deserialize_prim_tag s.
 
 Definition prim_int_of_string' (s : string) : error + PrimInt63.int :=
-  @from_string PrimInt63.int Deserialize_prim_int s.
+  @from_string PrimInt63.int (@Deserialize_SemiIntegral PrimInt63.int SemiIntegral_sint) s.
 
 Definition prim_float_of_string' (s : string) : error + PrimFloat.float :=
   @from_string PrimFloat.float Deserialize_prim_float s.

@@ -113,11 +113,11 @@ Proof.
   intros.
   destruct p.
   destruct p.
-  - cbn -[Deserialize_prim_int].
+  - cbn -[Deserialize_SemiIntegral].
     simpl_bytes.
     rewrite complete_class.
     reflexivity.
-  - cbn -[DeserializePrimitives.Deserialize_prim_float].
+  - cbn -[Deserialize_prim_float].
     simpl_bytes.
     rewrite complete_class.
     reflexivity.
@@ -225,11 +225,11 @@ Proof.
 
     destruct p.
     destruct p.
-    + cbn -[Deserialize_prim_int].
+    + cbn -[Deserialize_SemiIntegral].
       simpl_bytes.
       rewrite complete_class.
       reflexivity.
-    + cbn -[DeserializePrimitives.Deserialize_prim_float].
+    + cbn -[Deserialize_prim_float].
       simpl_bytes.
       rewrite complete_class.
       reflexivity.

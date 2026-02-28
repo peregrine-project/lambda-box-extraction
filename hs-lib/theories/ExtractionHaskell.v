@@ -33,13 +33,10 @@ Extraction Blacklist config List String Nat Int Ast Universes UnivSubst Typing R
 
 
 Extract Constant PrimInt63.int => "Data.Int.Int64".
-Extract Constant SerializePrimitives.string_of_prim_int =>
-  "(\i -> Bytestring._String__of_string (Prelude.show i))".
+(* Extract Constant SerializePrimitives.string_of_prim_int =>
+  "(\i -> Bytestring._String__of_string (Prelude.show i))". *)
 
 Extract Constant PrimFloat.float => "Prelude.Double".
-(* TODO *)
-Extract Constant SerializePrimitives.string_of_prim_float =>
-  "(\s -> Prelude.error ""Float serialization not implemented"")".
 
 Extract Constant PrimString.string => "Prelude.String".
 Extract Constant SerializePrimitives.string_of_prim_string =>
