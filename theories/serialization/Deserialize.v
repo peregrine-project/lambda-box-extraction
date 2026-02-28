@@ -3,11 +3,11 @@ From Peregrine Require DeserializeEAst.
 From Peregrine Require DeserializeExAst.
 From Peregrine Require DeserializePAst.
 From Peregrine Require DeserializeConfig.
-From Peregrine Require CeresExtra.
+From CeresBS Require CeresDeserialize.
 
 
 
-Definition string_of_error := CeresExtra.string_of_error.
+Definition string_of_error := CeresDeserialize.string_of_error.
 
 Definition PAst_of_string := DeserializePAst.PAst_of_string.
 
