@@ -4,7 +4,9 @@ From MetaRocq.Erasure Require EProgram.
 From Malfunction Require Serialize.
 From Peregrine Require Import Config.
 From Peregrine Require Import ConfigUtils.
+From Peregrine Require Import DeserializeCommon.
 From Peregrine Require Import SerializeCommon.
+From Peregrine Require Import DeserializeConfig.
 From Peregrine Require Import SerializeConfig.
 From Peregrine Require Import SerializeCommonSound.
 From Peregrine Require Import CeresExtra.

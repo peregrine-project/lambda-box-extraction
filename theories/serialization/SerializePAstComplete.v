@@ -1,5 +1,6 @@
 From MetaRocq.Utils Require Import bytestring.
 From Peregrine Require Import PAst.
+From Peregrine Require Import DeserializePAst.
 From Peregrine Require Import SerializePAst.
 From Peregrine Require Import SerializeEAstComplete.
 From Peregrine Require Import SerializeExAstComplete.

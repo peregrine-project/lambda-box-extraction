@@ -1,7 +1,10 @@
+From Peregrine Require Import DeserializeCommon.
 From Peregrine Require Import SerializeCommon.
 From Peregrine Require Import SerializeCommonSound.
+From Peregrine Require Import DeserializePrimitives.
 From Peregrine Require Import SerializePrimitives.
 From Peregrine Require Import SerializePrimitivesSound.
+From Peregrine Require Import DeserializeEAst.
 From Peregrine Require Import SerializeEAst.
 From Peregrine Require Import CeresExtra.
 From Ceres Require Import Ceres.

@@ -1,4 +1,5 @@
 From Peregrine Require Import SerializeCommon.
+From Peregrine Require Import DeserializeCommon.
 From Peregrine Require Import CeresExtra.
 From Ceres Require Import CeresRoundtrip.
 From Ceres Require Import CeresSerialize.
