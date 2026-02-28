@@ -40,6 +40,10 @@ let certicoq_opts_t =
     let doc = "Optimization level." in
     Arg.(value & opt (some int) None & info ["O"] ~doc)
   in
+  let anf_conf_arg =
+    let doc = "ANF pipeline config." in
+    Arg.(value & opt (some int) None & info ["anf-conf"] ~doc)
+  in
   let prefix_arg =
     let doc = "Prefix to generated FFI." in
     Arg.(value & opt (some string) None & info ["prefix"] ~doc)
@@ -48,7 +52,7 @@ let certicoq_opts_t =
     let doc = "Name of the toplevel function." in
     Arg.(value & opt (some string) None & info ["body-name"] ~doc)
   in
-  Term.(const mk_certicoq_opts $ cps_arg $ c_args_arg $ o_level_arg $ prefix_arg $ body_name_arg)
+  Term.(const mk_certicoq_opts $ cps_arg $ c_args_arg $ o_level_arg $ anf_conf_arg $ prefix_arg $ body_name_arg)
 
 
 let sdocs = Manpage.s_common_options

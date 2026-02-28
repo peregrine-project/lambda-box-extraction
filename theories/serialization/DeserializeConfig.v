@@ -44,13 +44,13 @@ Instance Deserialize_elm_config' : Deserialize elm_config' :=
 Instance Deserialize_certicoq_config : Deserialize certicoq_config :=
   fun l e =>
     Deser.match_con "certicoq_config" []
-      [ ("certicoq_config", Deser.con5_ Build_certicoq_config) ]
+      [ ("certicoq_config", Deser.con6_ Build_certicoq_config) ]
       l e.
 
 Instance Deserialize_certicoq_config' : Deserialize certicoq_config' :=
   fun l e =>
     Deser.match_con "certicoq_config" []
-      [ ("certicoq_config", Deser.con5_ Build_certicoq_config') ]
+      [ ("certicoq_config", Deser.con6_ Build_certicoq_config') ]
       l e.
 
 Instance Deserialize_program_type : Deserialize Serialize.program_type :=

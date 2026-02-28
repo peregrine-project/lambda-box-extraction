@@ -71,6 +71,7 @@ Instance Serialize_certicoq_config : Serialize certicoq_config :=
      to_sexp (direct o);
      to_sexp (c_args o);
      to_sexp (o_level o);
+     to_sexp (anf_conf o);
      to_sexp (prefix o);
      to_sexp (body_name o)
     ]%sexp.
@@ -81,6 +82,7 @@ Instance Serialize_certicoq_config' : Serialize certicoq_config' :=
      to_sexp (direct' o);
      to_sexp (c_args' o);
      to_sexp (o_level' o);
+     to_sexp (anf_conf' o);
      to_sexp (prefix' o);
      to_sexp (body_name' o)
     ]%sexp.

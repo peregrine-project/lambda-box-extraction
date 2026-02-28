@@ -41,6 +41,7 @@ certicoqConfigConv CertiCoqConfig {..} =
     direct
     (fmap natConv cArgs)
     (fmap natConv oLevel)
+    (fmap natConv anfConf)
     (fmap stringConv prefix)
     (fmap stringConv bodyName)
 

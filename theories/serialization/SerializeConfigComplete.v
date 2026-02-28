@@ -71,7 +71,7 @@ Proof.
   intros l o.
   cbn -[Deserialize_bool Deserialize_ident Deserialize_SemiIntegral].
   simpl_bytes.
-  rewrite 5!complete_class.
+  rewrite 6!complete_class.
   destruct o; cbn.
   reflexivity.
 Qed.
@@ -82,7 +82,7 @@ Proof.
   intros l o.
   cbn -[Deserialize_bool Deserialize_ident Deserialize_SemiIntegral Deserialize_option].
   simpl_bytes.
-  rewrite 5!complete_class.
+  rewrite 6!complete_class.
   destruct o; cbn.
   reflexivity.
 Qed.

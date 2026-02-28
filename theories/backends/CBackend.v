@@ -18,6 +18,7 @@ Definition default_c_config := {|
   direct    := true;
   c_args    := 5;
   o_level   := 0;
+  anf_conf  := 0;
   prefix    := "";
   body_name := "body";
 |}.

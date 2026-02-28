@@ -117,9 +117,10 @@ Proof.
   apply sound_class in Ea2.
   apply sound_class in Ea3.
   apply sound_class in Ea4.
+  apply sound_class in Ea5.
   unfold to_sexp, Serialize_certicoq_config.
   cbn.
-  rewrite <- Ea0, <- Ea1, <- Ea2, <- Ea3, <- Ea4.
+  rewrite <- Ea0, <- Ea1, <- Ea2, <- Ea3, <- Ea4, Ea5.
   reflexivity.
 Qed.
 
@@ -136,9 +137,10 @@ Proof.
   apply sound_class in Ea2.
   apply sound_class in Ea3.
   apply sound_class in Ea4.
+  apply sound_class in Ea5.
   unfold to_sexp, Serialize_certicoq_config'.
   cbn.
-  rewrite <- Ea0, <- Ea1, <- Ea2, <- Ea3, <- Ea4.
+  rewrite <- Ea0, <- Ea1, <- Ea2, <- Ea3, <- Ea4, <- Ea5.
   reflexivity.
 Qed.
 

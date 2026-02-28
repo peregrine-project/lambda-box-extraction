@@ -36,6 +36,7 @@ Section BackendConfig.
     direct    : bool;
     c_args    : nat;
     o_level   : nat;
+    anf_conf  : nat;
     prefix    : string;
     body_name : string;
   }.

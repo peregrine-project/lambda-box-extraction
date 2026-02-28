@@ -34,6 +34,7 @@ data CertiCoqConfig = CertiCoqConfig
   { direct    :: Maybe Bool,
     cArgs     :: Maybe Int,
     oLevel    :: Maybe Int,
+    anfConf   :: Maybe Int,
     prefix    :: Maybe String,
     bodyName  :: Maybe String
   }

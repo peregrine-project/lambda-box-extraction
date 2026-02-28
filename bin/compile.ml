@@ -145,6 +145,7 @@ let mk_certicoq_config copts = {
   ConfigUtils.direct'    = Some (not copts.cps);
   ConfigUtils.c_args'    = Option.map Peregrine.Caml_nat.nat_of_caml_int copts.c_args;
   ConfigUtils.o_level'   = Option.map Peregrine.Caml_nat.nat_of_caml_int copts.o_level;
+  ConfigUtils.anf_conf'  = Option.map Peregrine.Caml_nat.nat_of_caml_int copts.anf_conf;
   ConfigUtils.prefix'    = Option.map bytestring_of_caml_string copts.prefix;
   ConfigUtils.body_name' = Option.map bytestring_of_caml_string copts.body_name;
 }

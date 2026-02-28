@@ -127,6 +127,7 @@ Section BackendConfigOptional.
     direct'    : option bool;
     c_args'    : option nat;
     o_level'   : option nat;
+    anf_conf'  : option nat;
     prefix'    : option string;
     body_name' : option string;
   }.
@@ -134,6 +135,7 @@ Section BackendConfigOptional.
     direct'    := None;
     c_args'    := None;
     o_level'   := None;
+    anf_conf'  := None;
     prefix'    := None;
     body_name' := None;
   |}.
@@ -142,6 +144,7 @@ Section BackendConfigOptional.
     direct    := get_optional o default_certicoq_config direct' direct;
     c_args    := get_optional o default_certicoq_config c_args' c_args;
     o_level   := get_optional o default_certicoq_config o_level' o_level;
+    anf_conf  := get_optional o default_certicoq_config anf_conf' anf_conf;
     prefix    := get_optional o default_certicoq_config prefix' prefix;
     body_name := get_optional o default_certicoq_config body_name' body_name;
   |}.
