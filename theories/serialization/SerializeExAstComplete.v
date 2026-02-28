@@ -9,7 +9,6 @@ From Peregrine Require Import SerializeEAst.
 From Peregrine Require Import SerializeEAstComplete.
 From Peregrine Require Import DeserializeExAst.
 From Peregrine Require Import SerializeExAst.
-From Peregrine Require Import CeresExtra.
 From CeresBS Require Import CeresRoundtrip.
 From CeresBS Require Import CeresSerialize.
 From CeresBS Require Import CeresDeserialize.

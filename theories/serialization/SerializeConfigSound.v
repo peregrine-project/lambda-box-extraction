@@ -9,7 +9,6 @@ From Peregrine Require Import SerializeCommon.
 From Peregrine Require Import DeserializeConfig.
 From Peregrine Require Import SerializeConfig.
 From Peregrine Require Import SerializeCommonSound.
-From Peregrine Require Import CeresExtra.
 From Stdlib Require Import List.
 From CeresBS Require Import Ceres.
 

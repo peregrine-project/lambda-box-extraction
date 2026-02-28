@@ -2,7 +2,6 @@ From MetaRocq.Utils Require Import bytestring.
 From MetaRocq.Common Require Import BasicAst.
 From MetaRocq.Common Require Import Kernames.
 From MetaRocq.Common Require Import Universes.
-From Peregrine Require Import CeresExtra.
 From Stdlib Require Import List.
 From CeresBS Require Import Ceres.
 

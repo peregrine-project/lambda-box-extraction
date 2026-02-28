@@ -1,6 +1,5 @@
 From Peregrine Require Import SerializeCommon.
 From Peregrine Require Import DeserializeCommon.
-From Peregrine Require Import CeresExtra.
 From CeresBS Require Import CeresRoundtrip.
 From CeresBS Require Import CeresSerialize.
 From CeresBS Require Import CeresDeserialize.

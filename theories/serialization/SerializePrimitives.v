@@ -7,7 +7,6 @@ From CeresBS Require Import Ceres.
 From MetaRocq.Utils Require Import bytestring.
 From MetaRocq.Common Require Import Primitive.
 From MetaRocq.Erasure Require Import EPrimitive.
-From Peregrine Require Import CeresExtra.
 
 Import ListNotations.
 Local Open Scope bs_scope.

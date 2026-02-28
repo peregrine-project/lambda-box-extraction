@@ -8,7 +8,6 @@ From Peregrine Require Import DeserializeExAst.
 From Peregrine Require Import SerializeExAst.
 From Peregrine Require Import SerializeEAstSound.
 From Peregrine Require Import SerializeExAstSound.
-From Peregrine Require Import CeresExtra.
 From Stdlib Require Import List.
 From CeresBS Require Import Ceres.
 

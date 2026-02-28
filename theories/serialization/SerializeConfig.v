@@ -5,7 +5,6 @@ From Peregrine Require Import ERemapInductives.
 From Peregrine Require Import Config.
 From Peregrine Require Import ConfigUtils.
 From Peregrine Require Import SerializeCommon.
-From Peregrine Require Import CeresExtra.
 From Stdlib Require Import List.
 From CeresBS Require Import Ceres.
 

@@ -2,11 +2,9 @@ open Common
 open Peregrine.Caml_bytestring
 
 module Datatypes = Peregrine.Datatypes
-module CeresExtra = Peregrine.CeresExtra
 module Config = Peregrine.Config1
 module ConfigUtils = Peregrine.ConfigUtils
 module Pipeline = Peregrine.Pipeline2
-module CompM = Peregrine.CompM
 module ResultMonad = Peregrine.ResultMonad
 module Cps = Peregrine.Cps
 

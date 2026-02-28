@@ -2,7 +2,6 @@ From MetaRocq.Utils Require Import bytestring.
 From Peregrine Require Import PAst.
 From Peregrine Require Import DeserializeEAst.
 From Peregrine Require Import DeserializeExAst.
-From Peregrine Require Import CeresExtra.
 From Stdlib Require Import List.
 From CeresBS Require Import Ceres.
 

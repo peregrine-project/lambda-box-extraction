@@ -4,7 +4,6 @@ From Peregrine Require Import DeserializePAst.
 From Peregrine Require Import SerializePAst.
 From Peregrine Require Import SerializeEAstComplete.
 From Peregrine Require Import SerializeExAstComplete.
-From Peregrine Require Import CeresExtra.
 From Stdlib Require Import List.
 From CeresBS Require Import Ceres.
 
