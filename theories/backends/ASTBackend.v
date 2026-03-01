@@ -9,6 +9,7 @@ From Peregrine Require Import PAst.
 From Peregrine Require Import CertiCoqBackend.
 From Peregrine Require SerializePAst.
 From Peregrine Require SerializeLambdaBoxMut.
+From Peregrine Require SerializeLambdaBoxLocal.
 From MetaRocq.Erasure.Typed Require Import ResultMonad.
 
 Import MonadNotation.
@@ -68,7 +69,16 @@ Definition extract_local_ast (remaps : constant_remappings)
                              (opts : certicoq_config)
                              (p : EAst.program)
                             : result string string :=
-  Ok "TODO".
+  let config := mk_opts opts in
+  let prs := mk_prims remaps in
+  let (res, _) :=
+    run_pipeline EAst.program _ config p (local_pipeline prs) in
+  match res with
+  | compM.Ret s =>
+    Ok (SerializeLambdaBoxLocal.string_of_LambdaBoxLocalTerm s)
+  | compM.Err s => Err s
+  end.
+
 
 Definition extract_anf_ast (remaps : constant_remappings)
                            (opts : certicoq_config)
