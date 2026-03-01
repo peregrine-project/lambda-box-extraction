@@ -7,7 +7,8 @@ From Peregrine Require Import Config.
 From Peregrine Require Import Utils.
 From Peregrine Require Import PAst.
 From Peregrine Require Import CertiCoqBackend.
-From Peregrine Require Serialize.
+From Peregrine Require SerializePAst.
+From Peregrine Require SerializeLambdaBoxMut.
 From MetaRocq.Erasure.Typed Require Import ResultMonad.
 
 Import MonadNotation.
@@ -43,17 +44,25 @@ Definition ast_phases := {|
 
 Definition extract_untyped_ast (p : EAst.program)
                                : result string string :=
-  Ok (Serialize.string_of_PAst (Untyped p.1 (Some p.2))).
+  Ok (SerializePAst.string_of_PAst (Untyped p.1 (Some p.2))).
 
 Definition extract_typed_ast (p : ExAst.global_env)
                              : result string string :=
-  Ok (Serialize.string_of_PAst (Typed p None)).
+  Ok (SerializePAst.string_of_PAst (Typed p None)).
 
 Definition extract_mut_ast (remaps : constant_remappings)
                            (opts : certicoq_config)
                            (p : EAst.program)
                            : result string string :=
-  Ok "TODO".
+  let config := mk_opts opts in
+  let prs := mk_prims remaps in
+  let (res, _) :=
+    run_pipeline EAst.program _ config p (mut_pipeline prs) in
+  match res with
+  | compM.Ret s =>
+    Ok (@SerializeLambdaBoxMut.string_of_Program _ SerializeLambdaBoxMut.Serialize_Term s)
+  | compM.Err s => Err s
+  end.
 
 Definition extract_local_ast (remaps : constant_remappings)
                              (opts : certicoq_config)

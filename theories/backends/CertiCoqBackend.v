@@ -115,14 +115,18 @@ Definition compile_LambdaBoxMut
 
 Definition next_id := 100%positive.
 
-Definition mut_pipeline (p : EAst.program) prs :=
+Definition mut_pipeline prs (p : EAst.program) :=
+  let env := p.1 in
+  '(prs, next_id) <- register_prims prs next_id env ;;
   o <- get_options;;
   (* Translate lambda_box -> lambda_boxmut *)
   p_mut <- compile_LambdaBoxMut p;;
   check_axioms prs p_mut;;
   ret p_mut.
 
-Definition local_pipeline (p : EAst.program) prs :=
+Definition local_pipeline prs (p : EAst.program) :=
+  let env := p.1 in
+  '(prs, next_id) <- register_prims prs next_id env ;;
   o <- get_options;;
   (* Translate lambda_box -> lambda_boxmut *)
   p_mut <- compile_LambdaBoxMut p;;
@@ -131,7 +135,9 @@ Definition local_pipeline (p : EAst.program) prs :=
   p_local <- compile_LambdaBoxLocal prs p_mut;;
   ret p_local.
 
-Definition anf_pipeline' (p : EAst.program) prs next_id :=
+Definition anf_pipeline' prs (p : EAst.program) :=
+  let env := p.1 in
+  '(prs, next_id) <- register_prims prs next_id env ;;
   o <- get_options;;
   (* Translate lambda_box -> lambda_boxmut *)
   p_mut <- compile_LambdaBoxMut p;;
@@ -143,7 +149,15 @@ Definition anf_pipeline' (p : EAst.program) prs next_id :=
   p_anf <- local_to_anf_trans next_id prs p_local;;
   ret p_anf.
 
-Definition anf_pipeline (p : EAst.program) prs next_id :=
+Definition id_trans {A : Type} : CertiCoqTrans A A :=
+  fun p => ret p.
+
+Definition anf_pipeline {A : Type}
+      (f : list ((((Kernames.kername * string) * bool) * nat) * positive) -> CertiCoqTrans toplevel.LambdaANF_FullTerm A)
+      prs
+      (p : EAst.program) :=
+  let env := p.1 in
+  '(prs, next_id) <- register_prims prs next_id env ;;
   o <- get_options;;
   (* Translate lambda_box -> lambda_boxmut *)
   p_mut <- compile_LambdaBoxMut p;;
@@ -159,4 +173,4 @@ Definition anf_pipeline (p : EAst.program) prs next_id :=
     then compile_LambdaANF_debug (* For debugging intermediate states of the λanf pipeline *)
     else compile_LambdaANF in
   p_anf <- anf_trans next_id p_anf;;
-  ret p_anf.
+  f prs p_anf.

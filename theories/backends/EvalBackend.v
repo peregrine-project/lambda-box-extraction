@@ -41,22 +41,13 @@ Definition eval_phases := {|
 
 
 Definition eval_anf_pipeline prs fuel (p : EAst.program) :=
-  let env := p.1 in
-  '(prs, next_id) <- register_prims prs next_id env ;;
-  p_anf <- anf_pipeline p prs next_id;;
-  (* Eval using ANF evaluator *)
-  p_v <- eval_anf fuel p_anf;;
-  ret p_v.
+  anf_pipeline (fun _ => eval_anf fuel) prs p.
 
 Definition eval_mut_pipeline prs fuel (p : EAst.program) :=
-  let env := p.1 in
-  '(prs, next_id) <- register_prims prs next_id env ;;
-  p_anf <- mut_pipeline p prs;;
+  p_anf <- mut_pipeline prs p;;
   (* Eval using mut evaluator *)
   p_v <- eval_mut fuel p_anf;;
   ret p_v.
-
-
 
 Definition eval (remaps : constant_remappings)
                 (custom_attr : custom_attributes)

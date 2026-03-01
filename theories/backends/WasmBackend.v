@@ -37,16 +37,10 @@ Definition wasm_phases := {|
 
 
 Definition wasm_pipeline prs (p : EAst.program) :=
-  let env := p.1 in
-  '(prs, next_id) <- register_prims prs next_id env ;;
-  p_anf <- anf_pipeline p prs next_id;;
-  (* Compile lambda_anf -> WASM *)
-  p_wasm <- compile_LambdaANF_to_Wasm prs p_anf;;
-  ret p_wasm.
+  anf_pipeline compile_LambdaANF_to_Wasm prs p.
 
 Definition print_wasm p : string :=
   String.parse (binary_of_module p).
-
 
 Definition extract_wasm (remaps : constant_remappings)
                         (custom_attr : custom_attributes)
