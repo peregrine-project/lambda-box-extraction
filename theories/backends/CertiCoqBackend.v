@@ -60,7 +60,7 @@ Definition find_global_decl_arity (gd : EAst.global_decl) : error nat :=
   | EAst.ConstantDecl bd =>
     match (EAst.cst_body bd) with
     | Some bd => Ret (find_arity bd)
-    | None => Err ("Found empty ConstantDecl body") (* TODO *)
+    | None => Err ("Found empty ConstantDecl body")
     end
   | EAst.InductiveDecl _ =>
     Err ("Expected ConstantDecl but found InductiveDecl")

@@ -3,9 +3,7 @@ From Peregrine Require LambdaBoxToWasm.
 From Peregrine Require LambdaBoxToRust.
 From Peregrine Require LambdaBoxToElm.
 From Peregrine Require LambdaBoxToC.
-Local Unset Universe Checking. (* TODO: fix universe inconsistency *)
 From Peregrine Require LambdaBoxToOCaml.
-Local Set Universe Checking.
 
 
 Definition l_box_to_wasm :=

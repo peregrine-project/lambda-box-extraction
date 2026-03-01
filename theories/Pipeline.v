@@ -5,6 +5,7 @@ From Peregrine Require Import ConfigUtils.
 From Peregrine Require Import Transforms.
 From Peregrine Require Import Erasure.
 From Peregrine Require Import CheckWf.
+From Peregrine Require Import Utils.
 From Peregrine Require RustBackend.
 From Peregrine Require ElmBackend.
 From Peregrine Require OCamlBackend.
@@ -70,10 +71,6 @@ Definition check_wf (p : PAst) : result unit string :=
   | Typed env None =>
       @CheckWfExAst.check_wf_typed_program EWellformed.all_env_flags env
   end.
-
-(* TODO: move *)
-Definition assert {E : Type} (b : bool) (e : E) : result unit E :=
-  if b then Ok tt else Err e.
 
 Definition validate_ast_type (c : config) (p : PAst) : result unit string :=
   match c.(backend_opts) with

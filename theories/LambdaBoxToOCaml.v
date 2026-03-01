@@ -10,7 +10,6 @@ Import ListNotations.
 Definition extract_names (t : EAst.term) : list ident :=
   match t with
   | EAst.tConst kn => [Kernames.string_of_kername kn]
-  (* | EAst.tApp (EAst.tConstruct _ _ _) [_ ; _ ; l ; Ast.tConst kn _ ] => (Kernames.string_of_kername kn) :: extract_names l *) (* TODO? *)
   | _ => []
   end.
 
@@ -39,7 +38,7 @@ Qed.
 Axiom trust_coq_kernel : forall p, pre malfunction_pipeline p.
 
 Definition box_to_ocaml (p : EAst.program) :=
-  let config := default_malfunction_config in (* TODO: handle constructor reordering *)
+  let config := default_malfunction_config in
   let nms := extract_names (snd p) in
   let p := run malfunction_pipeline p (trust_coq_kernel p) in
   print_program config nms p.

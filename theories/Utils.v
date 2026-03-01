@@ -1,5 +1,6 @@
 From Stdlib Require Import List.
 From MetaRocq.Utils Require Import bytestring.
+From MetaRocq.Erasure.Typed Require ResultMonad.
 
 Import ListNotations.
 
@@ -41,3 +42,6 @@ Definition split_name (s : string) : string * string :=
   let l := split "." s in
   let '(l, s) := last l "" in
   (String.concat "." l, s).
+
+Definition assert {E : Type} (b : bool) (e : E) : ResultMonad.result unit E :=
+  if b then ResultMonad.Ok tt else ResultMonad.Err e.

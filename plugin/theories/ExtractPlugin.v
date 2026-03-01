@@ -37,7 +37,6 @@ Extraction Blacklist
 Extract Constant MetaRocq.Common.Transform.time =>
   "(fun c f x -> f x)".
 
-(* TODO: validate prim string implementations *)
 Extract Constant SerializePrimitives.string_of_prim_string =>
   "(fun f -> f |> Pstring.to_string |> Caml_bytestring.bytestring_of_caml_string)".
 Extract Constant DeserializePrimitives.prim_string_of_string =>

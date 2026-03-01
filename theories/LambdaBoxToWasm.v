@@ -16,7 +16,7 @@ Definition print_wasm p := (String.parse (binary_of_module p)).
 
 Definition box_to_wasm (p : EAst.program) :=
   let genv := fst p in
-  '(prs, next_id) <- register_prims next_id genv ;; (* TODO: better prim registration *)
+  '(prs, next_id) <- register_prims next_id genv ;;
   p_anf <- anf_pipeline p prs next_id;;
   (* Compile lambda_anf -> WASM *)
   p_wasm <- compile_LambdaANF_to_Wasm prs p_anf;;

@@ -13,7 +13,7 @@ Definition next_id := 100%positive.
 
 Definition box_to_c (p : EAst.program) :=
   let genv := fst p in
-  '(prs, next_id) <- register_prims next_id genv ;; (* TODO: better prim registration *)
+  '(prs, next_id) <- register_prims next_id genv ;;
   p_anf <- anf_pipeline p prs next_id;;
   compile_Clight prs p_anf.
 

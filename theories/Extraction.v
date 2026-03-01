@@ -41,7 +41,6 @@ Extraction Blacklist config List String Nat Int Ast Universes UnivSubst Typing R
 Extract Constant MetaRocq.Common.Transform.time =>
   "(fun c f x -> f x)".
 
-(* TODO: validate prim string implementations *)
 Extract Constant SerializePrimitives.string_of_prim_string =>
   "(fun f -> f |> Pstring.to_string |> Caml_bytestring.bytestring_of_caml_string)".
   (* "(fun s -> failwith "" "")". *)

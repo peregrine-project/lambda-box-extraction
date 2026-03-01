@@ -384,10 +384,6 @@ Definition elm_sanitizer (s : utf8_string) : string := ocaml_sanitizer s.
 Definition c_sanitizer (s : utf8_string) : string := ocaml_sanitizer s.
 Definition wasm_sanitizer (s : utf8_string) : string := ocaml_sanitizer s.
 
-(* TODO: move to Unicode.v *)
-Local Declare Scope utf8_scope.
-Local Delimit Scope utf8_scope with utf8_scope.
-Local Notation "x :: y" := (String (ascii x) y) : utf8_scope.
 
 Definition rust_delim : utf8_codepoint :=
   (* Ֆ U+0556 *)
@@ -478,35 +474,6 @@ Definition escape_rust_char (f : utf8_codepoint -> bool) (x : utf8_codepoint) : 
   if f x
   then String x EmptyString
   else String rust_delim (rust_esc x).
-
-(* TODO: move to Unicode.v *)
-Fixpoint utf8_map (f : utf8_codepoint -> utf8_codepoint) (s : utf8_string) : utf8_string :=
-  match s with
-    | EmptyString => EmptyString
-    | String x xs => String (f x) (utf8_map f xs)
-  end%utf8_scope.
-
-(* TODO: move to Unicode.v *)
-Fixpoint utf8_append (x y : utf8_string) : utf8_string :=
-  match x with
-  | EmptyString => y
-  | String x xs => String x (utf8_append xs y)
-  end.
-
-(* TODO: move to Unicode.v *)
-Fixpoint utf8_concat (sep : utf8_string) (s : list utf8_string) : utf8_string :=
-  match s with
-  | nil => EmptyString
-  | cons s nil => s
-  | cons s xs => utf8_append s (utf8_append sep (utf8_concat sep xs))
-  end.
-
-(* TODO: move to Unicode.v *)
-Fixpoint utf8_concat_map (f : utf8_codepoint -> utf8_string) (s : utf8_string) : utf8_string :=
-  match s with
-  | EmptyString => EmptyString
-  | String x xs => utf8_append (f x) (utf8_concat_map f xs)
-  end.
 
 Definition rust_sanitizer_aux (s : utf8_string) : utf8_string :=
   if is_rust_keyword s then ("r" :: "#" :: s)%utf8_scope else
