@@ -4,12 +4,13 @@ From MetaRocq.Erasure Require EProgram.
 From Malfunction Require Serialize.
 From Peregrine Require Import Config.
 From Peregrine Require Import ConfigUtils.
+From Peregrine Require Import DeserializeCommon.
 From Peregrine Require Import SerializeCommon.
+From Peregrine Require Import DeserializeConfig.
 From Peregrine Require Import SerializeConfig.
 From Peregrine Require Import SerializeCommonSound.
-From Peregrine Require Import CeresExtra.
 From Stdlib Require Import List.
-From Ceres Require Import Ceres.
+From CeresBS Require Import Ceres.
 
 
 Import ListNotations.
@@ -116,9 +117,10 @@ Proof.
   apply sound_class in Ea2.
   apply sound_class in Ea3.
   apply sound_class in Ea4.
+  apply sound_class in Ea5.
   unfold to_sexp, Serialize_certicoq_config.
   cbn.
-  rewrite <- Ea0, <- Ea1, <- Ea2, <- Ea3, <- Ea4.
+  rewrite <- Ea0, <- Ea1, <- Ea2, <- Ea3, <- Ea4, Ea5.
   reflexivity.
 Qed.
 
@@ -135,9 +137,10 @@ Proof.
   apply sound_class in Ea2.
   apply sound_class in Ea3.
   apply sound_class in Ea4.
+  apply sound_class in Ea5.
   unfold to_sexp, Serialize_certicoq_config'.
   cbn.
-  rewrite <- Ea0, <- Ea1, <- Ea2, <- Ea3, <- Ea4.
+  rewrite <- Ea0, <- Ea1, <- Ea2, <- Ea3, <- Ea4, <- Ea5.
   reflexivity.
 Qed.
 
@@ -207,12 +210,148 @@ Proof.
   exact He.
 Qed.
 
+Instance Sound_eval_config : SoundClass eval_config.
+Proof.
+  unfold SoundClass, Sound.
+  intros l e a He.
+  apply sound_match_con in He.
+  destruct He as [He | He]; elim_Exists He.
+  destruct He as [es [<- He]].
+  sound_field He.
+  apply sound_class in Ea0.
+  apply sound_class in Ea1.
+  apply sound_class in Ea2.
+  unfold to_sexp, Serialize_eval_config.
+  cbn.
+  rewrite <- Ea0, <- Ea1, <- Ea2.
+  reflexivity.
+Qed.
+
+Instance Sound_eval_config' : SoundClass eval_config'.
+Proof.
+  unfold SoundClass, Sound.
+  intros l e a He.
+  apply sound_match_con in He.
+  destruct He as [He | He]; elim_Exists He.
+  destruct He as [es [<- He]].
+  sound_field He.
+  apply sound_class in Ea0.
+  apply sound_class in Ea1.
+  apply sound_class in Ea2.
+  unfold to_sexp, Serialize_eval_config'.
+  cbn.
+  rewrite <- Ea0, <- Ea1, <- Ea2.
+  reflexivity.
+Qed.
+
+Instance Sound_ASTType : SoundClass ASTType.
+Proof.
+  unfold SoundClass, Sound.
+  intros l e a He.
+  apply sound_match_con in He.
+  destruct He as [He | He]; elim_Exists He.
+  - destruct He as [es ?]; subst.
+    reflexivity.
+  - destruct He as [es ?]; subst.
+    reflexivity.
+  - destruct He as [es [<- He]].
+    sound_field He.
+    apply sound_class in Ea1.
+    rewrite <- Ea1.
+    reflexivity.
+  - destruct He as [es [<- He]].
+    sound_field He.
+    apply sound_class in Ea1.
+    rewrite <- Ea1.
+    reflexivity.
+  - destruct He as [es [<- He]].
+    sound_field He.
+    apply sound_class in Ea1.
+    rewrite <- Ea1.
+    reflexivity.
+  - destruct He as [es [<- He]].
+    sound_field He.
+    apply sound_class in Ea1.
+    rewrite <- Ea1.
+    reflexivity.
+Qed.
+
+Instance Sound_ASTType' : SoundClass ASTType'.
+Proof.
+  unfold SoundClass, Sound.
+  intros l e a He.
+  apply sound_match_con in He.
+  destruct He as [He | He]; elim_Exists He.
+  - destruct He as [es ?]; subst.
+    reflexivity.
+  - destruct He as [es ?]; subst.
+    reflexivity.
+  - destruct He as [es [<- He]].
+    sound_field He.
+    apply sound_class in Ea1.
+    rewrite <- Ea1.
+    reflexivity.
+  - destruct He as [es [<- He]].
+    sound_field He.
+    apply sound_class in Ea1.
+    rewrite <- Ea1.
+    reflexivity.
+  - destruct He as [es [<- He]].
+    sound_field He.
+    apply sound_class in Ea1.
+    rewrite <- Ea1.
+    reflexivity.
+  - destruct He as [es [<- He]].
+    sound_field He.
+    apply sound_class in Ea1.
+    rewrite <- Ea1.
+    reflexivity.
+Qed.
+
+Instance Sound_ast_config : SoundClass ast_config.
+Proof.
+  unfold SoundClass, Sound.
+  intros l e a He.
+  apply sound_match_con in He.
+  destruct He as [He | He]; elim_Exists He.
+  destruct He as [es [<- He]].
+  sound_field He.
+  apply sound_class in Ea1.
+  rewrite <- Ea1.
+  cbn.
+  reflexivity.
+Qed.
+
+Instance Sound_ast_config' : SoundClass ast_config'.
+Proof.
+  unfold SoundClass, Sound.
+  intros l e a He.
+  apply sound_match_con in He.
+  destruct He as [He | He]; elim_Exists He.
+  destruct He as [es [<- He]].
+  sound_field He.
+  apply sound_class in Ea1.
+  rewrite <- Ea1.
+  cbn.
+  reflexivity.
+Qed.
+
 Instance Sound_backend_config : SoundClass backend_config.
 Proof.
   unfold SoundClass, Sound.
   intros l e n He.
   apply sound_match_con in He.
   destruct He as [He | He]; elim_Exists He.
+  - destruct He as [es [<- He]].
+    sound_field He.
+    apply sound_class in Ea1.
+    rewrite <- Ea1.
+    reflexivity.
+  - destruct He as [es [<- He]].
+    sound_field He.
+    apply sound_class in Ea1.
+    rewrite <- Ea1.
+    reflexivity.
   - destruct He as [es [<- He]].
     sound_field He.
     apply sound_class in Ea1.
@@ -251,6 +390,16 @@ Proof.
   intros l e n He.
   apply sound_match_con in He.
   destruct He as [He | He]; elim_Exists He.
+  - destruct He as [es [<- He]].
+    sound_field He.
+    apply sound_class in Ea1.
+    rewrite <- Ea1.
+    reflexivity.
+  - destruct He as [es [<- He]].
+    sound_field He.
+    apply sound_class in Ea1.
+    rewrite <- Ea1.
+    reflexivity.
   - destruct He as [es [<- He]].
     sound_field He.
     apply sound_class in Ea1.

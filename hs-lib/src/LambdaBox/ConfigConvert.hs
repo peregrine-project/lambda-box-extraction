@@ -41,6 +41,7 @@ certicoqConfigConv CertiCoqConfig {..} =
     direct
     (fmap natConv cArgs)
     (fmap natConv oLevel)
+    (fmap natConv anfConf)
     (fmap stringConv prefix)
     (fmap stringConv bodyName)
 
@@ -58,6 +59,27 @@ ocamlConfigConv OCamlConfig {..} =
 cakemlConfigConv :: CakeMLConfig -> ConfigUtils.Coq_cakeml_config'
 cakemlConfigConv t = t
 
+-- Eval backend configuration
+evalConfigConv :: EvalConfig -> ConfigUtils.Coq_eval_config'
+evalConfigConv EvalConfig {..} =
+  ConfigUtils.Build_eval_config'
+    (fmap certicoqConfigConv copts)
+    (natConv fuel)
+    evalAnf
+
+-- AST backend configuration
+astTypeConv :: ASTType -> ConfigUtils.ASTType'
+astTypeConv LambdaBox = ConfigUtils.LambdaBox'
+astTypeConv LambdaBoxTyped = ConfigUtils.LambdaBoxTyped'
+astTypeConv (LambdaBoxMut c) = ConfigUtils.LambdaBoxMut' (fmap certicoqConfigConv c)
+astTypeConv (LambdaBoxLocal c) = ConfigUtils.LambdaBoxLocal' (fmap certicoqConfigConv c)
+astTypeConv (LambdaANF c) = ConfigUtils.LambdaANF' (fmap certicoqConfigConv c)
+astTypeConv (LambdaANFC c) = ConfigUtils.LambdaANFC' (fmap certicoqConfigConv c)
+
+astConfigConv :: ASTConfig -> ConfigUtils.Coq_ast_config'
+astConfigConv ASTConfig {..} =
+  astTypeConv astType
+
 -- Backend configuration
 backendConfigConv :: BackendConfig -> ConfigUtils.Coq_backend_config'
 backendConfigConv (Rust c) = ConfigUtils.Rust' $ rustConfigConv c
@@ -66,6 +88,8 @@ backendConfigConv (C c) = ConfigUtils.C' $ certicoqConfigConv c
 backendConfigConv (Wasm c) = ConfigUtils.Wasm' $ certicoqConfigConv c
 backendConfigConv (OCaml c) = ConfigUtils.OCaml' $ ocamlConfigConv c
 backendConfigConv (CakeML c) = ConfigUtils.CakeML' $ cakemlConfigConv c
+backendConfigConv (Eval c) = ConfigUtils.Eval' $ evalConfigConv c
+backendConfigConv (AST c) = ConfigUtils.AST' $ astConfigConv c
 
 -- Inductive remapping
 remappedInductiveConv :: RemappedInductive -> Config0.Coq_remapped_inductive
@@ -82,14 +106,14 @@ extractInductiveConv ExtractInductive {..} =
     (kerNameConv elim)
 
 remapInductiveConv :: RemapInductive -> Config0.Coq_remap_inductive
-remapInductiveConv (KnIndRemap r) =
-  Config0.KnIndRemap $ extractInductiveConv r
-remapInductiveConv (StringIndRemap r) =
-  Config0.StringIndRemap $ remappedInductiveConv r
+remapInductiveConv (KnIndRemap kn r) =
+  Config0.KnIndRemap (kerNameConv kn) (map extractInductiveConv r)
+remapInductiveConv (StringIndRemap ind r) =
+  Config0.StringIndRemap (inductiveConv ind) (remappedInductiveConv r)
 
 inductiveRemappingsConv :: InductiveRemappings -> Config0.Coq_inductive_remappings
 inductiveRemappingsConv l =
-  map (\x -> (inductiveConv $ fst x, remapInductiveConv $ snd x)) l
+  map remapInductiveConv l
 
 -- Constant remapping
 remappedConstantConv :: RemappedConstant -> Config0.Coq_remapped_constant

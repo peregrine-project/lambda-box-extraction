@@ -34,6 +34,7 @@ data CertiCoqConfig = CertiCoqConfig
   { direct    :: Maybe Bool,
     cArgs     :: Maybe Int,
     oLevel    :: Maybe Int,
+    anfConf   :: Maybe Int,
     prefix    :: Maybe String,
     bodyName  :: Maybe String
   }
@@ -51,6 +52,26 @@ data OCamlConfig = OCamlConfig
 -- CakeML backend configuration
 type CakeMLConfig = ()
 
+-- Eval backend configuration
+data EvalConfig = EvalConfig
+  { copts    :: Maybe CertiCoqConfig,
+    fuel     :: Int,
+    evalAnf :: Bool
+  }
+
+-- AST backend configuration
+data ASTType
+  = LambdaBox
+  | LambdaBoxTyped
+  | LambdaBoxMut (Maybe CertiCoqConfig)
+  | LambdaBoxLocal (Maybe CertiCoqConfig)
+  | LambdaANF (Maybe CertiCoqConfig)
+  | LambdaANFC (Maybe CertiCoqConfig)
+
+data ASTConfig = ASTConfig
+  { astType :: ASTType
+  }
+
 -- Backend configuration
 -- States the backend that Peregrine should use along
 -- with with options specific to that backend
@@ -61,6 +82,8 @@ data BackendConfig
   | Wasm CertiCoqConfig
   | OCaml OCamlConfig
   | CakeML CakeMLConfig
+  | Eval EvalConfig
+  | AST ASTConfig
 
 
 
@@ -77,10 +100,10 @@ data ExtractInductive = ExtractInductive
   }
 
 data RemapInductive
-  = KnIndRemap ExtractInductive
-  | StringIndRemap RemappedInductive
+  = KnIndRemap LambdaBox.LambdaBox.KerName [ExtractInductive]
+  | StringIndRemap LambdaBox.LambdaBox.Inductive RemappedInductive
 
-type InductiveRemappings = [(LambdaBox.LambdaBox.Inductive, RemapInductive)]
+type InductiveRemappings = [RemapInductive]
 
 -- Constant remapping
 data RemappedConstant = RemappedConstant

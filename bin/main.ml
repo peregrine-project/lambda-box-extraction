@@ -40,6 +40,10 @@ let certicoq_opts_t =
     let doc = "Optimization level." in
     Arg.(value & opt (some int) None & info ["O"] ~doc)
   in
+  let anf_conf_arg =
+    let doc = "ANF pipeline config." in
+    Arg.(value & opt (some int) None & info ["anf-conf"] ~doc)
+  in
   let prefix_arg =
     let doc = "Prefix to generated FFI." in
     Arg.(value & opt (some string) None & info ["prefix"] ~doc)
@@ -48,7 +52,26 @@ let certicoq_opts_t =
     let doc = "Name of the toplevel function." in
     Arg.(value & opt (some string) None & info ["body-name"] ~doc)
   in
-  Term.(const mk_certicoq_opts $ cps_arg $ c_args_arg $ o_level_arg $ prefix_arg $ body_name_arg)
+  Term.(const mk_certicoq_opts $ cps_arg $ c_args_arg $ o_level_arg $ anf_conf_arg $ prefix_arg $ body_name_arg)
+
+let erasure_opts_t =
+  let betared_arg =
+    let doc = "Perform beta reduction." in
+    Arg.(value & opt (some bool) None & info ["betared"] ~doc)
+  in
+  let unbox_arg =
+    let doc = "Unbox singleton types." in
+    Arg.(value & opt (some bool) None & info ["unboxing"] ~doc)
+  in
+  let dearg_ctors_arg =
+    let doc = "Dearg constructors." in
+    Arg.(value & opt (some bool) None & info ["dearg-ctors"] ~doc)
+  in
+  let dearg_consts_arg =
+    let doc = "Dearg constants." in
+    Arg.(value & opt (some bool) None & info ["dearg-consts"] ~doc)
+  in
+  Term.(const mk_erasure_opts $ betared_arg $ unbox_arg $ dearg_ctors_arg $ dearg_consts_arg)
 
 
 let sdocs = Manpage.s_common_options
@@ -130,7 +153,7 @@ let rust_cmd =
     `Blocks help_secs; ]
   in
   let info = Cmd.info "rust" ~doc ~sdocs ~man in
-  Cmd.v info Term.(const compile_rust $ copts_t $ program_file)
+  Cmd.v info Term.(const compile_rust $ copts_t $ erasure_opts_t $ program_file)
 
 let elm_cmd =
   let program_file =
@@ -145,7 +168,7 @@ let elm_cmd =
     `Blocks help_secs; ]
   in
   let info = Cmd.info "elm" ~doc ~sdocs ~man in
-  Cmd.v info Term.(const compile_elm $ copts_t $ program_file)
+  Cmd.v info Term.(const compile_elm $ copts_t $ erasure_opts_t $ program_file)
 
 let ocaml_cmd =
   let program_file =
@@ -160,7 +183,7 @@ let ocaml_cmd =
     `Blocks help_secs; ]
   in
   let info = Cmd.info "ocaml" ~doc ~sdocs ~man in
-  Cmd.v info Term.(const compile_ocaml $ copts_t $ program_file)
+  Cmd.v info Term.(const compile_ocaml $ copts_t $ erasure_opts_t $ program_file)
 
 let cakeml_cmd =
   let program_file =
@@ -175,7 +198,7 @@ let cakeml_cmd =
     `Blocks help_secs; ]
   in
   let info = Cmd.info "cakeml" ~doc ~sdocs ~man in
-  Cmd.v info Term.(const compile_cakeml $ copts_t $ program_file)
+  Cmd.v info Term.(const compile_cakeml $ copts_t $ erasure_opts_t $ program_file)
 
 let c_cmd =
   let program_file =
@@ -190,7 +213,7 @@ let c_cmd =
     `Blocks help_secs; ]
   in
   let info = Cmd.info "c" ~doc ~sdocs ~man in
-  Cmd.v info Term.(const compile_c $ copts_t $ certicoq_opts_t $ program_file)
+  Cmd.v info Term.(const compile_c $ copts_t $ certicoq_opts_t $ erasure_opts_t $ program_file)
 
 let wasm_cmd =
   let program_file =
@@ -205,13 +228,75 @@ let wasm_cmd =
     `Blocks help_secs; ]
   in
   let info = Cmd.info "wasm" ~doc ~sdocs ~man in
-  Cmd.v info Term.(const compile_wasm $ copts_t $ certicoq_opts_t $ program_file)
+  Cmd.v info Term.(const compile_wasm $ copts_t $ certicoq_opts_t $ erasure_opts_t $ program_file)
+
+let eval_cmd =
+  let program_file =
+    let doc = "lambda box program" in
+    Arg.(required & pos 0 (some file) None & info []
+           ~docv:"FILE" ~doc)
+  in
+  let fuel_arg =
+    let doc = "evaluator fuel" in
+    Arg.(value & opt int 10000 & info ["fuel"] ~doc)
+  in
+  let anf_arg =
+    let doc = "evaluator type" in
+    Arg.(value & opt bool true & info ["anf"] ~doc)
+  in
+  let doc = "Evaluate lambda box program" in
+  let man = [
+    `S Manpage.s_description;
+    `P "";
+    `Blocks help_secs; ]
+  in
+  let info = Cmd.info "eval" ~doc ~sdocs ~man in
+  Cmd.v info Term.(const compile_eval $ copts_t $ certicoq_opts_t $ erasure_opts_t $ fuel_arg $ anf_arg $ program_file)
+
+let ast_cmd =
+  let ast_type =
+    let doc = "AST type" in
+    Arg.(required & pos 0 (some (enum [("box", Box); ("typed", BoxTyped); ("mut", BoxMut); ("local", BoxLocal); ("anf", ANF); ("anfc", ANFC)])) None & info []
+           ~docv:"AST_TYPE" ~doc)
+  in
+  let program_file =
+    let doc = "lambda box program" in
+    Arg.(required & pos 1 (some file) None & info []
+           ~docv:"FILE" ~doc)
+  in
+  let doc = "Get intermediate representations" in
+  let man = [
+    `S Manpage.s_description;
+    `P "";
+    `Blocks help_secs; ]
+  in
+  let info = Cmd.info "ast" ~doc ~sdocs ~man in
+  Cmd.v info Term.(const compile_ast $ copts_t $ certicoq_opts_t $ erasure_opts_t $ ast_type $ program_file)
+
+let validate_cmd =
+  let program_file =
+    let doc = "lambda box program" in
+    Arg.(required & pos 0 (some file) None & info []
+           ~docv:"FILE" ~doc)
+  in
+  let config_file =
+    let doc = "config file" in
+    Arg.(value & opt (some file) None & info ["config"] ~doc)
+  in
+  let doc = "Validate program and compile configuration" in
+  let man = [
+    `S Manpage.s_description;
+    `P "";
+    `Blocks help_secs; ]
+  in
+  let info = Cmd.info "validate" ~doc ~sdocs ~man in
+  Cmd.v info Term.(const validate $ copts_t $ program_file $ config_file)
 
 let main_cmd =
   let doc = "Verified compiler from LambdaBox to WebAssembly, C, Rust, and OCaml" in
   let man = help_secs in
   let info = Cmd.info "peregrine" ~version ~doc ~sdocs ~man ~exits in
   let default = Term.(ret (const (fun _ -> `Help (`Pager, None)) $ copts_t)) in
-  Cmd.group info ~default [compile_cmd; rust_cmd; elm_cmd; ocaml_cmd; cakeml_cmd; c_cmd; wasm_cmd; help_cmd]
+  Cmd.group info ~default [compile_cmd; rust_cmd; elm_cmd; ocaml_cmd; cakeml_cmd; c_cmd; wasm_cmd; eval_cmd; ast_cmd; validate_cmd; help_cmd]
 
 let () = exit (Cmd.eval main_cmd)

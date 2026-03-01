@@ -36,6 +36,7 @@ Section BackendConfig.
     direct    : bool;
     c_args    : nat;
     o_level   : nat;
+    anf_conf  : nat;
     prefix    : string;
     body_name : string;
   }.
@@ -50,13 +51,33 @@ Section BackendConfig.
 
   Definition cakeml_config : Type := unit.
 
+  Record eval_config := {
+    copts    : certicoq_config;
+    fuel     : nat;
+    eval_anf : bool;
+  }.
+
+  Variant ASTType :=
+  | LambdaBox
+  | LambdaBoxTyped
+  | LambdaBoxMut   : certicoq_config -> ASTType
+  | LambdaBoxLocal : certicoq_config -> ASTType
+  | LambdaANF      : certicoq_config -> ASTType
+  | LambdaANFC     : certicoq_config -> ASTType.
+
+  Record ast_config := {
+    ast_type : ASTType;
+  }.
+
   Inductive backend_config :=
   | Rust   : rust_config -> backend_config
   | Elm    : elm_config -> backend_config
   | C      : c_config -> backend_config
   | Wasm   : wasm_config -> backend_config
   | OCaml  : ocaml_config -> backend_config
-  | CakeML : cakeml_config -> backend_config.
+  | CakeML : cakeml_config -> backend_config
+  | Eval   : eval_config -> backend_config
+  | AST    : ast_config -> backend_config.
 
 End BackendConfig.
 

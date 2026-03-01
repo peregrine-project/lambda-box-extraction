@@ -5,9 +5,8 @@ From Peregrine Require Import ERemapInductives.
 From Peregrine Require Import Config.
 From Peregrine Require Import ConfigUtils.
 From Peregrine Require Import SerializeCommon.
-From Peregrine Require Import CeresExtra.
 From Stdlib Require Import List.
-From Ceres Require Import Ceres.
+From CeresBS Require Import Ceres.
 
 Import ListNotations.
 Local Open Scope bs_scope.
@@ -72,6 +71,7 @@ Instance Serialize_certicoq_config : Serialize certicoq_config :=
      to_sexp (direct o);
      to_sexp (c_args o);
      to_sexp (o_level o);
+     to_sexp (anf_conf o);
      to_sexp (prefix o);
      to_sexp (body_name o)
     ]%sexp.
@@ -82,6 +82,7 @@ Instance Serialize_certicoq_config' : Serialize certicoq_config' :=
      to_sexp (direct' o);
      to_sexp (c_args' o);
      to_sexp (o_level' o);
+     to_sexp (anf_conf' o);
      to_sexp (prefix' o);
      to_sexp (body_name' o)
     ]%sexp.
@@ -113,6 +114,56 @@ Instance Serialize_cakeml_config' : Serialize cakeml_config' :=
   fun o =>
     @to_sexp _ Serialize_unit o.
 
+Instance Serialize_eval_config : Serialize eval_config :=
+  fun o =>
+    [Atom "eval_config";
+     to_sexp (copts o);
+     to_sexp (fuel o);
+     to_sexp (eval_anf o)
+    ]%sexp.
+
+Instance Serialize_eval_config' : Serialize eval_config' :=
+  fun o =>
+    [Atom "eval_config";
+     to_sexp (copts' o);
+     to_sexp (fuel' o);
+     to_sexp (eval_anf' o)
+    ]%sexp.
+
+Instance Serialize_ASTType : Serialize ASTType :=
+  fun o =>
+    match o with
+    | LambdaBox => Atom "LambdaBox"
+    | LambdaBoxTyped => Atom "LambdaBoxTyped"
+    | LambdaBoxMut c => [Atom "LambdaBoxMut"; to_sexp c]
+    | LambdaBoxLocal c => [Atom "LambdaBoxLocal"; to_sexp c]
+    | LambdaANF c => [Atom "LambdaANF"; to_sexp c]
+    | LambdaANFC c => [Atom "LambdaANFC"; to_sexp c]
+    end%sexp.
+
+Instance Serialize_ASTType' : Serialize ASTType' :=
+  fun o =>
+    match o with
+    | LambdaBox' => Atom "LambdaBox"
+    | LambdaBoxTyped' => Atom "LambdaBoxTyped"
+    | LambdaBoxMut' c => [Atom "LambdaBoxMut"; to_sexp c]
+    | LambdaBoxLocal' c => [Atom "LambdaBoxLocal"; to_sexp c]
+    | LambdaANF' c => [Atom "LambdaANF"; to_sexp c]
+    | LambdaANFC' c => [Atom "LambdaANFC"; to_sexp c]
+    end%sexp.
+
+Instance Serialize_ast_config : Serialize ast_config :=
+  fun o =>
+    [Atom "ast_config";
+     to_sexp (ast_type o)
+    ]%sexp.
+
+Instance Serialize_ast_config' : Serialize ast_config' :=
+  fun o =>
+    [Atom "ast_config";
+     to_sexp (ast_type' o)
+    ]%sexp.
+
 Instance Serialize_backend_config : Serialize backend_config :=
   fun b =>
     match b with
@@ -122,6 +173,8 @@ Instance Serialize_backend_config : Serialize backend_config :=
     | Wasm o => [Atom "Wasm"; to_sexp o ]
     | OCaml o => [Atom "OCaml"; to_sexp o ]
     | CakeML o => [Atom "CakeML"; to_sexp o ]
+    | Eval o => [Atom "Eval"; to_sexp o ]
+    | AST o => [Atom "AST"; to_sexp o ]
     end%sexp.
 
 Instance Serialize_backend_config' : Serialize backend_config' :=
@@ -133,6 +186,8 @@ Instance Serialize_backend_config' : Serialize backend_config' :=
     | Wasm' o => [Atom "Wasm"; to_sexp o ]
     | OCaml' o => [Atom "OCaml"; to_sexp o ]
     | CakeML' o => [Atom "CakeML"; to_sexp o ]
+    | Eval' o => [Atom "Eval"; to_sexp o ]
+    | AST' o => [Atom "AST"; to_sexp o ]
     end%sexp.
 
 
@@ -260,185 +315,6 @@ Instance Serialize_attributes_config : Serialize attributes_config :=
 
 
 
-(** * Deserializers *)
-
-(** ** Backend Config *)
-
-Instance Deserialize_rust_config : Deserialize rust_config :=
-  fun l e =>
-    Deser.match_con "rust_config" []
-      [ ("rust_config", con7_ Build_rust_config) ]
-      l e.
-
-Instance Deserialize_rust_config' : Deserialize rust_config' :=
-  fun l e =>
-    Deser.match_con "rust_config" []
-      [ ("rust_config", con7_ Build_rust_config') ]
-      l e.
-
-Instance Deserialize_elm_config : Deserialize elm_config :=
-  fun l e =>
-    Deser.match_con "elm_config" []
-      [ ("elm_config", con7_ Build_elm_config) ]
-      l e.
-
-Instance Deserialize_elm_config' : Deserialize elm_config' :=
-  fun l e =>
-    Deser.match_con "elm_config" []
-      [ ("elm_config", con7_ Build_elm_config') ]
-      l e.
-
-Instance Deserialize_certicoq_config : Deserialize certicoq_config :=
-  fun l e =>
-    Deser.match_con "certicoq_config" []
-      [ ("certicoq_config", con5_ Build_certicoq_config) ]
-      l e.
-
-Instance Deserialize_certicoq_config' : Deserialize certicoq_config' :=
-  fun l e =>
-    Deser.match_con "certicoq_config" []
-      [ ("certicoq_config", con5_ Build_certicoq_config') ]
-      l e.
-
-Instance Deserialize_program_type : Deserialize Serialize.program_type :=
-  fun l e =>
-    Deser.match_con "program_type"
-      [ ("Standalone", Serialize.Standalone) ]
-      [ ("Shared_lib", con2_ Serialize.Shared_lib) ]
-      l e.
-
-Instance Deserialize_ocaml_config : Deserialize ocaml_config :=
-  fun l e =>
-    Deser.match_con "ocaml_config" []
-      [ ("ocaml_config", con1_ Build_ocaml_config) ]
-      l e.
-
-Instance Deserialize_ocaml_config' : Deserialize ocaml_config' :=
-  fun l e =>
-    Deser.match_con "ocaml_config" []
-      [ ("ocaml_config", con1_ Build_ocaml_config') ]
-      l e.
-
-Instance Deserialize_cakeml_config : Deserialize cakeml_config :=
-  fun l e =>
-    @_from_sexp _ Deserialize_unit l e.
-
-Instance Deserialize_cakeml_config' : Deserialize cakeml_config' :=
-  fun l e =>
-    @_from_sexp _ Deserialize_unit l e.
-
-Instance Deserialize_backend_config : Deserialize backend_config :=
-  fun l e =>
-    Deser.match_con "backend_config" []
-      [ ("Rust", Deser.con_ Rust);
-        ("Elm", Deser.con_ Elm);
-        ("C", Deser.con_ C);
-        ("Wasm", Deser.con_ Wasm);
-        ("OCaml", Deser.con_ OCaml);
-        ("CakeML", Deser.con_ CakeML)
-      ]
-      l e.
-
-Instance Deserialize_backend_config' : Deserialize backend_config' :=
-  fun l e =>
-    Deser.match_con "backend_config" []
-      [ ("Rust", Deser.con_ Rust');
-        ("Elm", Deser.con_ Elm');
-        ("C", Deser.con_ C');
-        ("Wasm", Deser.con_ Wasm');
-        ("OCaml", Deser.con_ OCaml');
-        ("CakeML", Deser.con_ CakeML')
-      ]
-      l e.
-
-
-
-(** ** Config *)
-
-Instance Deserialize_remapped_inductive : Deserialize remapped_inductive :=
-  fun l e =>
-    Deser.match_con "remapped_inductive" []
-      [ ("remapped_inductive", con3_ build_remapped_inductive) ]
-      l e.
-
-Instance Deserialize_inductive_mapping : Deserialize EProgram.inductive_mapping :=
-  fun l e =>
-    Deser.match_con "inductive_mapping" []
-      [ ("inductive_mapping", con3_ (fun kn s n => (kn, (s, n)))) ]
-      l e.
-
-Instance Deserialize_remapped_constant : Deserialize remapped_constant :=
-  fun l e =>
-    Deser.match_con "remapped_constant" []
-      [ ("remapped_constant", con5_ Build_remapped_constant) ]
-      l e.
-
-Instance Deserialize_extract_inductive : Deserialize extract_inductive :=
-  fun l e =>
-    Deser.match_con "extract_inductive" []
-      [ ("extract_inductive", con2_ Build_extract_inductive) ]
-      l e.
-
-Instance Deserialize_remap_inductive : Deserialize remap_inductive :=
-  fun l e =>
-    Deser.match_con "remap_inductive" []
-      [ ("KnIndRemap", con2_ KnIndRemap);
-        ("StringIndRemap", con2_ StringIndRemap)
-      ]
-      l e.
-
-Instance Deserialize_custom_attribute : Deserialize custom_attribute :=
-  fun l e =>
-    _from_sexp l e.
-
-Instance Deserialize_inlinings : Deserialize inlinings :=
-  fun l e =>
-    _from_sexp l e.
-
-Instance Deserialize_constant_remappings : Deserialize constant_remappings :=
-  fun l e =>
-    _from_sexp l e.
-
-Instance Deserialize_inductive_remappings : Deserialize inductive_remappings :=
-  fun l e =>
-    _from_sexp l e.
-
-Instance Deserialize_custom_attributes : Deserialize custom_attributes :=
-  fun l e =>
-    _from_sexp l e.
-
-Instance Deserialize_erasure_phases : Deserialize erasure_phases :=
-  fun l e =>
-    Deser.match_con "erasure_phases" []
-      [ ("erasure_phases", con7_ Build_erasure_phases) ]
-      l e.
-
-Instance Deserialize_erasure_phases' : Deserialize erasure_phases' :=
-  fun l e =>
-    Deser.match_con "erasure_phases" []
-      [ ("erasure_phases", con7_ Build_erasure_phases') ]
-      l e.
-
-Instance Deserialize_config : Deserialize config :=
-  fun l e =>
-    Deser.match_con "config" []
-      [ ("config", con7_ Build_config) ]
-      l e.
-
-Instance Deserialize_config' : Deserialize config' :=
-  fun l e =>
-    Deser.match_con "config" []
-      [ ("config", con7_ Build_config') ]
-      l e.
-
-Instance Deserialize_attributes_config : Deserialize attributes_config :=
-  fun l e =>
-    Deser.match_con "attributes_config" []
-      [ ("attributes_config", con5_ Build_attributes_config) ]
-      l e.
-
-
-
 (** * Main serialization functions *)
 
 (** ** Backend Config *)
@@ -475,6 +351,24 @@ Definition string_of_cakeml_config (x : cakeml_config) : string :=
 
 Definition string_of_cakeml_config' (x : cakeml_config') : string :=
   @to_string cakeml_config' Serialize_cakeml_config' x.
+
+Definition string_of_eval_config (x : eval_config) : string :=
+  @to_string eval_config Serialize_eval_config x.
+
+Definition string_of_eval_config' (x : eval_config') : string :=
+  @to_string eval_config' Serialize_eval_config' x.
+
+Definition string_of_ASTType (x : ASTType) : string :=
+  @to_string ASTType Serialize_ASTType x.
+
+Definition string_of_ASTType' (x : ASTType') : string :=
+  @to_string ASTType' Serialize_ASTType' x.
+
+Definition string_of_ast_config (x : ast_config) : string :=
+  @to_string ast_config Serialize_ast_config x.
+
+Definition string_of_ast_config' (x : ast_config') : string :=
+  @to_string ast_config' Serialize_ast_config' x.
 
 Definition string_of_backend_config (x : backend_config) : string :=
   @to_string backend_config Serialize_backend_config x.
@@ -530,97 +424,3 @@ Definition string_of_config' (x : config') : string :=
 
 Definition string_of_attributes_config (x : attributes_config) : string :=
   @to_string attributes_config Serialize_attributes_config x.
-
-
-
-(** * Main deserialization functions *)
-
-(** ** Backend Config *)
-
-Definition rust_config_of_string (s : string) : error + rust_config :=
-  @from_string rust_config Deserialize_rust_config s.
-
-Definition rust_config'_of_string (s : string) : error + rust_config' :=
-  @from_string rust_config' Deserialize_rust_config' s.
-
-Definition elm_config_of_string (s : string) : error + elm_config :=
-  @from_string elm_config Deserialize_elm_config s.
-
-Definition elm_config'_of_string (s : string) : error + elm_config' :=
-  @from_string elm_config' Deserialize_elm_config' s.
-
-Definition certicoq_config_of_string (s : string) : error + certicoq_config :=
-  @from_string certicoq_config Deserialize_certicoq_config s.
-
-Definition certicoq_config'_of_string (s : string) : error + certicoq_config' :=
-  @from_string certicoq_config' Deserialize_certicoq_config' s.
-
-Definition program_type_of_string (s : string) : error + Serialize.program_type :=
-  @from_string Serialize.program_type Deserialize_program_type s.
-
-Definition ocaml_config_of_string (s : string) : error + ocaml_config :=
-  @from_string ocaml_config Deserialize_ocaml_config s.
-
-Definition ocaml_config'_of_string (s : string) : error + ocaml_config' :=
-  @from_string ocaml_config' Deserialize_ocaml_config' s.
-
-Definition cakeml_config_of_string (s : string) : error + cakeml_config :=
-  @from_string cakeml_config Deserialize_cakeml_config s.
-
-Definition cakeml_config'_of_string (s : string) : error + cakeml_config' :=
-  @from_string cakeml_config' Deserialize_cakeml_config' s.
-
-Definition backend_config_of_string (s : string) : error + backend_config :=
-  @from_string backend_config Deserialize_backend_config s.
-
-Definition backend_config'_of_string (s : string) : error + backend_config' :=
-  @from_string backend_config' Deserialize_backend_config' s.
-
-
-
-(** ** Config *)
-
-Definition remapped_inductive_of_string (s : string) : error + remapped_inductive :=
-  @from_string remapped_inductive Deserialize_remapped_inductive s.
-
-Definition inductive_mapping_of_string (s : string) : error + EProgram.inductive_mapping :=
-  @from_string inductive_mapping Deserialize_inductive_mapping s.
-
-Definition remapped_constant_of_string (s : string) : error + remapped_constant :=
-  @from_string remapped_constant Deserialize_remapped_constant s.
-
-Definition extract_inductive_of_string (s : string) : error + extract_inductive :=
-  @from_string extract_inductive Deserialize_extract_inductive s.
-
-Definition remap_inductive_of_string (s : string) : error + remap_inductive :=
-  @from_string remap_inductive Deserialize_remap_inductive s.
-
-Definition custom_attribute_of_string (s : string) : error + custom_attribute :=
-  @from_string custom_attribute Deserialize_custom_attribute s.
-
-Definition inlinings_of_string (s : string) : error + inlinings :=
-  @from_string inlinings Deserialize_inlinings s.
-
-Definition constant_remappings_of_string (s : string) : error + constant_remappings :=
-  @from_string constant_remappings Deserialize_constant_remappings s.
-
-Definition inductive_remappings_of_string (s : string) : error + inductive_remappings :=
-  @from_string inductive_remappings Deserialize_inductive_remappings s.
-
-Definition custom_attributes_of_string (s : string) : error + custom_attributes :=
-  @from_string custom_attributes Deserialize_custom_attributes s.
-
-Definition erasure_phases_of_string (s : string) : error + erasure_phases :=
-  @from_string erasure_phases Deserialize_erasure_phases s.
-
-Definition erasure_phases'_of_string (s : string) : error + erasure_phases' :=
-  @from_string erasure_phases' Deserialize_erasure_phases' s.
-
-Definition config_of_string (s : string) : error + config :=
-  @from_string config Deserialize_config s.
-
-Definition config'_of_string (s : string) : error + config' :=
-  @from_string config' Deserialize_config' s.
-
-Definition attributes_config_of_string (s : string) : error + attributes_config :=
-  @from_string attributes_config Deserialize_attributes_config s.

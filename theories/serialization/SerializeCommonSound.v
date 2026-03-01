@@ -1,8 +1,8 @@
 From Peregrine Require Import SerializeCommon.
-From Peregrine Require Import CeresExtra.
-From Ceres Require Import CeresRoundtrip.
-From Ceres Require Import CeresSerialize.
-From Ceres Require Import CeresDeserialize.
+From Peregrine Require Import DeserializeCommon.
+From CeresBS Require Import CeresRoundtrip.
+From CeresBS Require Import CeresSerialize.
+From CeresBS Require Import CeresDeserialize.
 From MetaRocq.Common Require Import BasicAst.
 From MetaRocq.Common Require Import Kernames.
 From MetaRocq.Common Require Import Universes.

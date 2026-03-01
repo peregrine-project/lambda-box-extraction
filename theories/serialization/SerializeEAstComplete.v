@@ -1,15 +1,18 @@
+From Peregrine Require Import DeserializeCommon.
 From Peregrine Require Import SerializeCommon.
 From Peregrine Require Import SerializeCommonComplete.
+From Peregrine Require Import DeserializePrimitives.
 From Peregrine Require Import SerializePrimitives.
 From Peregrine Require Import SerializePrimitivesComplete.
+From Peregrine Require Import DeserializeEAst.
 From Peregrine Require Import SerializeEAst.
-From Peregrine Require Import CeresExtra.
-From Ceres Require Import CeresRoundtrip.
-From Ceres Require Import CeresSerialize.
-From Ceres Require Import CeresDeserialize.
-From Ceres Require Import CeresUtils.
+From CeresBS Require Import CeresRoundtrip.
+From CeresBS Require Import CeresSerialize.
+From CeresBS Require Import CeresDeserialize.
+From CeresBS Require Import CeresUtils.
 From MetaRocq.Erasure Require Import EAst.
 From MetaRocq.Erasure Require EInduction.
+From MetaRocq.Utils Require Import bytestring.
 From Stdlib Require Import List.
 
 
@@ -19,7 +22,7 @@ Proof.
   unfold CompleteClass, Complete.
   intros l d.
   cbn -[Deserialize_name Deserialize_SemiIntegral].
-  rewrite !eqb_ascii_refl.
+  simpl_bytes.
   rewrite 3!complete_class.
   destruct d; cbn.
   reflexivity.
@@ -33,6 +36,52 @@ Proof.
   apply complete_class_list.
 Qed.
 
+Lemma complete_class_list_all {A : Type}
+                             `{Serialize A}
+                             `{Deserialize A} :
+  forall (a xs : list A) (n : nat) (l : loc),
+    All_Forall.All
+      (fun t : A =>
+       forall l : loc, _from_sexp l (to_sexp t) = inr t) a ->
+    _sexp_to_list _from_sexp xs n l (map to_sexp a) = inr (rev xs ++ a).
+Proof.
+  induction a; intros; cbn.
+  - rewrite rev_alt, app_nil_r.
+    reflexivity.
+  - inversion X; subst.
+    rewrite H2.
+    rewrite app_cons_assoc.
+    apply IHa.
+    assumption.
+Qed.
+
+Lemma complete_class_all_prod {A B : Type}
+                             `{Serialize A}
+                             `{Deserialize A}
+                             `{Serialize B}
+                             `{Deserialize B} :
+  forall xs,
+    CompleteClass A ->
+    All_Forall.All
+      (fun x : A * B =>
+        forall l : loc, _from_sexp l (to_sexp (snd x)) = inr (snd x)) xs ->
+      All_Forall.All
+        (fun x : A * B =>
+        forall l : loc, _from_sexp l (to_sexp x) = inr x) xs.
+Proof.
+  induction xs; intros.
+  - apply All_Forall.All_nil.
+  - apply All_Forall.All_cons.
+    + intros.
+      inversion X; subst.
+      cbn.
+      rewrite H5.
+      rewrite complete_class.
+      destruct a; cbn.
+      reflexivity.
+    + inversion X; subst.
+      apply IHxs; assumption.
+Qed.
 
 Lemma complete_class_def_all : forall m,
   All_Forall.All
@@ -48,14 +97,14 @@ Proof.
   intros.
   cbn in H.
   cbn -[Deserialize_name Deserialize_SemiIntegral].
-  rewrite !eqb_ascii_refl.
+  simpl_bytes.
   rewrite H.
   rewrite 2!complete_class.
   destruct x; cbn.
   reflexivity.
 Qed.
 
-Lemma complete_class_prim_val_all {T : Set} {H : Serialize T} {H0 : Deserialize T}
+Lemma complete_class_prim_val_all {T : Set} `{Serialize T} `{Deserialize T}
 : forall (p : EPrimitive.prim_val T) l (f : EPrimitive.prim_val T -> T),
   EPrimitive.primProp (fun t : T => forall l : loc, _from_sexp l (to_sexp t) = inr t) p ->
   _bind_sum (_from_sexp (0 :: l) (to_sexp p))
@@ -64,25 +113,22 @@ Proof.
   intros.
   destruct p.
   destruct p.
-  - cbn -[Deserialize_prim_int].
-    rewrite !eqb_ascii_refl.
+  - cbn -[Deserialize_SemiIntegral].
+    simpl_bytes.
     rewrite complete_class.
     reflexivity.
   - cbn -[Deserialize_prim_float].
-    rewrite !eqb_ascii_refl.
-    rewrite !neqb_ascii_neq by congruence.
+    simpl_bytes.
     rewrite complete_class.
     reflexivity.
   - cbn -[Deserialize_prim_string].
-    rewrite !eqb_ascii_refl.
-    rewrite !neqb_ascii_neq by congruence.
+    simpl_bytes.
     rewrite complete_class.
     reflexivity.
   - inversion_clear X; subst.
     destruct X0 as [H1 H2].
     cbn.
-    rewrite !eqb_ascii_refl.
-    rewrite !neqb_ascii_neq by congruence.
+    simpl_bytes.
     rewrite H1.
     rewrite complete_class_list_all by assumption.
     destruct a; cbn.
@@ -99,59 +145,51 @@ Proof.
     reflexivity.
   - (* tRel *)
     cbn -[Deserialize_SemiIntegral].
-    rewrite !eqb_ascii_refl.
+    simpl_bytes.
     rewrite complete_class.
     reflexivity.
   - (* tVar *)
     cbn -[Deserialize_ident].
-    rewrite !eqb_ascii_refl.
-    rewrite !neqb_ascii_neq by congruence.
+    simpl_bytes.
     rewrite complete_class.
     reflexivity.
   - (* tEvar *)
     cbn -[Deserialize_SemiIntegral].
-    rewrite !eqb_ascii_refl.
-    rewrite !neqb_ascii_neq by congruence.
+    simpl_bytes.
     rewrite complete_class.
     rewrite complete_class_list_all by assumption.
     reflexivity.
   - (* tLambda *)
     cbn -[Deserialize_name].
-    rewrite !eqb_ascii_refl.
-    rewrite !neqb_ascii_neq by congruence.
+    simpl_bytes.
     rewrite complete_class.
     rewrite IHt.
     reflexivity.
   - (* tLetIn *)
     cbn -[Deserialize_name].
-    rewrite !eqb_ascii_refl.
-    rewrite !neqb_ascii_neq by congruence.
+    simpl_bytes.
     rewrite complete_class.
     rewrite IHt1, IHt2.
     reflexivity.
   - (* tApp *)
     cbn.
-    rewrite !eqb_ascii_refl.
-    rewrite !neqb_ascii_neq by congruence.
+    simpl_bytes.
     rewrite IHt1, IHt2.
     reflexivity.
   - (* tConst *)
     cbn -[Deserialize_kername].
-    rewrite !eqb_ascii_refl.
-    rewrite !neqb_ascii_neq by congruence.
+    simpl_bytes.
     rewrite complete_class.
     reflexivity.
   - (* tConstruct *)
     cbn -[Deserialize_inductive Deserialize_SemiIntegral].
-    rewrite !eqb_ascii_refl.
-    rewrite !neqb_ascii_neq by congruence.
+    simpl_bytes.
     rewrite 2!complete_class.
     rewrite complete_class_list_all by assumption.
     reflexivity.
   - (* tCase *)
     cbn -[Deserialize_inductive Deserialize_SemiIntegral Deserialize_name Deserialize_prod].
-    rewrite !eqb_ascii_refl.
-    rewrite !neqb_ascii_neq by congruence.
+    simpl_bytes.
     rewrite complete_class.
     rewrite IHt.
     cbn.
@@ -161,15 +199,13 @@ Proof.
     typeclasses eauto.
   - (* tProj *)
     cbn -[Deserialize_projection].
-    rewrite !eqb_ascii_refl.
-    rewrite !neqb_ascii_neq by congruence.
+    simpl_bytes.
     rewrite complete_class.
     rewrite IHt.
     reflexivity.
   - (* tFix *)
     cbn -[Deserialize_SemiIntegral].
-    rewrite !eqb_ascii_refl.
-    rewrite !neqb_ascii_neq by congruence.
+    simpl_bytes.
     rewrite complete_class_list_all.
     + rewrite complete_class.
       reflexivity.
@@ -177,8 +213,7 @@ Proof.
       assumption.
   - (* tCoFix *)
     cbn -[Deserialize_SemiIntegral].
-    rewrite !eqb_ascii_refl.
-    rewrite !neqb_ascii_neq by congruence.
+    simpl_bytes.
     rewrite complete_class_list_all.
     + rewrite complete_class.
       reflexivity.
@@ -186,44 +221,38 @@ Proof.
       assumption.
   - (* tPrim *)
     cbn -[Deserialize_prim_val].
-    rewrite !eqb_ascii_refl.
-    rewrite !neqb_ascii_neq by congruence.
+    simpl_bytes.
 
     destruct p.
     destruct p.
-    + cbn -[Deserialize_prim_int].
-      rewrite !eqb_ascii_refl.
+    + cbn -[Deserialize_SemiIntegral].
+      simpl_bytes.
       rewrite complete_class.
       reflexivity.
     + cbn -[Deserialize_prim_float].
-      rewrite !eqb_ascii_refl.
-      rewrite !neqb_ascii_neq by congruence.
+      simpl_bytes.
       rewrite complete_class.
       reflexivity.
     + cbn -[Deserialize_prim_string].
-      rewrite !eqb_ascii_refl.
-      rewrite !neqb_ascii_neq by congruence.
+      simpl_bytes.
       rewrite complete_class.
       reflexivity.
     + inversion_clear X; subst.
       destruct X0 as [H1 H2].
       cbn.
-      rewrite !eqb_ascii_refl.
-      rewrite !neqb_ascii_neq by congruence.
+      simpl_bytes.
       rewrite H1.
       rewrite complete_class_list_all by assumption.
       destruct a; cbn.
       reflexivity.
   - (* tLazy *)
     cbn.
-    rewrite !eqb_ascii_refl.
-    rewrite !neqb_ascii_neq by congruence.
+    simpl_bytes.
     rewrite IHt.
     reflexivity.
   - (* tForce *)
     cbn.
-    rewrite !eqb_ascii_refl.
-    rewrite !neqb_ascii_neq by congruence.
+    simpl_bytes.
     rewrite IHt.
     reflexivity.
 Qed.
@@ -235,7 +264,7 @@ Proof.
   unfold CompleteClass, Complete.
   intros l cb.
   cbn -[Deserialize_ident Deserialize_SemiIntegral].
-  rewrite !eqb_ascii_refl.
+  simpl_bytes.
   rewrite 2!complete_class.
   destruct cb; cbn.
   reflexivity.
@@ -246,7 +275,7 @@ Proof.
   unfold CompleteClass, Complete.
   intros l pb.
   cbn -[Deserialize_ident].
-  rewrite !eqb_ascii_refl.
+  simpl_bytes.
   rewrite 1!complete_class.
   destruct pb; cbn.
   reflexivity.
@@ -257,7 +286,7 @@ Proof.
   unfold CompleteClass, Complete.
   intros l oib.
   cbn -[Deserialize_ident Deserialize_bool Deserialize_allowed_eliminations].
-  rewrite !eqb_ascii_refl.
+  simpl_bytes.
   rewrite 3!complete_class.
   rewrite 2!complete_class_list.
   destruct oib; cbn.
@@ -269,7 +298,7 @@ Proof.
   unfold CompleteClass, Complete.
   intros l mib.
   cbn -[Deserialize_recursivity_kind Deserialize_SemiIntegral].
-  rewrite !eqb_ascii_refl.
+  simpl_bytes.
   rewrite 2!complete_class.
   rewrite 1!complete_class_list.
   destruct mib; cbn.
@@ -281,7 +310,7 @@ Proof.
   unfold CompleteClass, Complete.
   intros l cb.
   cbn -[Deserialize_option].
-  rewrite !eqb_ascii_refl.
+  simpl_bytes.
   rewrite 1!complete_class.
   destruct cb; cbn.
   reflexivity.
@@ -293,12 +322,11 @@ Proof.
   intros l gd.
   destruct gd.
   - cbn -[Deserialize_constant_body].
-    rewrite !eqb_ascii_refl.
+    simpl_bytes.
     rewrite 1!complete_class.
     reflexivity.
   - cbn -[Deserialize_mutual_inductive_body].
-    rewrite !eqb_ascii_refl.
-    rewrite !neqb_ascii_neq by congruence.
+    simpl_bytes.
     rewrite 1!complete_class.
     reflexivity.
 Qed.

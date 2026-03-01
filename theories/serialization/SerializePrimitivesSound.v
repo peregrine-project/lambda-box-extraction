@@ -1,8 +1,8 @@
+From Peregrine Require Import DeserializePrimitives.
 From Peregrine Require Import SerializePrimitives.
-From Peregrine Require Import CeresExtra.
-From Ceres Require Import CeresRoundtrip.
-From Ceres Require Import CeresSerialize.
-From Ceres Require Import CeresDeserialize.
+From CeresBS Require Import CeresRoundtrip.
+From CeresBS Require Import CeresSerialize.
+From CeresBS Require Import CeresDeserialize.
 From MetaRocq.Common Require Import Primitive.
 From MetaRocq.Erasure Require Import EPrimitive.
 From Stdlib Require Import List.
@@ -13,8 +13,6 @@ From Stdlib Require PrimFloat.
 
 
 (* TODO: validate axioms *)
-Axiom prim_int_ser_sound : forall x, (string_of_prim_int (prim_int_of_string x)) = x.
-Axiom prim_float_ser_sound : forall x, (string_of_prim_float (prim_float_of_string x)) = x.
 Axiom prim_string_ser_sound : forall x, (string_of_prim_string (prim_string_of_string x)) = x.
 
 
@@ -33,30 +31,6 @@ Proof.
     reflexivity.
   - destruct He as [-> ->].
     reflexivity.
-Qed.
-
-Instance Sound_prim_int : SoundClass PrimInt63.int.
-Proof.
-  unfold SoundClass, Sound.
-  intros l e i He.
-  destruct e; cbn in *; try discriminate.
-  destruct a; cbn in *; try discriminate.
-  injection He as <-.
-  unfold to_sexp, Serialize_prim_int.
-  rewrite prim_int_ser_sound.
-  reflexivity.
-Qed.
-
-Instance Sound_prim_float : SoundClass PrimFloat.float.
-Proof.
-  unfold SoundClass, Sound.
-  intros l e f He.
-  destruct e; cbn in *; try discriminate.
-  destruct a; cbn in *; try discriminate.
-  injection He as <-.
-  unfold to_sexp, Serialize_prim_float.
-  rewrite prim_float_ser_sound.
-  reflexivity.
 Qed.
 
 Instance Sound_prim_string : SoundClass PrimString.string.

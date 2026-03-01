@@ -1,14 +1,19 @@
+From Peregrine Require Import DeserializeCommon.
 From Peregrine Require Import SerializeCommon.
 From Peregrine Require Import SerializeCommonComplete.
+From Peregrine Require Import DeserializeEAst.
 From Peregrine Require Import SerializeEAst.
 From Peregrine Require Import SerializeEAstComplete.
+From Peregrine Require Import DeserializeExAst.
 From Peregrine Require Import SerializeExAst.
 From Peregrine Require Import SerializeExAstComplete.
+From Peregrine Require Import DeserializePAst.
 From Peregrine Require Import SerializePAst.
 From Peregrine Require Import SerializePAstComplete.
+From Peregrine Require Import DeserializeConfig.
 From Peregrine Require Import SerializeConfig.
 From Peregrine Require Import SerializeConfigComplete.
-From Ceres Require Import CeresRoundtrip.
+From CeresBS Require Import CeresRoundtrip.
 
 
 

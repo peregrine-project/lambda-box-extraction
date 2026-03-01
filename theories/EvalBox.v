@@ -12,7 +12,6 @@ From CertiCoq.LambdaBoxMut Require Import wcbvEval.
 From CertiCoq.LambdaANF Require Import toplevel.
 From CertiCoq.LambdaANF Require Import eval.
 From CertiCoq.LambdaANF Require Import cps.
-From Peregrine Require Import CertiCoqPipeline.
 From ExtLib.Structures Require Import Monad.
 
 Import MonadNotation.
@@ -198,21 +197,9 @@ End Evaluator.
 
 
 
-Definition next_id := 100%positive.
 Definition fuel := (2^18)%nat.
 
-Definition box_to_mut (p : EAst.program) : pipelineM (Program Term) :=
-  ret {|
-    CertiCoq.Common.AstCommon.env  := LambdaBoxMut.compile.compile_ctx (fst p);
-    CertiCoq.Common.AstCommon.main := compile (snd p);
-  |}.
-
-Definition box_to_anf (p : EAst.program) :=
-  let genv := fst p in
-  '(prs, next_id) <- register_prims next_id genv;; (* TODO: better prim registration *)
-  anf_pipeline p prs next_id.
-
-Definition eval_box (n : nat) (p : Program Term) : pipelineM string :=
+Definition eval_mut (n : nat) (p : Program Term) : pipelineM string :=
   match wcbvEval (AstCommon.env p) n (main p) with
   | Ret p => ret (print_term p)
   | Exc s => compM.failwith ("Could not evaluate program:" ^ nl ^ s)
@@ -226,15 +213,3 @@ Definition eval_anf (n : nat) (p : LambdaANF_FullTerm) : pipelineM string :=
   | Ret (inr v) => ret (cps_show.show_val nenv ctor_env true v)
   | Exc s => compM.failwith ("Could not evaluate program:" ^ nl ^ s)
   end.
-
-Definition eval (opts : Options) (anf : bool) (p : EAst.program) : compM.error string * string :=
-  let pipeline p :=
-    if anf
-    then
-      p <- box_to_anf p;;
-      eval_anf fuel p
-    else
-      p <- box_to_mut p;;
-      eval_box fuel p
-  in
-  run_pipeline EAst.program string opts p pipeline.

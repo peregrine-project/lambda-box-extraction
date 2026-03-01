@@ -1,16 +1,18 @@
-From Peregrine Require Import Serialize.
+From Peregrine Require Import Deserialize.
 From Peregrine Require Import PAst.
 From Peregrine Require Import Config.
 From Peregrine Require Import ConfigUtils.
 From Peregrine Require Import Transforms.
 From Peregrine Require Import Erasure.
 From Peregrine Require Import CheckWf.
+From Peregrine Require Import Utils.
 From Peregrine Require RustBackend.
 From Peregrine Require ElmBackend.
 From Peregrine Require OCamlBackend.
 From Peregrine Require CBackend.
 From Peregrine Require WasmBackend.
-From Peregrine Require TypedTransforms.
+From Peregrine Require EvalBackend.
+From Peregrine Require ASTBackend.
 From Peregrine Require NameSanitize.
 From MetaRocq.Utils Require Import utils.
 From MetaRocq.Erasure.Typed Require Import ResultMonad.
@@ -69,21 +71,27 @@ Definition check_wf (p : PAst) : result unit string :=
       @CheckWfExAst.check_wf_typed_program EWellformed.all_env_flags env
   end.
 
-(* TODO: move *)
-Definition assert {E : Type} (b : bool) (e : E) : result unit E :=
-  if b then Ok tt else Err e.
-
 Definition validate_ast_type (c : config) (p : PAst) : result unit string :=
   match c.(backend_opts) with
   | Rust _ => assert (is_typed_ast p) "Rust extraction requires typed lambda box input"
   | Elm _ => assert (is_typed_ast p) "Elm extraction requires typed lambda box input"
-  | C _ | Wasm _ | OCaml _ | CakeML _ => Ok tt
+  | C _ | Wasm _ | OCaml _ | CakeML _ | Eval _ => Ok tt
+  | AST c =>
+    match c.(ast_type) with
+    | LambdaBoxTyped => assert (is_typed_ast p) "Extraction requires typed lambda box input"
+    | _ => Ok tt
+    end
   end.
 
 Definition needs_typed (c : config) : bool :=
   match c.(backend_opts) with
   | Rust _ | Elm _ => true
-  | C _ | Wasm _ | OCaml _ | CakeML _ => false
+  | C _ | Wasm _ | OCaml _ | CakeML _ | Eval _ => false
+  | AST c =>
+    match c.(ast_type) with
+    | LambdaBoxTyped => true
+    | _ => false
+    end
   end.
 
 Definition apply_transforms (c : config) (p : PAst) (typed : bool) : result PAst string :=
@@ -121,7 +129,9 @@ Inductive extracted_program :=
 | CProgram : (CertiCoq.Codegen.toplevel.Cprogram * list string) -> extracted_program
 | WasmProgram : string -> extracted_program
 | OCamlProgram : (list string * string) -> extracted_program
-| CakeMLProgram : (list string * string) -> extracted_program.
+| CakeMLProgram : (list string * string) -> extracted_program
+| EvalProgram : string -> extracted_program
+| ASTProgram : string -> extracted_program.
 
 Definition extraction_result : Type := result extracted_program string.
 
@@ -190,6 +200,25 @@ Definition run_backend (c : config) (f : string) (p : PAst) : extraction_result 
       f
       p';;
     Ok (WasmProgram res)
+
+  | Eval opts =>
+    p' <- PAst_to_EAst p;;
+    res <- EvalBackend.eval
+      const_remaps
+      custom_attr
+      opts
+      f
+      p';;
+    Ok (EvalProgram res)
+
+  | AST opts =>
+    res <- ASTBackend.extract_ast
+      const_remaps
+      custom_attr
+      opts
+      f
+      p;;
+    Ok (ASTProgram res)
   end.
 
 
@@ -203,3 +232,8 @@ Definition peregrine_pipeline (c : string + config') (attrs : list string) (p : 
   c <- NameSanitize.sanitize_config (NameSanitize.get_sanitizer c) c;; (* Sanitize names in config *)
   p <- apply_transforms c p (needs_typed c);; (* Apply program transformation *)
   run_backend c f p. (* Run extraction backend *)
+
+Definition peregrine_validate (c : string + config') (attrs : list string) (p : string) : result unit string :=
+  p <- parse_ast p;; (* Parse input string into AST *)
+  c <- get_config c attrs;; (* Parse or construct config *)
+  check_wf p. (* Check that AST is wellformed *)

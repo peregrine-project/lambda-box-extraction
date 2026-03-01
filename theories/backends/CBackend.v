@@ -18,6 +18,7 @@ Definition default_c_config := {|
   direct    := true;
   c_args    := 5;
   o_level   := 0;
+  anf_conf  := 0;
   prefix    := "";
   body_name := "body";
 |}.
@@ -35,14 +36,7 @@ Definition c_phases := {|
 
 
 Definition c_pipeline prs (p : EAst.program) :=
-  let env := p.1 in
-  '(prs, next_id) <- register_prims prs next_id env ;;
-  p_anf <- anf_pipeline p prs next_id;;
-  (* Compile lambda_anf to C_light *)
-  p_c <- compile_Clight prs p_anf;;
-  ret p_c.
-
-
+  anf_pipeline compile_Clight prs p.
 
 Definition extract_c (remaps : constant_remappings)
                      (custom_attr : custom_attributes)

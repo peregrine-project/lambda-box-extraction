@@ -36,12 +36,13 @@ library
                       Datatypes
                       Decimal
                       DecimalString
-                      Deserialize
                       EAst
                       EPrimitive
                       EProgram
                       ERemapInductives
                       ExAst
+                      FloatOps
+                      IntDef
                       Kernames
                       LambdaBox.LBoxConvert
                       List0
@@ -55,14 +56,18 @@ library
                       Primitive
                       PrimString
                       Serialize
+                      Serialize0
                       SerializeCommon
                       SerializeConfig
                       SerializeEAst
                       SerializeExAst
                       SerializePAst
                       SerializePrimitives
+                      Sint63Axioms
+                      SpecFloat
                       Specif
                       String0
+                      Uint63Axioms
                       Universes0
     build-depends:    base       ^>=4.20.0.0,
                       ghc-internal,

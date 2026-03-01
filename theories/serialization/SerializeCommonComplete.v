@@ -1,8 +1,8 @@
 From Peregrine Require Import SerializeCommon.
-From Peregrine Require Import CeresExtra.
-From Ceres Require Import CeresRoundtrip.
-From Ceres Require Import CeresSerialize.
-From Ceres Require Import CeresDeserialize.
+From Peregrine Require Import DeserializeCommon.
+From CeresBS Require Import CeresRoundtrip.
+From CeresBS Require Import CeresSerialize.
+From CeresBS Require Import CeresDeserialize.
 From MetaRocq.Common Require Import BasicAst.
 From MetaRocq.Common Require Import Kernames.
 From MetaRocq.Common Require Import Universes.
@@ -33,17 +33,15 @@ Proof.
   revert l.
   induction m; intros l.
   - cbn -[Deserialize_dirpath].
-    rewrite !eqb_ascii_refl.
+    simpl_bytes.
     rewrite complete_class.
     reflexivity.
   - cbn -[Deserialize_dirpath Deserialize_ident Deserialize_SemiIntegral].
-    rewrite !eqb_ascii_refl.
-    rewrite !neqb_ascii_neq by congruence.
+    simpl_bytes.
     rewrite !complete_class.
     reflexivity.
   - cbn -[Deserialize_ident].
-    rewrite !eqb_ascii_refl.
-    rewrite !neqb_ascii_neq by congruence.
+    simpl_bytes.
     rewrite IHm.
     rewrite !complete_class.
     reflexivity.
@@ -62,7 +60,7 @@ Proof.
   unfold CompleteClass, Complete.
   intros l ind.
   cbn -[Deserialize_kername Deserialize_SemiIntegral].
-  rewrite !eqb_ascii_refl.
+  simpl_bytes.
   rewrite 2!complete_class.
   destruct ind; cbn.
   reflexivity.
@@ -73,7 +71,7 @@ Proof.
   unfold CompleteClass, Complete.
   intros l proj.
   cbn -[Deserialize_inductive Deserialize_SemiIntegral].
-  rewrite !eqb_ascii_refl.
+  simpl_bytes.
   rewrite 3!complete_class.
   destruct proj; cbn.
   reflexivity.
@@ -88,7 +86,7 @@ Proof.
   destruct n.
   - reflexivity.
   - cbn -[Deserialize_ident].
-    rewrite !eqb_ascii_refl.
+    simpl_bytes.
     rewrite complete_class.
     reflexivity.
 Qed.

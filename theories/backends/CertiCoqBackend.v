@@ -60,7 +60,7 @@ Definition find_global_decl_arity (gd : EAst.global_decl) : error nat :=
   | EAst.ConstantDecl bd =>
     match (EAst.cst_body bd) with
     | Some bd => Ret (find_arity bd)
-    | None => Err ("Found empty ConstantDecl body") (* TODO *)
+    | None => Err ("Found empty ConstantDecl body")
     end
   | EAst.InductiveDecl _ =>
     Err ("Expected ConstantDecl but found InductiveDecl")
@@ -115,7 +115,49 @@ Definition compile_LambdaBoxMut
 
 Definition next_id := 100%positive.
 
-Definition anf_pipeline (p : EAst.program) prs next_id :=
+Definition mut_pipeline prs (p : EAst.program) :=
+  let env := p.1 in
+  '(prs, next_id) <- register_prims prs next_id env ;;
+  o <- get_options;;
+  (* Translate lambda_box -> lambda_boxmut *)
+  p_mut <- compile_LambdaBoxMut p;;
+  check_axioms prs p_mut;;
+  ret p_mut.
+
+Definition local_pipeline prs (p : EAst.program) :=
+  let env := p.1 in
+  '(prs, next_id) <- register_prims prs next_id env ;;
+  o <- get_options;;
+  (* Translate lambda_box -> lambda_boxmut *)
+  p_mut <- compile_LambdaBoxMut p;;
+  check_axioms prs p_mut;;
+  (* Translate lambda_boxmut -> lambda_boxlocal *)
+  p_local <- compile_LambdaBoxLocal prs p_mut;;
+  ret p_local.
+
+Definition anf_pipeline' prs (p : EAst.program) :=
+  let env := p.1 in
+  '(prs, next_id) <- register_prims prs next_id env ;;
+  o <- get_options;;
+  (* Translate lambda_box -> lambda_boxmut *)
+  p_mut <- compile_LambdaBoxMut p;;
+  check_axioms prs p_mut;;
+  (* Translate lambda_boxmut -> lambda_boxlocal *)
+  p_local <- compile_LambdaBoxLocal prs p_mut;;
+  (* Translate lambda_boxlocal -> lambda_anf *)
+  let local_to_anf_trans := if o.(direct) then compile_LambdaANF_ANF else compile_LambdaANF_CPS in
+  p_anf <- local_to_anf_trans next_id prs p_local;;
+  ret p_anf.
+
+Definition id_trans {A : Type} : CertiCoqTrans A A :=
+  fun p => ret p.
+
+Definition anf_pipeline {A : Type}
+      (f : list ((((Kernames.kername * string) * bool) * nat) * positive) -> CertiCoqTrans toplevel.LambdaANF_FullTerm A)
+      prs
+      (p : EAst.program) :=
+  let env := p.1 in
+  '(prs, next_id) <- register_prims prs next_id env ;;
   o <- get_options;;
   (* Translate lambda_box -> lambda_boxmut *)
   p_mut <- compile_LambdaBoxMut p;;
@@ -131,4 +173,4 @@ Definition anf_pipeline (p : EAst.program) prs next_id :=
     then compile_LambdaANF_debug (* For debugging intermediate states of the λanf pipeline *)
     else compile_LambdaANF in
   p_anf <- anf_trans next_id p_anf;;
-  ret p_anf.
+  f prs p_anf.

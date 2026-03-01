@@ -4,12 +4,13 @@ From MetaRocq.Erasure Require EProgram.
 From Malfunction Require Serialize.
 From Peregrine Require Import Config.
 From Peregrine Require Import ConfigUtils.
+From Peregrine Require Import DeserializeCommon.
 From Peregrine Require Import SerializeCommon.
+From Peregrine Require Import DeserializeConfig.
 From Peregrine Require Import SerializeConfig.
 From Peregrine Require Import SerializeCommonComplete.
-From Peregrine Require Import CeresExtra.
 From Stdlib Require Import List.
-From Ceres Require Import Ceres.
+From CeresBS Require Import Ceres.
 
 
 Import ListNotations.
@@ -25,7 +26,7 @@ Proof.
   unfold CompleteClass, Complete.
   intros l o.
   cbn -[Deserialize_bool Deserialize_ident].
-  rewrite !eqb_ascii_refl.
+  simpl_bytes.
   rewrite 7!complete_class.
   destruct o; cbn.
   reflexivity.
@@ -36,7 +37,7 @@ Proof.
   unfold CompleteClass, Complete.
   intros l o.
   cbn -[Deserialize_bool Deserialize_ident].
-  rewrite !eqb_ascii_refl.
+  simpl_bytes.
   rewrite 7!complete_class.
   destruct o; cbn.
   reflexivity.
@@ -47,7 +48,7 @@ Proof.
   unfold CompleteClass, Complete.
   intros l o.
   cbn -[Deserialize_bool Deserialize_ident].
-  rewrite !eqb_ascii_refl.
+  simpl_bytes.
   rewrite 7!complete_class.
   destruct o; cbn.
   reflexivity.
@@ -58,7 +59,7 @@ Proof.
   unfold CompleteClass, Complete.
   intros l o.
   cbn -[Deserialize_bool Deserialize_ident].
-  rewrite !eqb_ascii_refl.
+  simpl_bytes.
   rewrite 7!complete_class.
   destruct o; cbn.
   reflexivity.
@@ -69,8 +70,8 @@ Proof.
   unfold CompleteClass, Complete.
   intros l o.
   cbn -[Deserialize_bool Deserialize_ident Deserialize_SemiIntegral].
-  rewrite !eqb_ascii_refl.
-  rewrite 5!complete_class.
+  simpl_bytes.
+  rewrite 6!complete_class.
   destruct o; cbn.
   reflexivity.
 Qed.
@@ -80,8 +81,8 @@ Proof.
   unfold CompleteClass, Complete.
   intros l o.
   cbn -[Deserialize_bool Deserialize_ident Deserialize_SemiIntegral Deserialize_option].
-  rewrite !eqb_ascii_refl.
-  rewrite 5!complete_class.
+  simpl_bytes.
+  rewrite 6!complete_class.
   destruct o; cbn.
   reflexivity.
 Qed.
@@ -93,7 +94,7 @@ Proof.
   destruct a.
   - reflexivity.
   - cbn -[Deserialize_ident].
-    rewrite !eqb_ascii_refl.
+    simpl_bytes.
     rewrite 2!complete_class.
     reflexivity.
 Qed.
@@ -103,7 +104,7 @@ Proof.
   unfold CompleteClass, Complete.
   intros l o.
   cbn -[Deserialize_program_type].
-  rewrite !eqb_ascii_refl.
+  simpl_bytes.
   rewrite 1!complete_class.
   destruct o; cbn.
   reflexivity.
@@ -114,7 +115,7 @@ Proof.
   unfold CompleteClass, Complete.
   intros l o.
   cbn -[Deserialize_program_type].
-  rewrite !eqb_ascii_refl.
+  simpl_bytes.
   rewrite 1!complete_class.
   destruct o; cbn.
   reflexivity.
@@ -138,39 +139,144 @@ Proof.
   reflexivity.
 Qed.
 
+Instance Complete_eval_config : CompleteClass eval_config.
+Proof.
+  unfold CompleteClass, Complete.
+  intros l o.
+  cbn -[Deserialize_certicoq_config Deserialize_bool Deserialize_SemiIntegral].
+  simpl_bytes.
+  rewrite 3!complete_class.
+  destruct o; cbn.
+  reflexivity.
+Qed.
+
+Instance Complete_eval_config' : CompleteClass eval_config'.
+Proof.
+  unfold CompleteClass, Complete.
+  intros l o.
+  cbn -[Deserialize_certicoq_config' Deserialize_bool Deserialize_SemiIntegral].
+  simpl_bytes.
+  rewrite 3!complete_class.
+  destruct o; cbn.
+  reflexivity.
+Qed.
+
+Instance Complete_ASTType : CompleteClass ASTType.
+Proof.
+  unfold CompleteClass, Complete.
+  intros l o.
+  destruct o.
+  - cbn -[Deserialize_certicoq_config].
+    simpl_bytes.
+    reflexivity.
+  - cbn -[Deserialize_certicoq_config].
+    simpl_bytes.
+    reflexivity.
+  - cbn -[Deserialize_certicoq_config].
+    simpl_bytes.
+    rewrite complete_class.
+    reflexivity.
+  - cbn -[Deserialize_certicoq_config].
+    simpl_bytes.
+    rewrite complete_class.
+    reflexivity.
+  - cbn -[Deserialize_certicoq_config].
+    simpl_bytes.
+    rewrite complete_class.
+    reflexivity.
+  - cbn -[Deserialize_certicoq_config].
+    simpl_bytes.
+    rewrite complete_class.
+    reflexivity.
+Qed.
+
+Instance Complete_ASTType' : CompleteClass ASTType'.
+Proof.
+  unfold CompleteClass, Complete.
+  intros l o.
+  destruct o.
+  - cbn -[Deserialize_certicoq_config' Deserialize_option].
+    simpl_bytes.
+    reflexivity.
+  - cbn -[Deserialize_certicoq_config' Deserialize_option].
+    simpl_bytes.
+    reflexivity.
+  - cbn -[Deserialize_certicoq_config' Deserialize_option].
+    simpl_bytes.
+    rewrite complete_class.
+    reflexivity.
+  - cbn -[Deserialize_certicoq_config' Deserialize_option].
+    simpl_bytes.
+    rewrite complete_class.
+    reflexivity.
+  - cbn -[Deserialize_certicoq_config' Deserialize_option].
+    simpl_bytes.
+    rewrite complete_class.
+    reflexivity.
+  - cbn -[Deserialize_certicoq_config' Deserialize_option].
+    simpl_bytes.
+    rewrite complete_class.
+    reflexivity.
+Qed.
+
+Instance Complete_ast_config : CompleteClass ast_config.
+Proof.
+  unfold CompleteClass, Complete.
+  intros l o.
+  cbn -[Deserialize_certicoq_config].
+  simpl_bytes.
+  rewrite complete_class.
+  destruct o; cbn.
+  reflexivity.
+Qed.
+
+Instance Complete_ast_config' : CompleteClass ast_config'.
+Proof.
+  unfold CompleteClass, Complete.
+  intros l o.
+  cbn -[Deserialize_certicoq_config' Deserialize_option].
+  simpl_bytes.
+  rewrite complete_class.
+  destruct o; cbn.
+  reflexivity.
+Qed.
+
 Instance Complete_backend_config : CompleteClass backend_config.
 Proof.
   unfold CompleteClass, Complete.
   intros l b.
   destruct b.
   - cbn -[Deserialize_rust_config].
-    rewrite !eqb_ascii_refl.
-    rewrite !complete_class.
+    simpl_bytes.
+    rewrite complete_class.
     reflexivity.
   - cbn -[Deserialize_elm_config].
-    rewrite !eqb_ascii_refl.
-    rewrite !neqb_ascii_neq by congruence.
-    rewrite !complete_class.
+    simpl_bytes.
+    rewrite complete_class.
     reflexivity.
   - cbn -[Deserialize_certicoq_config].
-    rewrite !eqb_ascii_refl.
-    rewrite !neqb_ascii_neq by congruence.
-    rewrite !complete_class.
+    simpl_bytes.
+    rewrite complete_class.
     reflexivity.
   - cbn -[Deserialize_certicoq_config].
-    rewrite !eqb_ascii_refl.
-    rewrite !neqb_ascii_neq by congruence.
-    rewrite !complete_class.
+    simpl_bytes.
+    rewrite complete_class.
     reflexivity.
   - cbn -[Deserialize_ocaml_config].
-    rewrite !eqb_ascii_refl.
-    rewrite !neqb_ascii_neq by congruence.
-    rewrite !complete_class.
+    simpl_bytes.
+    rewrite complete_class.
     reflexivity.
   - cbn -[Deserialize_cakeml_config'].
-    rewrite !eqb_ascii_refl.
-    rewrite !neqb_ascii_neq by congruence.
-    rewrite !complete_class.
+    simpl_bytes.
+    rewrite complete_class.
+    reflexivity.
+  - cbn -[Deserialize_eval_config].
+    simpl_bytes.
+    rewrite complete_class.
+    reflexivity.
+  - cbn -[Deserialize_ast_config].
+    simpl_bytes.
+    rewrite complete_class.
     reflexivity.
 Qed.
 
@@ -180,33 +286,36 @@ Proof.
   intros l b.
   destruct b.
   - cbn -[Deserialize_rust_config'].
-    rewrite !eqb_ascii_refl.
-    rewrite !complete_class.
+    simpl_bytes.
+    rewrite complete_class.
     reflexivity.
   - cbn -[Deserialize_elm_config'].
-    rewrite !eqb_ascii_refl.
-    rewrite !neqb_ascii_neq by congruence.
-    rewrite !complete_class.
+    simpl_bytes.
+    rewrite complete_class.
     reflexivity.
   - cbn -[Deserialize_certicoq_config'].
-    rewrite !eqb_ascii_refl.
-    rewrite !neqb_ascii_neq by congruence.
-    rewrite !complete_class.
+    simpl_bytes.
+    rewrite complete_class.
     reflexivity.
   - cbn -[Deserialize_certicoq_config'].
-    rewrite !eqb_ascii_refl.
-    rewrite !neqb_ascii_neq by congruence.
-    rewrite !complete_class.
+    simpl_bytes.
+    rewrite complete_class.
     reflexivity.
   - cbn -[Deserialize_ocaml_config'].
-    rewrite !eqb_ascii_refl.
-    rewrite !neqb_ascii_neq by congruence.
-    rewrite !complete_class.
+    simpl_bytes.
+    rewrite complete_class.
     reflexivity.
   - cbn -[Deserialize_cakeml_config'].
-    rewrite !eqb_ascii_refl.
-    rewrite !neqb_ascii_neq by congruence.
-    rewrite !complete_class.
+    simpl_bytes.
+    rewrite complete_class.
+    reflexivity.
+  - cbn -[Deserialize_eval_config'].
+    simpl_bytes.
+    rewrite complete_class.
+    reflexivity.
+  - cbn -[Deserialize_ast_config'].
+    simpl_bytes.
+    rewrite complete_class.
     reflexivity.
 Qed.
 
@@ -219,7 +328,7 @@ Proof.
   unfold CompleteClass, Complete.
   intros l o.
   cbn -[Deserialize_ident Deserialize_list Deserialize_option].
-  rewrite !eqb_ascii_refl.
+  simpl_bytes.
   rewrite 3!complete_class.
   destruct o; cbn.
   reflexivity.
@@ -230,7 +339,7 @@ Proof.
   unfold CompleteClass, Complete.
   intros l o.
   cbn -[Deserialize_ident Deserialize_list Deserialize_option Deserialize_bool Deserialize_SemiIntegral].
-  rewrite !eqb_ascii_refl.
+  simpl_bytes.
   rewrite 5!complete_class.
   destruct o; cbn.
   reflexivity.
@@ -242,7 +351,7 @@ Proof.
   intros l a.
   destruct a, p.
   cbn -[Deserialize_ident Deserialize_list Deserialize_inductive].
-  rewrite !eqb_ascii_refl.
+  simpl_bytes.
   rewrite 3!complete_class.
   reflexivity.
 Qed.
@@ -252,7 +361,7 @@ Proof.
   unfold CompleteClass, Complete.
   intros l o.
   cbn -[Deserialize_kername Deserialize_list].
-  rewrite !eqb_ascii_refl.
+  simpl_bytes.
   rewrite 2!complete_class.
   destruct o; cbn.
   reflexivity.
@@ -264,12 +373,11 @@ Proof.
   intros l r.
   destruct r.
   - cbn -[Deserialize_extract_inductive Deserialize_kername Deserialize_list].
-    rewrite !eqb_ascii_refl.
+    simpl_bytes.
     rewrite 2!complete_class.
     reflexivity.
   - cbn -[Deserialize_remapped_inductive Deserialize_inductive].
-    rewrite !eqb_ascii_refl.
-    rewrite !neqb_ascii_neq by congruence.
+    simpl_bytes.
     rewrite 2!complete_class.
     reflexivity.
 Qed.
@@ -304,7 +412,7 @@ Proof.
   unfold CompleteClass, Complete.
   intros l o.
   cbn -[Deserialize_bool].
-  rewrite !eqb_ascii_refl.
+  simpl_bytes.
   rewrite 7!complete_class.
   destruct o; cbn.
   reflexivity.
@@ -315,7 +423,7 @@ Proof.
   unfold CompleteClass, Complete.
   intros l o.
   cbn -[Deserialize_bool].
-  rewrite !eqb_ascii_refl.
+  simpl_bytes.
   rewrite 7!complete_class.
   destruct o; cbn.
   reflexivity.
@@ -326,7 +434,7 @@ Proof.
   unfold CompleteClass, Complete.
   intros l o.
   cbn -[Deserialize_backend_config Deserialize_erasure_phases Deserialize_option Deserialize_list Deserialize_inlinings Deserialize_inductive_mapping Deserialize_constant_remappings Deserialize_inductive_remappings Deserialize_custom_attributes].
-  rewrite !eqb_ascii_refl.
+  simpl_bytes.
   rewrite 7!complete_class.
   destruct o; cbn.
   reflexivity.
@@ -337,7 +445,7 @@ Proof.
   unfold CompleteClass, Complete.
   intros l o.
   cbn -[Deserialize_backend_config' Deserialize_erasure_phases' Deserialize_option Deserialize_list Deserialize_inlinings Deserialize_inductive_mapping Deserialize_constant_remappings Deserialize_inductive_remappings Deserialize_custom_attributes].
-  rewrite !eqb_ascii_refl.
+  simpl_bytes.
   rewrite 7!complete_class.
   destruct o; cbn.
   reflexivity.
@@ -348,7 +456,7 @@ Proof.
   unfold CompleteClass, Complete.
   intros l o.
   cbn -[Deserialize_list Deserialize_inlinings Deserialize_inductive_mapping Deserialize_constant_remappings Deserialize_inductive_remappings Deserialize_custom_attributes].
-  rewrite !eqb_ascii_refl.
+  simpl_bytes.
   rewrite 5!complete_class.
   destruct o; cbn.
   reflexivity.

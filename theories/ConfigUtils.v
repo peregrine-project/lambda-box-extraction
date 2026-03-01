@@ -13,6 +13,8 @@ From Peregrine Require Import OCamlBackend.
 From Peregrine Require Import CakeMLBackend.
 From Peregrine Require Import CBackend.
 From Peregrine Require Import WasmBackend.
+From Peregrine Require Import EvalBackend.
+From Peregrine Require Import ASTBackend.
 
 Local Open Scope bs_scope.
 
@@ -127,6 +129,7 @@ Section BackendConfigOptional.
     direct'    : option bool;
     c_args'    : option nat;
     o_level'   : option nat;
+    anf_conf'  : option nat;
     prefix'    : option string;
     body_name' : option string;
   }.
@@ -134,6 +137,7 @@ Section BackendConfigOptional.
     direct'    := None;
     c_args'    := None;
     o_level'   := None;
+    anf_conf'  := None;
     prefix'    := None;
     body_name' := None;
   |}.
@@ -142,6 +146,7 @@ Section BackendConfigOptional.
     direct    := get_optional o default_certicoq_config direct' direct;
     c_args    := get_optional o default_certicoq_config c_args' c_args;
     o_level   := get_optional o default_certicoq_config o_level' o_level;
+    anf_conf  := get_optional o default_certicoq_config anf_conf' anf_conf;
     prefix    := get_optional o default_certicoq_config prefix' prefix;
     body_name := get_optional o default_certicoq_config body_name' body_name;
   |}.
@@ -167,13 +172,61 @@ Section BackendConfigOptional.
 
   Definition mk_cakeml_config (o : cakeml_config') : cakeml_config := tt.
 
+  Record eval_config' := {
+    copts'    : option certicoq_config';
+    fuel'     : nat;
+    eval_anf' : bool;
+  }.
+  Definition empty_eval_config' : eval_config' := {|
+    copts'    := None;
+    fuel'     := (Nat.pow 2 14);
+    eval_anf' := true;
+  |}.
+
+  Definition mk_eval_config (o : eval_config') : eval_config := {|
+    copts    := get_optional o default_eval_config
+      (fun c => option_map (mk_certicoq_config default_eval_config.(copts)) (copts' c)) copts;
+    fuel     := o.(fuel');
+    eval_anf := o.(eval_anf');
+  |}.
+
+  Variant ASTType' :=
+  | LambdaBox'
+  | LambdaBoxTyped'
+  | LambdaBoxMut'   : option certicoq_config' -> ASTType'
+  | LambdaBoxLocal' : option certicoq_config' -> ASTType'
+  | LambdaANF'      : option certicoq_config' -> ASTType'
+  | LambdaANFC'     : option certicoq_config' -> ASTType'.
+
+  Record ast_config' := {
+    ast_type' : ASTType';
+  }.
+  Definition empty_ast_config' : ast_config' := {|
+    ast_type' := LambdaBox';
+  |}.
+
+  Definition mk_ast_config (o : ast_config') : ast_config :=
+    let mk c := match c with | Some c => mk_certicoq_config default_ast_c_config c | None => default_ast_c_config end in
+    {| ast_type :=
+        match o.(ast_type') with
+        | LambdaBox' => LambdaBox
+        | LambdaBoxTyped' => LambdaBoxTyped
+        | LambdaBoxMut' c => LambdaBoxMut (mk c)
+        | LambdaBoxLocal' c => LambdaBoxLocal (mk c)
+        | LambdaANF' c => LambdaANF (mk c)
+        | LambdaANFC' c => LambdaANFC (mk c)
+        end
+    |}.
+
   Inductive backend_config' :=
   | Rust'   : rust_config' -> backend_config'
   | Elm'    : elm_config' -> backend_config'
   | C'      : c_config' -> backend_config'
   | Wasm'   : wasm_config' -> backend_config'
   | OCaml'  : ocaml_config' -> backend_config'
-  | CakeML' : cakeml_config' -> backend_config'.
+  | CakeML' : cakeml_config' -> backend_config'
+  | Eval'   : eval_config' -> backend_config'
+  | AST'    : ast_config' -> backend_config'.
   Definition mk_backend_config (o : backend_config') : backend_config :=
     match o with
     | Rust' o   => Rust (mk_rust_config o)
@@ -182,6 +235,8 @@ Section BackendConfigOptional.
     | Wasm' o   => Wasm (mk_certicoq_config default_wasm_config o)
     | OCaml' o  => OCaml (mk_ocaml_config o)
     | CakeML' o => CakeML (mk_cakeml_config o)
+    | Eval' o   => Eval (mk_eval_config o)
+    | AST' o    => AST (mk_ast_config o)
     end.
 
 End BackendConfigOptional.
@@ -256,6 +311,8 @@ Section GeneralConfigOptional.
       | Wasm' _   => get_default_phases_opt wasm_phases
       | OCaml' _  => get_default_phases_opt ocaml_phases
       | CakeML' _ => get_default_phases_opt cakeml_phases
+      | Eval' _   => get_default_phases_opt eval_phases
+      | AST' _   => get_default_phases_opt ast_phases
       end in
     match o with
     | Some o =>
@@ -266,6 +323,8 @@ Section GeneralConfigOptional.
       | Wasm' _   => enforce_phases o def_opt wasm_phases
       | OCaml' _  => enforce_phases o def_opt ocaml_phases
       | CakeML' _ => enforce_phases o def_opt cakeml_phases
+      | Eval' _   => enforce_phases o def_opt eval_phases
+      | AST' _   => enforce_phases o def_opt ast_phases
       end
     | None => def_opt
     end.
@@ -358,6 +417,18 @@ Section GeneralConfigOptional.
   Definition is_wasm_config (o : config) : bool :=
     match o.(backend_opts) with
     | Wasm _ => true
+    | _ => false
+    end.
+
+  Definition is_eval_config (o : config) : bool :=
+    match o.(backend_opts) with
+    | Eval _ => true
+    | _ => false
+    end.
+
+  Definition is_ast_config (o : config) : bool :=
+    match o.(backend_opts) with
+    | AST _ => true
     | _ => false
     end.
 

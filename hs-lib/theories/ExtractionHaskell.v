@@ -1,5 +1,5 @@
 From Peregrine Require SerializePrimitives.
-From Peregrine Require Deserialize.
+From Peregrine Require Serialize.
 From MetaRocq.Utils Require bytestring.
 From Stdlib Require Import ExtrHaskellBasic.
 From Stdlib Require Import ExtrHaskellString.
@@ -33,17 +33,14 @@ Extraction Blacklist config List String Nat Int Ast Universes UnivSubst Typing R
 
 
 Extract Constant PrimInt63.int => "Data.Int.Int64".
-Extract Constant SerializePrimitives.string_of_prim_int =>
-  "(\i -> Bytestring._String__of_string (Prelude.show i))".
+(* Extract Constant SerializePrimitives.string_of_prim_int =>
+  "(\i -> Bytestring._String__of_string (Prelude.show i))". *)
 
 Extract Constant PrimFloat.float => "Prelude.Double".
-(* TODO *)
-Extract Constant SerializePrimitives.string_of_prim_float =>
-  "(\s -> Prelude.error ""Float serialization not implemented"")".
 
 Extract Constant PrimString.string => "Prelude.String".
 Extract Constant SerializePrimitives.string_of_prim_string =>
-  "(\f -> Bytestring._String__of_string f)".  
+  "(\f -> Bytestring._String__of_string f)".
 
 
 Set Warnings "-extraction-reserved-identifier".
@@ -52,7 +49,7 @@ Set Warnings "-extraction-logical-axiom".
 Set Extraction Output Directory "extraction/".
 
 
-Separate Extraction Deserialize.string_of_PAst Deserialize.string_of_config
-                    Deserialize.string_of_backend_config Deserialize.string_of_erasure_phases
-                    Deserialize.string_of_attributes_config
+Separate Extraction Serialize.string_of_PAst Serialize.string_of_config
+                    Serialize.string_of_backend_config Serialize.string_of_erasure_phases
+                    Serialize.string_of_attributes_config
                     bytestring.String.of_string bytestring.String.to_string.

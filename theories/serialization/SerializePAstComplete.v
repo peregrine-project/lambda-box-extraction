@@ -1,11 +1,11 @@
 From MetaRocq.Utils Require Import bytestring.
 From Peregrine Require Import PAst.
+From Peregrine Require Import DeserializePAst.
 From Peregrine Require Import SerializePAst.
 From Peregrine Require Import SerializeEAstComplete.
 From Peregrine Require Import SerializeExAstComplete.
-From Peregrine Require Import CeresExtra.
 From Stdlib Require Import List.
-From Ceres Require Import Ceres.
+From CeresBS Require Import Ceres.
 
 Import ListNotations.
 Local Open Scope bs_scope.
@@ -26,12 +26,11 @@ Proof.
   intros l n.
   destruct n.
   - cbn -[Deserialize_untyped_env Deserialize_option].
-    rewrite !eqb_ascii_refl.
+    simpl_bytes.
     rewrite !complete_class.
     reflexivity.
   - cbn -[Deserialize_typed_env Deserialize_option].
-    rewrite !eqb_ascii_refl.
-    rewrite !neqb_ascii_neq by congruence.
+    simpl_bytes.
     rewrite !complete_class.
     reflexivity.
 Qed.

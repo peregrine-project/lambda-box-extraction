@@ -174,6 +174,11 @@ Inductive utf8_string :=
 | String (x : utf8_codepoint) (xs : utf8_string).
 
 
+Declare Scope utf8_scope.
+Delimit Scope utf8_scope with utf8_scope.
+Notation "x :: y" := (String (ascii x) y) : utf8_scope.
+
+
 Definition codepoint' : Type :=
   (hex_digit * (hex_digit * (hex_digit * (hex_digit * (hex_digit * hex_digit))))).
 
@@ -386,3 +391,28 @@ Definition of_string (s : string) : result utf8_string string :=
         end
     end
   in aux s.
+
+Fixpoint utf8_map (f : utf8_codepoint -> utf8_codepoint) (s : utf8_string) : utf8_string :=
+  match s with
+    | EmptyString => EmptyString
+    | String x xs => String (f x) (utf8_map f xs)
+  end%utf8_scope.
+
+Fixpoint utf8_append (x y : utf8_string) : utf8_string :=
+  match x with
+  | EmptyString => y
+  | String x xs => String x (utf8_append xs y)
+  end.
+
+Fixpoint utf8_concat (sep : utf8_string) (s : list utf8_string) : utf8_string :=
+  match s with
+  | nil => EmptyString
+  | cons s nil => s
+  | cons s xs => utf8_append s (utf8_append sep (utf8_concat sep xs))
+  end.
+
+Fixpoint utf8_concat_map (f : utf8_codepoint -> utf8_string) (s : utf8_string) : utf8_string :=
+  match s with
+  | EmptyString => EmptyString
+  | String x xs => utf8_append (f x) (utf8_concat_map f xs)
+  end.

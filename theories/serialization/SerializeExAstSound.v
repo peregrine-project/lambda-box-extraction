@@ -1,14 +1,17 @@
+From Peregrine Require Import DeserializeCommon.
 From Peregrine Require Import SerializeCommon.
 From Peregrine Require Import SerializeCommonSound.
+From Peregrine Require Import DeserializePrimitives.
 From Peregrine Require Import SerializePrimitives.
 From Peregrine Require Import SerializePrimitivesSound.
+From Peregrine Require Import DeserializeEAst.
 From Peregrine Require Import SerializeEAst.
 From Peregrine Require Import SerializeEAstSound.
+From Peregrine Require Import DeserializeExAst.
 From Peregrine Require Import SerializeExAst.
-From Peregrine Require Import CeresExtra.
-From Ceres Require Import CeresRoundtrip.
-From Ceres Require Import CeresSerialize.
-From Ceres Require Import CeresDeserialize.
+From CeresBS Require Import CeresRoundtrip.
+From CeresBS Require Import CeresSerialize.
+From CeresBS Require Import CeresDeserialize.
 From MetaRocq.Erasure Require Import ExAst.
 From Stdlib Require Import List.
 

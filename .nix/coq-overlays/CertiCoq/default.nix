@@ -27,10 +27,10 @@ mkCoqDerivation {
   ];
 
   propagatedBuildInputs = [
-    wasmcert # TODO: enforce 2.2.0
+    wasmcert
     compcert
     ExtLib
-    metarocq # TODO: enforce 1.3.1+8.20
+    metarocq
   ];
 
   patchPhase = ''

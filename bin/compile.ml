@@ -2,11 +2,9 @@ open Common
 open Peregrine.Caml_bytestring
 
 module Datatypes = Peregrine.Datatypes
-module CeresExtra = Peregrine.CeresExtra
 module Config = Peregrine.Config1
 module ConfigUtils = Peregrine.ConfigUtils
 module Pipeline = Peregrine.Pipeline2
-module CompM = Peregrine.CompM
 module ResultMonad = Peregrine.ResultMonad
 module Cps = Peregrine.Cps
 
@@ -63,6 +61,11 @@ let write_cakeml_res opts f p =
   write_res f (fun f ->
     output_string f (caml_string_of_bytestring (snd p)))
 
+let write_ast_res opts f p =
+  let f = get_out_file opts f "ast" in
+  let p = caml_string_of_bytestring p in
+  write_res f (fun f -> output_string f p)
+
 let printCProg prog names (dest : string) (imports : import list) =
   let imports' = List.map (fun i -> match i with
     | FromRelativePath s -> "#include \"" ^ s ^ "\""
@@ -89,6 +92,8 @@ let write_program opts f p =
   | Pipeline.CakeMLProgram p -> write_cakeml_res opts f p
   | Pipeline.CProgram p -> write_c_res opts f p
   | Pipeline.WasmProgram p -> write_wasm_res opts f p
+  | Pipeline.EvalProgram p -> cprint_endline p
+  | Pipeline.ASTProgram p -> write_ast_res opts f p
 
 
 
@@ -98,6 +103,63 @@ let read_file f =
   close_in c;
   s
 
+
+let mk_certicoq_config copts = {
+  ConfigUtils.direct'    = Some (not copts.cps);
+  ConfigUtils.c_args'    = Option.map Peregrine.Caml_nat.nat_of_caml_int copts.c_args;
+  ConfigUtils.o_level'   = Option.map Peregrine.Caml_nat.nat_of_caml_int copts.o_level;
+  ConfigUtils.anf_conf'  = Option.map Peregrine.Caml_nat.nat_of_caml_int copts.anf_conf;
+  ConfigUtils.prefix'    = Option.map bytestring_of_caml_string copts.prefix;
+  ConfigUtils.body_name' = Option.map bytestring_of_caml_string copts.body_name;
+}
+
+let mk_erasure_config eopts = {
+  ConfigUtils.implement_box'  = None;
+  ConfigUtils.implement_lazy' = None;
+  ConfigUtils.cofix_to_laxy'  = None;
+  ConfigUtils.betared'        = eopts.betared;
+  ConfigUtils.unboxing'       = eopts.unboxing;
+  ConfigUtils.dearg_ctors'    = eopts.dearg_ctors;
+  ConfigUtils.dearg_consts'   = eopts.dearg_consts;
+}
+
+let mk_config b eopts = {
+  ConfigUtils.backend_opts' = b;
+  ConfigUtils.erasure_opts' = Some (mk_erasure_config eopts);
+  ConfigUtils.inlinings_opts' = [];
+  ConfigUtils.const_remappings_opts' = [];
+  ConfigUtils.ind_remappings_opts' = [];
+  ConfigUtils.cstr_reorders_opts' = [];
+  ConfigUtils.custom_attributes_opts' = []
+}
+
+let mk_ast_config t copts : ConfigUtils.ast_config' =
+    match t with
+    | Box -> ConfigUtils.LambdaBox'
+    | BoxTyped -> ConfigUtils.LambdaBoxTyped'
+    | BoxMut -> ConfigUtils.LambdaBoxMut' (Some (mk_certicoq_config copts))
+    | BoxLocal -> ConfigUtils.LambdaBoxLocal' (Some (mk_certicoq_config copts))
+    | ANF -> ConfigUtils.LambdaANF' (Some (mk_certicoq_config copts))
+    | ANFC -> ConfigUtils.LambdaANFC' (Some (mk_certicoq_config copts))
+
+(* Validate function *)
+let validate opts f_prog f_config =
+  let prog = f_prog |> read_file |> bytestring_of_caml_string in
+  (* backend part of config isn't check so we just use any *)
+  let config =
+    match f_config with
+    | Some f -> Datatypes.Coq_inl (f |> read_file |> bytestring_of_caml_string)
+    | None -> Datatypes.Coq_inr (ConfigUtils.empty_config' (ConfigUtils.OCaml' ConfigUtils.empty_ocaml_config')) in
+  let attrs = List.map (fun s -> s |> read_file |> bytestring_of_caml_string) opts.attrs in
+  print_endline "Validating AST:";
+  let res = Pipeline.peregrine_validate config attrs prog in
+  match res with
+  | ResultMonad.Ok _ ->
+    print_endline "AST is valid"
+  | ResultMonad.Err e ->
+    print_endline "Error validating AST:";
+    cprint_endline e;
+    exit 1
 
 
 (* Compile functions *)
@@ -120,42 +182,44 @@ let compile opts f_prog f_config =
   let config = f_config |> read_file |> bytestring_of_caml_string in
   compile_aux opts f_prog prog (Datatypes.Coq_inl config)
 
-let compile_backend backend_opts opts f_prog =
+let compile_backend backend_opts opts eopts f_prog =
   let prog = f_prog |> read_file |> bytestring_of_caml_string in
-  let config = backend_opts |> ConfigUtils.empty_config' in
+  let config = mk_config backend_opts eopts in
   compile_aux opts f_prog prog (Datatypes.Coq_inr config)
 
-let compile_rust opts f_prog =
+let compile_rust opts eopts f_prog =
   let b_opts = ConfigUtils.Rust' ConfigUtils.empty_rust_config' in
-  compile_backend b_opts opts f_prog
+  compile_backend b_opts opts eopts f_prog
 
-let compile_elm opts f_prog =
+let compile_elm opts eopts f_prog =
   let b_opts = ConfigUtils.Elm' ConfigUtils.empty_elm_config' in
-  compile_backend b_opts opts f_prog
+  compile_backend b_opts opts eopts f_prog
 
-let compile_ocaml opts f_prog =
+let compile_ocaml opts eopts f_prog =
   let b_opts = ConfigUtils.OCaml' ConfigUtils.empty_ocaml_config' in
-  compile_backend b_opts opts f_prog
+  compile_backend b_opts opts eopts f_prog
 
-let compile_cakeml opts f_prog =
+let compile_cakeml opts eopts f_prog =
   let b_opts = ConfigUtils.CakeML' ConfigUtils.empty_cakeml_config' in
-  compile_backend b_opts opts f_prog
+  compile_backend b_opts opts eopts f_prog
 
-
-
-let mk_certicoq_config copts = {
-  ConfigUtils.direct'    = Some (not copts.cps);
-  ConfigUtils.c_args'    = Option.map Peregrine.Caml_nat.nat_of_caml_int copts.c_args;
-  ConfigUtils.o_level'   = Option.map Peregrine.Caml_nat.nat_of_caml_int copts.o_level;
-  ConfigUtils.prefix'    = Option.map bytestring_of_caml_string copts.prefix;
-  ConfigUtils.body_name' = Option.map bytestring_of_caml_string copts.body_name;
-}
-
-
-let compile_c opts copts f_prog =
+let compile_c opts copts eopts f_prog =
   let b_opts = ConfigUtils.C' (mk_certicoq_config copts) in
-  compile_backend b_opts opts f_prog
+  compile_backend b_opts opts eopts f_prog
 
-let compile_wasm opts copts f_prog =
+let compile_wasm opts copts eopts f_prog =
   let b_opts = ConfigUtils.Wasm' (mk_certicoq_config copts) in
-  compile_backend b_opts opts f_prog
+  compile_backend b_opts opts eopts f_prog
+
+let compile_ast opts copts eopts t f_prog =
+  let b_opts = ConfigUtils.AST' (mk_ast_config t copts) in
+  compile_backend b_opts opts eopts f_prog
+
+let compile_eval opts copts eopts fuel anf f_prog =
+  let copts = (mk_certicoq_config copts) in
+  let b_opts = ConfigUtils.Eval' {
+      ConfigUtils.copts'    = Some copts;
+      ConfigUtils.fuel'     = Peregrine.Caml_nat.nat_of_caml_int fuel;
+      ConfigUtils.eval_anf' = anf;
+    } in
+  compile_backend b_opts opts eopts f_prog

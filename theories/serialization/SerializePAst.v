@@ -2,9 +2,8 @@ From MetaRocq.Utils Require Import bytestring.
 From Peregrine Require Import PAst.
 From Peregrine Require Import SerializeEAst.
 From Peregrine Require Import SerializeExAst.
-From Peregrine Require Import CeresExtra.
 From Stdlib Require Import List.
-From Ceres Require Import Ceres.
+From CeresBS Require Import Ceres.
 
 Import ListNotations.
 Local Open Scope bs_scope.
@@ -30,28 +29,11 @@ Instance Serialize_PAst : Serialize PAst :=
 
 
 
-(** * Deserializers *)
+Definition string_of_typed_env (env : typed_env) : string :=
+  @to_string typed_env Serialize_typed_env env.
 
-Instance Deserialize_typed_env : Deserialize typed_env :=
- fun l e =>
-    _from_sexp l e.
-
-Instance Deserialize_untyped_env : Deserialize untyped_env :=
- fun l e =>
-    _from_sexp l e.
-
-Instance Deserialize_PAst : Deserialize PAst :=
-  fun l e =>
-    Deser.match_con "PAst"
-      []
-      [ ("Untyped", con2_ Untyped)
-      ; ("Typed", con2_ Typed)
-      ]
-      l e.
-
+Definition string_of_untyped_env (env : untyped_env) : string :=
+  @to_string untyped_env Serialize_untyped_env env.
 
 Definition string_of_PAst (ast : PAst) : string :=
   @to_string PAst Serialize_PAst ast.
-
-Definition PAst_of_string (s : string) : error + PAst :=
-  @from_string PAst Deserialize_PAst s.
