@@ -32,7 +32,7 @@ depends: [
   "rocq-primitive" {= "9.0.0"}
   "rocq-ceres-bytestring" {= "dev"}
   "coq-certicoq" {= "9.1.dev"}
-  "cmdliner" {< "2.0.0"}
+  "cmdliner" {>= "2.0.0"}
 ]
 
 pin-depends: [
