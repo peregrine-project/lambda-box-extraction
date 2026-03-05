@@ -31,7 +31,7 @@ depends: [
   "rocq-rust-extraction" {= "0.2.0"}
   "rocq-cakeml-extraction" {= "9.1.dev"}
   "rocq-verified-extraction" {= "9.1.dev"}
-  "cmdliner" {= "1.3.0"}
+  "cmdliner" {= "2.1.0"}
 ]
 build: [make "build"]
 install: [make "install"]
