@@ -14,7 +14,7 @@ From Peregrine Require ERemapInductives.
 
 From Stdlib Require Import Strings.Byte.
 
-Import MRMonadNotation.
+Import MonadNotation.
 Local Open Scope bs_scope.
 
 

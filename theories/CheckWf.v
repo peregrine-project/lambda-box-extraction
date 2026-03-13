@@ -66,7 +66,7 @@ From MetaRocq.Erasure Require Import EPrimitive.
 From MetaRocq.Utils Require Import utils.
 From MetaRocq.Erasure.Typed Require Import ResultMonad.
 
-Import MRMonadNotation.
+Import MonadNotation.
 
 From MetaRocq.Common Require Import Primitive.
 

@@ -14,7 +14,7 @@ From Stdlib Require Import List.
 From CeresBS Require Import CeresSerialize.
 
 Import ListNotations.
-Import MRMonadNotation.
+Import MonadNotation.
 Import Common.Transform.Transform.
 
 Local Open Scope bs_scope.

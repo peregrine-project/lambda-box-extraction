@@ -20,7 +20,7 @@ From MetaRocq.Erasure.Typed Require Import ExAst.
 From MetaRocq.Utils Require Import utils.
 From MetaRocq.Utils Require Import bytestring.
 
-Import MRMonadNotation.
+Import MonadNotation.
 #[local]
 Existing Instance Monad_result.
 

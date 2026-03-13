@@ -4,7 +4,7 @@ From MetaRocq.Erasure.Typed Require Import ResultMonad.
 From Stdlib Require Import Strings.Byte.
 From Stdlib Require Import NArith.BinNat.
 
-Import MRMonadNotation.
+Import MonadNotation.
 
 Local Open Scope bs_scope.
 

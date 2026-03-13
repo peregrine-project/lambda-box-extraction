@@ -7,7 +7,7 @@ From TypedExtraction Require Import PrettyPrinterMonad.
 From TypedExtraction Require Import ElmExtract.
 From TypedExtraction Require Import Common.
 
-Import MRMonadNotation.
+Import MonadNotation.
 
 Local Open Scope bs_scope.
 

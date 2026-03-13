@@ -12,7 +12,7 @@ From MetaRocq.Erasure Require Import EProgram EPrimitive EAst ESpineView EEtaExp
   EAstUtils ELiftSubst EWellformed ECSubst EWcbvEval.
 
 Import Kernames.
-Import MRMonadNotation.
+Import MonadNotation.
 
 Record extract_inductive :=
   { cstrs : list kername; (* One constant for each constructor *)

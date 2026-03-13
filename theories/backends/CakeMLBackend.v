@@ -13,7 +13,7 @@ From CakeML Require Import Pipeline.
 From CakeML Require Import Serialize.
 
 Import ListNotations.
-Import MRMonadNotation.
+Import MonadNotation.
 Import Common.Transform.Transform.
 
 Local Open Scope bs_scope.

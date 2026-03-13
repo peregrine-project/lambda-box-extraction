@@ -7,7 +7,7 @@ From TypedExtraction Require Import PrettyPrinterMonad.
 From TypedExtraction Require Import Printing.
 From TypedExtraction Require Import RustExtract.
 
-Import MRMonadNotation.
+Import MonadNotation.
 
 Local Open Scope bs_scope.
 
