@@ -12,7 +12,7 @@
 
   bundles."9.1" = { coqPackages = {
       coq.override.version = "9.1";
-      metarocq.override.version = "1.4.1-9.1";
+      metarocq.override.version = "1.5.1-9.1";
       TypedExtraction.override.version = "0.2.1";
       CertiCoq.override.version = "coq-9.1";
       verified-extraction.override.version = "rocq-9.1-bs";
