@@ -14,7 +14,6 @@ depends: [
   "rocq-runtime" {= "9.1.1"}
   "rocq-stdlib" {= "9.0.0"}
   "rocq-certirocq" {= "9.1.dev"}
-  "coq-compcert" {= "3.17"}
   "rocq-ceres-bytestring" {= "1.0.0"}
   "rocq-metarocq-common" {= "1.5.1+9.1"}
   "rocq-metarocq-erasure" {= "1.5.1+9.1"}
@@ -37,10 +36,6 @@ build: [make "build"]
 install: [make "install"]
 dev-repo: "git+https://github.com/peregrine-project/peregrine-tool.git"
 pin-depends: [
-  [
-    "coq-compcert.3.17"
-    "git+https://github.com/4ever2/CompCert.git#0d1179ee06c4cd38b419696c17d49dad3a4a2521"
-  ]
   [
     "rocq-certirocq.9.1.dev"
     "git+https://github.com/CertiRocq/certirocq.git#5e2f0d26bc95e5b8c0b3dd5918463fffb877d23a"
