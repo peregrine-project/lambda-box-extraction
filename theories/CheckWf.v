@@ -8,6 +8,7 @@ From MetaRocq.Erasure Require Import EAst.
 From MetaRocq.Erasure Require Import EWellformed.
 From MetaRocq.Erasure.Typed Require ExAst.
 From Equations Require Import Equations.
+From Peregrine Require Import Utils.
 
 Import ListNotations.
 Import EnvMap.
@@ -64,7 +65,7 @@ From MetaRocq.Erasure Require Import EGlobalEnv.
 From MetaRocq.Erasure Require Import EPrimitive.
 
 From MetaRocq.Utils Require Import utils.
-From MetaRocq.Erasure.Typed Require Import ResultMonad.
+From MetaRocq.Utils Require Import ResultMonad.
 
 Import MonadNotation.
 
@@ -73,30 +74,33 @@ From MetaRocq.Common Require Import Primitive.
 
 Section Wf.
 
-  Definition assert (b : bool) (s : unit -> string) : (fun T => result T string) unit :=
+  (* TODO: replace with Utils.assert definition *)
+  Definition assert (b : bool) (s : unit -> string) : result' unit :=
     if b then Ok tt else Err (s tt).
 
-  Definition assert_some {A : Type} (b : option A) (s : unit -> string) : (fun T => result T string) unit :=
+  (* TODO: move to utils *)
+  Definition assert_some {A : Type} (b : option A) (s : unit -> string) : result' unit :=
     match b with
     | Some _ =>  Ok tt
     | None => Err (s tt)
     end.
 
-  Definition result_forall {A : Type} (f : A -> (fun T => result T string) unit ) (l : list A) :=
+  Definition result_forall {A : Type} (f : A -> result' unit) (l : list A) :=
     List.fold_left (fun a t => a ;; f t) l (Ok tt).
 
-  Definition wf_fix_gen_ (wf : nat -> term -> (fun T => result T string) unit) k mfix idx :=
+  Definition wf_fix_gen_ (wf : nat -> term -> result' unit) k mfix idx :=
     let k' := List.length mfix + k in
     assert (idx <? #|mfix|) (fun _ => "Fixpoint index out of bounds") ;;
     result_forall (fun d => (wf k') d.(dbody)) mfix.
 
+  (* TODO: move to utils *)
   Definition bool_of_result {T E : Type} (r : result T E) : bool :=
     match r with
     | Ok _ => true
     | Err _ => false
     end.
 
-  Definition has_prim_ {epfl : EPrimitiveFlags} (p : prim_val term) : (fun T => result T string) unit :=
+  Definition has_prim_ {epfl : EPrimitiveFlags} (p : prim_val term) : result' unit :=
     match prim_val_tag p with
     | primInt => assert has_primint (fun _ => "Program contains primitive integers")
     | primFloat => assert has_primfloat (fun _ => "Program contains primitive floats")
@@ -104,7 +108,7 @@ Section Wf.
     | primArray => assert has_primarray (fun _ => "Program contains primitive arrays")
     end.
 
-  Fixpoint wellformed {efl  : EEnvFlags} Σ (k : nat) (t : term) {struct t} : (fun T => result T string) unit :=
+  Fixpoint wellformed {efl  : EEnvFlags} Σ (k : nat) (t : term) {struct t} : result' unit :=
     match t with
     | tRel i => assert has_tRel (fun _ => "Program contains tRel") ;; assert (Nat.ltb i k) (fun _ => "Program not closed, invalid tRel " ^ (string_of_nat i))
     | tEvar ev args => assert has_tEvar (fun _ => "Program contains tEvar") ;; result_forall (wellformed Σ k) args
@@ -156,7 +160,7 @@ Section Wf.
     | tForce t => assert has_tLazy_Force (fun _ => "Program contains lazy/force") ;; wellformed Σ k t
     end.
 
-  Definition wf_projections idecl : (fun T => result T string) unit :=
+  Definition wf_projections idecl : result' unit :=
     match idecl.(ind_projs) with
     | [] => Ok tt
     | _ =>
@@ -166,14 +170,14 @@ Section Wf.
       end
     end.
 
-  Definition wf_inductive (idecl : one_inductive_body) : (fun T => result T string) unit :=
+  Definition wf_inductive (idecl : one_inductive_body) : result' unit :=
     wf_projections idecl.
 
-  Definition wf_minductive {efl  : EEnvFlags} (mdecl : mutual_inductive_body) : (fun T => result T string) unit :=
+  Definition wf_minductive {efl  : EEnvFlags} (mdecl : mutual_inductive_body) : result' unit :=
     assert (has_cstr_params || (mdecl.(ind_npars) == 0)) (fun _ => "Has constructor params") ;;
     result_forall wf_inductive mdecl.(ind_bodies).
 
-  Definition wf_global_decl {efl  : EEnvFlags} Σ d : (fun T => result T string) unit :=
+  Definition wf_global_decl {efl  : EEnvFlags} Σ d : result' unit :=
     match d with
     | ConstantDecl cb =>
       match cb.(cst_body) with
@@ -183,7 +187,7 @@ Section Wf.
     | InductiveDecl idecl => wf_minductive idecl
     end.
 
-  Fixpoint check_fresh_global (k : kername) (decls : global_declarations) : (fun T => result T string) unit :=
+  Fixpoint check_fresh_global (k : kername) (decls : global_declarations) : result' unit :=
     match decls with
     | []    => Ok tt
     | p::ds =>
@@ -191,7 +195,7 @@ Section Wf.
       check_fresh_global k ds
     end.
 
-  Fixpoint check_wf_glob {efl : EEnvFlags} (decls : global_declarations) : (fun T => result T string) unit :=
+  Fixpoint check_wf_glob {efl : EEnvFlags} (decls : global_declarations) : result' unit :=
     match decls with
     | []    => Ok tt
     | p::ds =>
@@ -200,7 +204,7 @@ Section Wf.
       map_error (fun e => "Error while checking " ^ (string_of_kername (fst p)) ^ ": " ^ e) (wf_global_decl ds (snd p))
     end.
 
-  Definition check_wf_program {efl : EEnvFlags} (p : program) : (fun T => result T string) unit :=
+  Definition check_wf_program {efl : EEnvFlags} (p : program) : result' unit :=
     check_wf_glob (fst p) ;; wellformed (fst p) 0 (snd p).
 
 End Wf.
@@ -279,6 +283,7 @@ Section WfCorrect.
 
 
 
+  (* TODO: move to utils *)
   Lemma result_mapb {E1 E2 T : Type} : forall (f : E1 -> E2) (r : result T E1),
     bool_of_result (map_error f r) = bool_of_result r.
   Proof.
@@ -286,6 +291,7 @@ Section WfCorrect.
     destruct r; reflexivity.
   Qed.
 
+  (* TODO: move to utils *)
   Lemma result_assertb' : forall b s,
     bool_of_result (assert b s) = b.
   Proof.
@@ -293,13 +299,15 @@ Section WfCorrect.
     destruct b; reflexivity.
   Qed.
 
-  Lemma result_assertb : forall b s (c : result unit string),
+  (* TODO: move to utils *)
+  Lemma result_assertb : forall b s (c : result' unit),
     bool_of_result (assert b s ;; c) = b && (bool_of_result c).
   Proof.
     intros.
     destruct b; reflexivity.
   Qed.
 
+  (* TODO: move to utils *)
   Lemma result_assert_someb' {A : Type} : forall (o : option A) s,
     bool_of_result (assert_some o s) = isSome o.
   Proof.
@@ -307,13 +315,15 @@ Section WfCorrect.
     destruct o; reflexivity.
   Qed.
 
-  Lemma result_assert_someb {A : Type} : forall (o : option A) s (c : result unit string),
+  (* TODO: move to utils *)
+  Lemma result_assert_someb {A : Type} : forall (o : option A) s (c : result' unit),
     bool_of_result (assert_some o s ;; c) = isSome o && (bool_of_result c).
   Proof.
     intros.
     destruct o; reflexivity.
   Qed.
 
+  (* TODO: move to utils *)
   Lemma result_bindb {T E: Type} : forall (c1 c2 : (fun T => result T E) T),
     bool_of_result (c1 ;; c2) = bool_of_result c1 && bool_of_result c2.
   Proof.
@@ -321,7 +331,8 @@ Section WfCorrect.
     destruct c1, c2; reflexivity.
   Qed.
 
-  Lemma result_forallb' {A : Type} : forall (f : A -> (fun T => result T string) unit)  h (t : list A),
+  (* TODO: move to utils *)
+  Lemma result_forallb' {A : Type} : forall (f : A -> result' unit)  h (t : list A),
     bool_of_result (fold_left (fun a t => a ;; f t) (h :: t) (Ok tt)) =
     bool_of_result (f h) && bool_of_result (fold_left (fun a t => a ;; f t) t (Ok tt)).
   Proof.
@@ -336,6 +347,7 @@ Section WfCorrect.
         apply IHt0.
   Qed.
 
+  (* TODO: move to utils *)
   Lemma result_forallb {A : Type} : forall f f' (l : list A),
     (forall x, bool_of_result (f x) = f' x) ->
     bool_of_result (result_forall f l) = forallb f' l.
@@ -351,6 +363,7 @@ Section WfCorrect.
     reflexivity.
   Qed.
 
+  (* TODO: move to utils *)
   Lemma result_forall_allb {A : Type} : forall f f' (l : list A),
     All (fun x => bool_of_result (f x) = f' x) l ->
     bool_of_result (result_forall f l) = forallb f' l.
@@ -651,7 +664,7 @@ End WfCorrect.
 Module CheckWfExAst.
   Import ExAst.
 
-  Definition check_wf_typed_program {efl : EEnvFlags} (p : global_env) : (fun T => result T string) unit  :=
+  Definition check_wf_typed_program {efl : EEnvFlags} (p : global_env) : result' unit  :=
     check_wf_glob (trans_env p).
 
 End CheckWfExAst.

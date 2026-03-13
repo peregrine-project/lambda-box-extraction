@@ -1,6 +1,6 @@
 From MetaRocq.Utils Require Import utils.
 From MetaRocq.Utils Require Import bytestring.
-From MetaRocq.Erasure.Typed Require Import ResultMonad.
+From MetaRocq.Utils Require Import ResultMonad.
 From Peregrine Require Import Config.
 From Peregrine Require Import Utils.
 From CertiRocq Require Import LambdaBoxMut.compile.

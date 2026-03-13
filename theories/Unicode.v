@@ -1,8 +1,9 @@
 From MetaRocq.Utils Require Import utils.
 From MetaRocq.Utils Require Import bytestring.
-From MetaRocq.Erasure.Typed Require Import ResultMonad.
+From MetaRocq.Utils Require Import ResultMonad.
 From Stdlib Require Import Strings.Byte.
 From Stdlib Require Import NArith.BinNat.
+From Peregrine Require Import Utils.
 
 Import MonadNotation.
 
@@ -319,11 +320,8 @@ Definition is_start_byte (b3 b4 b5 b6 b7 : bool) : nat :=
   | _ => 0
   end.
 
-#[local]
-Existing Instance Monad_result.
-
-Definition of_string (s : string) : result utf8_string string :=
-  let fix aux s :=
+Definition of_string (s : string) : result' utf8_string :=
+  let fix aux s : result' utf8_string :=
     match s with
     | String.EmptyString => Ok EmptyString
     | (a :: xs)%bs =>

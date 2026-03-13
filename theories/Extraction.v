@@ -53,10 +53,10 @@ Extract Constant Malfunction.FFI.coq_msg_info => "(fun s -> s |> Caml_bytestring
 Extract Constant Malfunction.FFI.coq_user_error => "(fun s -> s |> Caml_bytestring.caml_string_of_bytestring |> Stdlib.print_endline)".
 Extraction Inline Malfunction.FFI.coq_msg_info.
 Extraction Inline Malfunction.FFI.coq_user_error.
-Extract Constant CakeML.FFI.coq_msg_info => "(fun s -> s |> Caml_bytestring.caml_string_of_bytestring |> Stdlib.print_endline)".
-Extract Constant CakeML.FFI.coq_user_error => "(fun s -> s |> Caml_bytestring.caml_string_of_bytestring |> Stdlib.print_endline)".
-Extraction Inline CakeML.FFI.coq_msg_info.
-Extraction Inline CakeML.FFI.coq_user_error.
+Extract Constant CakeML.Backend.FFI.coq_msg_info => "(fun s -> s |> Caml_bytestring.caml_string_of_bytestring |> Stdlib.print_endline)".
+Extract Constant CakeML.Backend.FFI.coq_user_error => "(fun s -> s |> Caml_bytestring.caml_string_of_bytestring |> Stdlib.print_endline)".
+Extraction Inline CakeML.Backend.FFI.coq_msg_info.
+Extraction Inline CakeML.Backend.FFI.coq_user_error.
 
 
 Set Warnings "-extraction-reserved-identifier".
