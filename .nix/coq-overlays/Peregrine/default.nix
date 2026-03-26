@@ -2,20 +2,17 @@
 {
   lib,
   mkCoqDerivation,
-  which,
   coq,
   metarocq-erasure-plugin,
   TypedExtraction,
   ceres-bs,
   CertiRocq,
   verified-extraction,
-  rocq-primitive,
   CakeMLExtraction,
-  dune,
   version ? null
 }:
 
-with lib; mkCoqDerivation {
+mkCoqDerivation {
   pname = "Peregrine";
   repo = "peregrine-tool";
   owner = "peregrine-project";
@@ -23,21 +20,20 @@ with lib; mkCoqDerivation {
   opam-name = "rocq-peregrine";
 
   inherit version;
-  defaultVersion = with versions; switch coq.coq-version [
+  defaultVersion = with lib.versions; lib.switch coq.coq-version [
   ] null;
 
-  buildInputs = [ dune ];
+  buildInputs = [ coq.ocamlPackages.dune_3 ];
   propagatedBuildInputs = [
     coq.ocamlPackages.cmdliner
     coq.ocamlPackages.findlib
-    coq.ocamlPackages.dune_3
+    coq.ocamlPackages.rocq-primitive
     metarocq-erasure-plugin
     TypedExtraction
     ceres-bs
     CertiRocq
     verified-extraction
     CakeMLExtraction
-    rocq-primitive
   ];
 
   mlPlugin = true;
@@ -57,7 +53,7 @@ with lib; mkCoqDerivation {
 
   meta = {
     description = "The Peregrine Project provides a unified middle-end for code generation from proof assistants.";
-    maintainers = with maintainers; [ _4ever2 ];
-    license = licenses.mit;
+    maintainers = with lib.maintainers; [ _4ever2 ];
+    license = lib.licenses.mit;
   };
 }

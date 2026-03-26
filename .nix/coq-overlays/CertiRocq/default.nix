@@ -12,7 +12,6 @@
   version ? null,
 }:
 
-with lib;
 mkCoqDerivation {
   pname = "CertiRocq";
   owner = "CertiRocq";
@@ -57,7 +56,7 @@ mkCoqDerivation {
     metarocq-safechecker-plugin
   ];
 
-  patchPhase = ''
+  prePatch = ''
     patchShebangs ./configure.sh
     patchShebangs ./clean_extraction.sh
     patchShebangs ./make_plugin.sh
@@ -95,7 +94,7 @@ mkCoqDerivation {
 
   meta = {
     description = "CertiRocq";
-    maintainers = with maintainers; [ womeier _4ever2 ];
-    license = licenses.mit;
+    maintainers = with lib.maintainers; [ womeier _4ever2 ];
+    license = lib.licenses.mit;
   };
 }
