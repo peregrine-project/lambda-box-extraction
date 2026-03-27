@@ -1,7 +1,6 @@
 {
   lib,
   mkCoqDerivation,
-  which,
   coq,
   stdlib,
   metarocq-erasure,
@@ -93,7 +92,7 @@ let
             ]
             ++ typedextraction-deps;
 
-            patchPhase = ''
+            prePatch = ''
               patchShebangs ./configure.sh
               patchShebangs ./plugin/process_extraction.sh
             '';
